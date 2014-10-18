@@ -151,7 +151,7 @@ static VALUE sdl2r_renderer_get_destroyed(VALUE self)
 }
 
 
-static VALUE sdl2r_renderer_create_surface_from_surface(VALUE klass, VALUE vrenderer, VALUE vsurface)
+static VALUE sdl2r_create_texture_from_surface(VALUE klass, VALUE vrenderer, VALUE vsurface)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
@@ -283,7 +283,7 @@ static VALUE sdl2r_render_fill_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
 void Init_sdl2r_renderer(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "create_texture_from_surface", sdl2r_renderer_create_surface_from_surface, 2);
+    rb_define_singleton_method(mSDL, "create_texture_from_surface", sdl2r_create_texture_from_surface, 2);
     rb_define_singleton_method(mSDL, "render_copy", sdl2r_render_copy, 4);
     rb_define_singleton_method(mSDL, "render_copy_ex", sdl2r_render_copy_ex, 7);
     rb_define_singleton_method(mSDL, "render_present", sdl2r_render_present, 1);
