@@ -1,5 +1,4 @@
 #include <SDL.h>
-#include <SDL_mixer.h>
 
 #define SDL2R
 #include "sdl2r.h"
