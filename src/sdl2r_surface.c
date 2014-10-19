@@ -6,6 +6,7 @@
 #include "sdl2r_window.h"
 
 VALUE cSurface;
+VALUE cPixels;
 
 static void sdl2r_surface_free(void *ptr);
 static void sdl2r_surface_mark(void *ptr);
@@ -14,6 +15,16 @@ const rb_data_type_t sdl2r_surface_data_type = {
     {
     sdl2r_surface_mark,
     sdl2r_surface_free,
+    0,
+    },
+};
+static void sdl2r_pixels_free(void *ptr);
+static void sdl2r_pixels_mark(void *ptr);
+const rb_data_type_t sdl2r_pixels_data_type = {
+    "Pixels",
+    {
+    sdl2r_pixels_mark,
+    sdl2r_pixels_free,
     0,
     },
 };
@@ -55,10 +66,10 @@ struct SDL2RSurface *sdl2r_get_surface(VALUE vsur)
 VALUE sdl2r_surface_alloc(VALUE klass)
 {
     struct SDL2RSurface *sur;
-    VALUE vsur = TypedData_Make_Struct(klass, struct SDL2RSurface, &sdl2r_surface_data_type, sur);
+    VALUE vsurface = TypedData_Make_Struct(klass, struct SDL2RSurface, &sdl2r_surface_data_type, sur);
     sur->surface = 0;
     sur->vwindow = Qnil;
-    return vsur;
+    return vsurface;
 }
 
 
@@ -80,6 +91,18 @@ static VALUE sdl2r_h(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
     return INT2NUM(sur->surface->h);
+}
+
+
+static VALUE sdl2r_get_pixels(VALUE self)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
+    VALUE vpixels = sdl2r_pixels_alloc(cPixels);
+    struct SDL2RPixels *pix = SDL2R_GET_STRUCT(Pixels, vpixels);
+    (void)sur;
+    pix->vsurface = self;
+
+    return vpixels;
 }
 
 
@@ -128,7 +151,7 @@ static VALUE sdl2r_create_rgb_surface(int argc, VALUE *argv, VALUE klass)
     if (vbmask == Qnil) vbmask = INT2FIX(0);
     if (vamask == Qnil) vamask = INT2FIX(0);
 
-    SDL2R_RETRY(sur->surface = SDL_CreateRGBSurface(NUM2INT(vflags), NUM2INT(vw), NUM2INT(vh), NUM2INT(vdepth), NUM2INT(vrmask), NUM2INT(vgmask), NUM2INT(vbmask), NUM2INT(vamask)));
+    SDL2R_RETRY(sur->surface = SDL_CreateRGBSurface(NUM2INT(vflags), NUM2INT(vw), NUM2INT(vh), NUM2INT(vdepth), NUM2UINT(vrmask), NUM2UINT(vgmask), NUM2UINT(vbmask), NUM2UINT(vamask)));
 
     if (!sur->surface) {
         rb_raise(eSDLError, SDL_GetError());
@@ -180,6 +203,98 @@ static VALUE sdl2r_free_surface(VALUE klass, VALUE vsurface)
 }
 
 
+// SDL::Surface::Pixels class
+static void sdl2r_pixels_free(void *ptr)
+{
+    struct SDL2RPixels *pix = ptr;
+    xfree(pix);
+}
+
+
+static void sdl2r_pixels_mark(void *ptr)
+{
+    struct SDL2RPixels *pix = ptr;
+    rb_gc_mark(pix->vsurface);
+}
+
+
+VALUE sdl2r_pixels_alloc(VALUE klass)
+{
+    struct SDL2RPixels *pix;
+    VALUE vpixels = TypedData_Make_Struct(klass, struct SDL2RPixels, &sdl2r_pixels_data_type, pix);
+    pix->vsurface = Qnil;
+    return vpixels;
+}
+
+
+static VALUE sdl2r_get_pixel(VALUE self, VALUE vx, VALUE vy)
+{
+    struct SDL2RPixels *pix = SDL2R_GET_PIXELS_STRUCT(self);
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pix->vsurface);
+    SDL_Surface *surface = sur->surface;
+    SDL_PixelFormat *format = surface->format;
+    Uint32 pixel;
+    Uint8 r, g, b, a;
+
+    switch(format->BytesPerPixel) {
+    case 1:
+        pixel = *((Uint8 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w);
+        break;
+    case 2:
+        pixel = *((Uint16 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w);
+        break;
+    case 3:
+        pixel = *((Uint32 *)((Uint8 *)surface->pixels + NUM2INT(vx) * 3 + NUM2INT(vy) * surface->w * 3));
+        break;
+    case 4:
+        pixel = *((Uint32 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w);
+        break;
+    default:
+        rb_raise(eSDL2RError, "internal error");
+    }
+
+    SDL_GetRGBA(pixel, format, &r, &g, &b, &a);
+
+    return rb_ary_new3(4, INT2FIX(r), INT2FIX(g), INT2FIX(b), INT2FIX(a));
+}
+
+
+static VALUE sdl2r_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
+{
+    struct SDL2RPixels *pix = SDL2R_GET_PIXELS_STRUCT(self);
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pix->vsurface);
+    SDL_Surface *surface = sur->surface;
+    SDL_PixelFormat *format = surface->format;
+    Uint32 pixel;
+
+    Check_Type(vcolor, T_ARRAY);
+    pixel = SDL_MapRGBA(format, (Uint8)NUM2INT(rb_ary_entry(vcolor, 0))
+                              , (Uint8)NUM2INT(rb_ary_entry(vcolor, 1))
+                              , (Uint8)NUM2INT(rb_ary_entry(vcolor, 2))
+                              , (Uint8)NUM2INT(rb_ary_entry(vcolor, 3)));
+    switch(format->BytesPerPixel) {
+    case 1:
+        *((Uint8 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w) = (Uint8)pixel;
+        break;
+    case 2:
+        *((Uint16 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w) = (Uint16)pixel;
+        break;
+    case 3:
+        *((Uint8 *)surface->pixels + NUM2INT(vx) * 3 + NUM2INT(vy) * surface->w * 3) = (Uint8)(pixel & 0x000000ff);
+        *((Uint8 *)surface->pixels + NUM2INT(vx) * 3 + NUM2INT(vy) * surface->w * 3 + 1) = (Uint8)((pixel & 0x0000ff00)>>8);
+        *((Uint8 *)surface->pixels + NUM2INT(vx) * 3 + NUM2INT(vy) * surface->w * 3 + 2) = (Uint8)((pixel & 0x00ff0000)>>16);
+        break;
+    case 4:
+        *((Uint32 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w) = pixel;
+        break;
+    default:
+        rb_raise(eSDL2RError, "internal error");
+    }
+
+    return self;
+}
+
+
 void Init_sdl2r_surface(void)
 {
     // SDL module methods
@@ -197,6 +312,14 @@ void Init_sdl2r_surface(void)
     rb_define_method(cSurface, "destroyed?", sdl2r_surface_get_destroyed, 0);
     rb_define_method(cSurface, "w", sdl2r_w, 0);
     rb_define_method(cSurface, "h", sdl2r_h, 0);
+    rb_define_method(cSurface, "pixels", sdl2r_get_pixels, 0);
+
+    // SDL::Surface::Pixels class
+    cPixels = rb_define_class_under(cSurface, "Pixels", rb_cObject);
+    rb_define_alloc_func(cPixels, sdl2r_pixels_alloc);
+    rb_define_method(cPixels, "[]", sdl2r_get_pixel, 2);
+    rb_define_method(cPixels, "[]=", sdl2r_set_pixel, 3);
+
 
     // Constants
 //    rb_define_const(mSDL, "WINDOWPOS_CENTERED", INT2FIX(SDL_WINDOWPOS_CENTERED));
