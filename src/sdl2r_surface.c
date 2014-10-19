@@ -236,19 +236,25 @@ static VALUE sdl2r_get_pixel(VALUE self, VALUE vx, VALUE vy)
     Uint32 pixel;
     Uint8 r, g, b, a;
     VALUE ary[4];
+    int x = NUM2INT(vx);
+    int y = NUM2INT(vy);
+
+    if (x < 0 || x >= surface->w || y < 0 || y >= surface->h) {
+        rb_raise(eSDL2RError, "out of range");
+    }
 
     switch(format->BytesPerPixel) {
     case 1:
-        pixel = *((Uint8 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w);
+        pixel = *((Uint8 *)surface->pixels + x + y * surface->w);
         break;
     case 2:
-        pixel = *((Uint16 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w);
+        pixel = *((Uint16 *)surface->pixels + x + y * surface->w);
         break;
     case 3:
-        pixel = *((Uint32 *)((Uint8 *)surface->pixels + NUM2INT(vx) * 3 + NUM2INT(vy) * surface->w * 3));
+        pixel = *((Uint32 *)((Uint8 *)surface->pixels + x * 3 + y * surface->w * 3));
         break;
     case 4:
-        pixel = *((Uint32 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w);
+        pixel = *((Uint32 *)surface->pixels + x + y * surface->w);
         break;
     default:
         rb_raise(eSDL2RError, "internal error");
@@ -271,6 +277,12 @@ static VALUE sdl2r_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
     SDL_Surface *surface = sur->surface;
     SDL_PixelFormat *format = surface->format;
     Uint32 pixel;
+    int x = NUM2INT(vx);
+    int y = NUM2INT(vy);
+
+    if (x < 0 || x >= surface->w || y < 0 || y >= surface->h) {
+        rb_raise(eSDL2RError, "out of range");
+    }
 
     Check_Type(vcolor, T_ARRAY);
     pixel = SDL_MapRGBA(format, (Uint8)NUM2INT(rb_ary_entry(vcolor, 0))
@@ -279,18 +291,18 @@ static VALUE sdl2r_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
                               , (Uint8)NUM2INT(rb_ary_entry(vcolor, 3)));
     switch(format->BytesPerPixel) {
     case 1:
-        *((Uint8 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w) = (Uint8)pixel;
+        *((Uint8 *)surface->pixels + x +  y * surface->w) = (Uint8)pixel;
         break;
     case 2:
-        *((Uint16 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w) = (Uint16)pixel;
+        *((Uint16 *)surface->pixels + x +  y * surface->w) = (Uint16)pixel;
         break;
     case 3:
-        *((Uint8 *)surface->pixels + NUM2INT(vx) * 3 + NUM2INT(vy) * surface->w * 3) = (Uint8)(pixel & 0x000000ff);
-        *((Uint8 *)surface->pixels + NUM2INT(vx) * 3 + NUM2INT(vy) * surface->w * 3 + 1) = (Uint8)((pixel & 0x0000ff00)>>8);
-        *((Uint8 *)surface->pixels + NUM2INT(vx) * 3 + NUM2INT(vy) * surface->w * 3 + 2) = (Uint8)((pixel & 0x00ff0000)>>16);
+        *((Uint8 *)surface->pixels + x * 3 + y * surface->w * 3) = (Uint8)(pixel & 0x000000ff);
+        *((Uint8 *)surface->pixels + x * 3 + y * surface->w * 3 + 1) = (Uint8)((pixel & 0x0000ff00)>>8);
+        *((Uint8 *)surface->pixels + x * 3 + y * surface->w * 3 + 2) = (Uint8)((pixel & 0x00ff0000)>>16);
         break;
     case 4:
-        *((Uint32 *)surface->pixels + NUM2INT(vx) + NUM2INT(vy) * surface->w) = pixel;
+        *((Uint32 *)surface->pixels + x + y * surface->w) = pixel;
         break;
     default:
         rb_raise(eSDL2RError, "internal error");
