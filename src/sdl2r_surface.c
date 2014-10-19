@@ -235,6 +235,7 @@ static VALUE sdl2r_get_pixel(VALUE self, VALUE vx, VALUE vy)
     SDL_PixelFormat *format = surface->format;
     Uint32 pixel;
     Uint8 r, g, b, a;
+    VALUE ary[4];
 
     switch(format->BytesPerPixel) {
     case 1:
@@ -255,7 +256,11 @@ static VALUE sdl2r_get_pixel(VALUE self, VALUE vx, VALUE vy)
 
     SDL_GetRGBA(pixel, format, &r, &g, &b, &a);
 
-    return rb_ary_new3(4, INT2FIX(r), INT2FIX(g), INT2FIX(b), INT2FIX(a));
+    ary[0] = INT2FIX(r);
+    ary[1] = INT2FIX(g);
+    ary[2] = INT2FIX(b);
+    ary[3] = INT2FIX(a);
+    return rb_class_new_instance(4, ary, cColor);
 }
 
 

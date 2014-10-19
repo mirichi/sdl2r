@@ -1,16 +1,14 @@
 #include "ruby.h"
 #include "ruby/encoding.h"
 
-#ifdef SDL2R
-VALUE mSDL;
-VALUE eSDLError;
-VALUE eSDL2RError;
-rb_encoding *g_enc_utf8;
-#else
+#ifndef SDL2R
 extern VALUE mSDL;
 extern VALUE eSDLError;
 extern VALUE eSDL2RError;
 extern rb_encoding *g_enc_utf8;
+extern VALUE cPoint;
+extern VALUE cRect;
+extern VALUE cColor;
 #endif
 
 #define SDL2R_GET_STRUCT(name, obj) ((struct SDL2R##name *)DATA_PTR(obj))
