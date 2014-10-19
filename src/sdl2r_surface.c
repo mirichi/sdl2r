@@ -69,6 +69,20 @@ static VALUE sdl2r_surface_get_destroyed(VALUE self)
 }
 
 
+static VALUE sdl2r_w(VALUE self)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
+    return INT2NUM(sur->surface->w);
+}
+
+
+static VALUE sdl2r_h(VALUE self)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
+    return INT2NUM(sur->surface->h);
+}
+
+
 static VALUE sdl2r_blit_surface(VALUE klass, VALUE vsrc, VALUE vsrcrect, VALUE vdst, VALUE vdstrect)
 {
     struct SDL2RSurface *src = sdl2r_get_surface(vsrc);
@@ -123,17 +137,10 @@ static VALUE sdl2r_create_rgb_surface(int argc, VALUE *argv, VALUE klass)
 }
 
 
-static VALUE sdl2r_w(VALUE self)
+static VALUE sdl2r_mustlock(VALUE klass, VALUE vsurface)
 {
-    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
-    return INT2NUM(sur->surface->w);
-}
-
-
-static VALUE sdl2r_h(VALUE self)
-{
-    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
-    return INT2NUM(sur->surface->h);
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    return SDL_MUSTLOCK(sur->surface) ? Qtrue : Qfalse;
 }
 
 
@@ -157,6 +164,7 @@ void Init_sdl2r_surface(void)
     rb_define_singleton_method(mSDL, "create_rgb_surface", sdl2r_create_rgb_surface, -1);
     rb_define_singleton_method(mSDL, "free_surface", sdl2r_free_surface, 1);
     rb_define_singleton_method(mSDL, "blit_surface", sdl2r_blit_surface, 4);
+    rb_define_singleton_method(mSDL, "MUSTLOCK", sdl2r_mustlock, 1);
 
     // SDL::Surface class
     cSurface = rb_define_class_under(mSDL, "Surface", rb_cObject);
