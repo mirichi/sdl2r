@@ -12,6 +12,13 @@
 #include "sdl2r_image.h"
 #include "sdl2r_ttf.h"
 
+VALUE mSDL;
+VALUE eSDLError;
+VALUE eSDL2RError;
+VALUE cPoint;
+VALUE cRect;
+VALUE cColor;
+
 // encoding
 rb_encoding *g_enc_utf8;
 
@@ -254,6 +261,16 @@ void Init_sdl2r(void)
     // Encoding data
     g_enc_utf8 = rb_enc_find("UTF-8");
 
+    // SDL::Point class
+    cPoint = rb_define_class_under(mSDL, "Point", rb_cArray);
+
+    // SDL::Rect class
+    cRect = rb_define_class_under(mSDL, "Rect", rb_cArray);
+
+    // SDL::Color class
+    cColor = rb_define_class_under(mSDL, "Color", rb_cArray);
+
+    // initialize
     Init_sdl2r_window();
     Init_sdl2r_surface();
     Init_sdl2r_renderer();
