@@ -110,7 +110,7 @@ static VALUE sdl2r_create_renderer(VALUE klass, VALUE vwindow, VALUE vindex, VAL
     VALUE vrenderer = sdl2r_renderer_alloc(cRenderer);
     struct SDL2RRenderer *ren = SDL2R_GET_STRUCT(Renderer, vrenderer);
 
-    SDL2R_RETRY(win->renderer = SDL_CreateRenderer(win->window, NUM2INT(vindex), (UINT32)NUM2UINT(vflags)));
+    SDL2R_RETRY(win->renderer = SDL_CreateRenderer(win->window, NUM2INT(vindex), (Uint32)NUM2UINT(vflags)));
     if (!win->renderer) {
         rb_raise(eSDLError, SDL_GetError());
     }
@@ -238,4 +238,3 @@ void Init_sdl2r_window(void)
     rb_define_const(mSDL, "WINDOW_FOREIGN", INT2FIX(SDL_WINDOW_FOREIGN));
     rb_define_const(mSDL, "WINDOW_ALLOW_HIGHDPI", INT2FIX(SDL_WINDOW_ALLOW_HIGHDPI));
 }
-
