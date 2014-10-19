@@ -43,10 +43,10 @@ static void sdl2r_texture_mark(void *ptr)
 VALUE sdl2r_texture_alloc(VALUE klass)
 {
     struct SDL2RTexture *tex;
-    VALUE vtex = TypedData_Make_Struct(klass, struct SDL2RTexture, &sdl2r_texture_data_type, tex);
+    VALUE vtexture = TypedData_Make_Struct(klass, struct SDL2RTexture, &sdl2r_texture_data_type, tex);
     tex->texture = 0;
     tex->vrenderer = Qnil;
-    return vtex;
+    return vtexture;
 }
 
 
