@@ -123,6 +123,20 @@ static VALUE sdl2r_create_rgb_surface(int argc, VALUE *argv, VALUE klass)
 }
 
 
+static VALUE sdl2r_w(VALUE self)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
+    return INT2NUM(sur->surface->w);
+}
+
+
+static VALUE sdl2r_h(VALUE self)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
+    return INT2NUM(sur->surface->h);
+}
+
+
 static VALUE sdl2r_free_surface(VALUE klass, VALUE vsurface)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
@@ -149,6 +163,8 @@ void Init_sdl2r_surface(void)
     rb_define_alloc_func(cSurface, sdl2r_surface_alloc);
 
     rb_define_method(cSurface, "destroyed?", sdl2r_surface_get_destroyed, 0);
+    rb_define_method(cSurface, "w", sdl2r_w, 0);
+    rb_define_method(cSurface, "h", sdl2r_h, 0);
 
     // Constants
 //    rb_define_const(mSDL, "WINDOWPOS_CENTERED", INT2FIX(SDL_WINDOWPOS_CENTERED));
