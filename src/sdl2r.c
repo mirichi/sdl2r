@@ -237,6 +237,10 @@ void Init_sdl2r(void)
     rb_define_const(mSDL, "BLENDMODE_ADD", INT2FIX(SDL_BLENDMODE_ADD));
     rb_define_const(mSDL, "BLENDMODE_MOD", INT2FIX(SDL_BLENDMODE_MOD));
 
+    rb_define_const(mSDL, "BYTEORDER", INT2FIX(SDL_BYTEORDER));
+    rb_define_const(mSDL, "BIG_ENDIAN", INT2FIX(SDL_BIG_ENDIAN));
+    rb_define_const(mSDL, "LIL_ENDIAN", INT2FIX(SDL_LIL_ENDIAN));
+
     // SDL macro
     rb_define_singleton_method(mSDL, "PIXELTYPE", sdl2r_pixeltype, 1);
     rb_define_singleton_method(mSDL, "PIXELORDER", sdl2r_macro_pixelorder, 1);
