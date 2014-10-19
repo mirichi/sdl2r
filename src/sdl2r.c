@@ -11,6 +11,7 @@
 #include "sdl2r_mixer.h"
 #include "sdl2r_image.h"
 #include "sdl2r_ttf.h"
+#include "sdl2r_joystick.h"
 
 VALUE mSDL;
 VALUE eSDLError;
@@ -280,6 +281,7 @@ void Init_sdl2r(void)
     Init_sdl2r_mixer();
     Init_sdl2r_image();
     Init_sdl2r_ttf();
+    Init_sdl2r_joystick();
 }
 
 
