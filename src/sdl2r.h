@@ -14,6 +14,6 @@ extern rb_encoding *g_enc_utf8;
 #endif
 
 #define SDL2R_GET_STRUCT(name, obj) ((struct SDL2R##name *)DATA_PTR(obj))
-#define SDL2R_RETRY(test) {int retry_flag = 0;do {\
-                            if (!(test) && !retry_flag) {rb_gc_start();retry_flag = 1;}else{retry_flag = 0;}\
+#define SDL2R_RETRY(test) {SDL_bool retry_flag = SDL_FALSE;do {\
+                            if (!(test) && !retry_flag) {rb_gc_start();retry_flag = SDL_TRUE;}else{retry_flag = SDL_FALSE;}\
 }                          while(retry_flag);}
