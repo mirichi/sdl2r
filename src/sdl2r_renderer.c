@@ -158,7 +158,7 @@ static VALUE sdl2r_create_texture_from_surface(VALUE klass, VALUE vrenderer, VAL
     VALUE vtexture = sdl2r_texture_alloc(cTexture);
     struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, vtexture);
 
-    tex->texture = SDL_CreateTextureFromSurface(SDL2R_GET_STRUCT(Window, ren->vwindow)->renderer, sur->surface);
+    SDL2R_RETRY(tex->texture = SDL_CreateTextureFromSurface(SDL2R_GET_STRUCT(Window, ren->vwindow)->renderer, sur->surface));
     if (!tex->texture) {
         rb_raise(eSDLError, SDL_GetError());
     }
