@@ -46,7 +46,115 @@ static VALUE sdl2r_joystick_get_destroyed(VALUE self)
 }
 
 
+static VALUE sdl2r_num_joysticks(VALUE klass)
+{
+    int result = SDL_NumJoysticks();
+
+    if (result < 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_joystick_open(VALUE klass, VALUE vindex)
+{
+    VALUE vjoystick = sdl2r_joystick_alloc(cJoystick);
+    struct SDL2RJoystick *js = SDL2R_GET_STRUCT(Joystick, vjoystick);
+
+    SDL2R_RETRY(js->joystick = SDL_JoystickOpen(NUM2INT(vindex)));
+    if (!js->joystick) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vjoystick;
+}
+
+
+static VALUE sdl2r_joystick_close(VALUE klass, VALUE vjoystick)
+{
+    struct SDL2RJoystick *js = SDL2R_GET_JOYSTICK_STRUCT(vjoystick);
+
+    SDL_JoystickClose(js->joystick);
+    js->joystick = 0;
+
+    return vjoystick;
+}
+
+
+static VALUE sdl2r_joystick_num_axes(VALUE klass, VALUE vjoystick)
+{
+    struct SDL2RJoystick *js = SDL2R_GET_JOYSTICK_STRUCT(vjoystick);
+    int result;
+
+    result = SDL_JoystickNumAxes(js->joystick);
+    if (result < 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_joystick_num_balls(VALUE klass, VALUE vjoystick)
+{
+    struct SDL2RJoystick *js = SDL2R_GET_JOYSTICK_STRUCT(vjoystick);
+    int result;
+
+    result = SDL_JoystickNumBalls(js->joystick);
+    if (result < 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_joystick_num_buttons(VALUE klass, VALUE vjoystick)
+{
+    struct SDL2RJoystick *js = SDL2R_GET_JOYSTICK_STRUCT(vjoystick);
+    int result;
+
+    result = SDL_JoystickNumButtons(js->joystick);
+    if (result < 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_joystick_num_hats(VALUE klass, VALUE vjoystick)
+{
+    struct SDL2RJoystick *js = SDL2R_GET_JOYSTICK_STRUCT(vjoystick);
+    int result;
+
+    result = SDL_JoystickNumHats(js->joystick);
+    if (result < 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return INT2NUM(result);
+}
+
+
 void Init_sdl2r_joystick(void)
 {
-    cJoystick = rb_define_module_under(mSDL, "Joystick");
+    // SDL module methods
+    rb_define_singleton_method(mSDL, "num_joysticks", sdl2r_num_joysticks, 0);
+    rb_define_singleton_method(mSDL, "joystick_open", sdl2r_joystick_open, 1);
+    rb_define_singleton_method(mSDL, "joystick_close", sdl2r_joystick_close, 1);
+    rb_define_singleton_method(mSDL, "joystick_num_axes", sdl2r_joystick_num_axes, 1);
+    rb_define_singleton_method(mSDL, "joystick_num_balls", sdl2r_joystick_num_balls, 1);
+    rb_define_singleton_method(mSDL, "joystick_num_buttons", sdl2r_joystick_num_buttons, 1);
+    rb_define_singleton_method(mSDL, "joystick_num_hats", sdl2r_joystick_num_hats, 1);
+
+    // SDL::Joystick class
+    cJoystick = rb_define_class_under(mSDL, "Joystick", rb_cObject);
+    rb_define_alloc_func(cJoystick, sdl2r_joystick_alloc);
+    rb_define_method(cJoystick, "destroyed?", sdl2r_joystick_get_destroyed, 0);
+
+
+
 }
