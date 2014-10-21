@@ -139,6 +139,19 @@ static VALUE sdl2r_joystick_num_hats(VALUE klass, VALUE vjoystick)
 }
 
 
+static VALUE sdl2r_joystick_event_state(VALUE klass, VALUE vstate)
+{
+    int result;
+
+    result = SDL_JoystickEventState(NUM2INT(vstate));
+    if (result < 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return INT2NUM(result);
+}
+
+
 void Init_sdl2r_joystick(void)
 {
     // SDL module methods
@@ -149,6 +162,7 @@ void Init_sdl2r_joystick(void)
     rb_define_singleton_method(mSDL, "joystick_num_balls", sdl2r_joystick_num_balls, 1);
     rb_define_singleton_method(mSDL, "joystick_num_buttons", sdl2r_joystick_num_buttons, 1);
     rb_define_singleton_method(mSDL, "joystick_num_hats", sdl2r_joystick_num_hats, 1);
+    rb_define_singleton_method(mSDL, "joystick_event_state", sdl2r_joystick_event_state, 1);
 
     // SDL::Joystick class
     cJoystick = rb_define_class_under(mSDL, "Joystick", rb_cObject);
