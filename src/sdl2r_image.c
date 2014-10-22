@@ -1,6 +1,3 @@
-#include <SDL.h>
-#include <SDL_image.h>
-
 #define SDL2RIMAGE
 #include "sdl2r.h"
 #include "sdl2r_image.h"

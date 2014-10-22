@@ -1,5 +1,3 @@
-#include <SDL.h>
-
 #define SDL2REVENT
 #include "sdl2r.h"
 #include "sdl2r_event.h"

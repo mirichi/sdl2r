@@ -1,5 +1,3 @@
-#include <SDL.h>
-
 #define SDL2RTIMER
 #include "sdl2r.h"
 #include "sdl2r_timer.h"
