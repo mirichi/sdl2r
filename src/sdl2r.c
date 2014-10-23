@@ -20,6 +20,7 @@ VALUE cColor;
 
 // encoding
 rb_encoding *g_enc_utf8;
+rb_encoding *g_enc_utf16;
 
 // init and quit
 static VALUE sdl2r_init(VALUE klass, VALUE flags)
@@ -259,6 +260,7 @@ void Init_sdl2r(void)
 
     // Encoding data
     g_enc_utf8 = rb_enc_find("UTF-8");
+    g_enc_utf16 = rb_enc_find("UTF-16LE");
 
     // SDL::Point class
     cPoint = rb_define_class_under(mSDL, "Point", rb_cArray);

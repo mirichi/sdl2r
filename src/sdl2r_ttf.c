@@ -111,7 +111,7 @@ static VALUE sdl2r_ttf_close_font(VALUE klass, VALUE vfont)
 }
 
 
-static VALUE sdl2r_ttf_render_utf8_blended(VALUE klass, VALUE vfont, VALUE vtext, VALUE vcolor)
+static VALUE sdl2r_ttf_render_blended(VALUE klass, VALUE vfont, VALUE vtext, VALUE vcolor)
 {
     struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(vfont);
     SDL_Color col;
@@ -294,6 +294,60 @@ static VALUE sdl2r_ttf_font_face_style_name(VALUE klass, VALUE vfont)
 }
 
 
+static VALUE sdl2r_ttf_glyph_is_provided(VALUE klass, VALUE vfont, VALUE vstr)
+{
+    struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(vfont);
+    int result;
+    Check_Type(vstr, T_STRING);
+
+    if (rb_enc_get_index(vstr) != 0) {
+        vstr = rb_str_export_to_enc(vstr, g_enc_utf16);
+    }
+    result = TTF_GlyphIsProvided(fnt->font, *(Uint16*)RSTRING_PTR(vstr));
+
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_ttf_glyph_metrics(VALUE klass, VALUE vfont, VALUE vstr)
+{
+    struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(vfont);
+    int result;
+    int minx, maxx, miny, maxy, advance;
+    Check_Type(vstr, T_STRING);
+
+    if (rb_enc_get_index(vstr) != 0) {
+        vstr = rb_str_export_to_enc(vstr, g_enc_utf16);
+    }
+    result = TTF_GlyphMetrics(fnt->font, *(Uint16*)RSTRING_PTR(vstr)
+                            , &minx, &maxx, &miny, &maxy, &advance);
+    if (result == -1) {
+        rb_raise(eSDLError, TTF_GetError());
+    }
+
+    return rb_ary_new3(5, INT2NUM(minx), INT2NUM(maxx), INT2NUM(miny), INT2NUM(maxy), INT2NUM(advance));
+}
+
+
+static VALUE sdl2r_ttf_size(VALUE klass, VALUE vfont, VALUE vstr)
+{
+    struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(vfont);
+    int result;
+    int w, h;
+    Check_Type(vstr, T_STRING);
+
+    if (rb_enc_get_index(vstr) != 0) {
+        vstr = rb_str_export_to_enc(vstr, g_enc_utf8);
+    }
+    result = TTF_SizeUTF8(fnt->font, RSTRING_PTR(vstr), &w, &h);
+    if (result == -1) {
+        rb_raise(eSDLError, TTF_GetError());
+    }
+
+    return rb_ary_new3(2, INT2NUM(w), INT2NUM(h));
+}
+
+
 void Init_sdl2r_ttf(void)
 {
     mTTF = rb_define_module_under(mSDL, "TTF");
@@ -304,7 +358,8 @@ void Init_sdl2r_ttf(void)
     rb_define_singleton_method(mTTF, "open_font", sdl2r_ttf_open_font, 2);
     rb_define_singleton_method(mTTF, "open_font_index", sdl2r_ttf_open_font_index, 3);
     rb_define_singleton_method(mTTF, "close_font", sdl2r_ttf_close_font, 1);
-    rb_define_singleton_method(mTTF, "render_utf8_blended", sdl2r_ttf_render_utf8_blended, 3);
+    rb_define_singleton_method(mTTF, "render_blended", sdl2r_ttf_render_blended, 3);
+    rb_define_singleton_method(mTTF, "render_utf8_blended", sdl2r_ttf_render_blended, 3);
     rb_define_singleton_method(mTTF, "get_font_outline", sdl2r_ttf_get_font_outline, 1);
     rb_define_singleton_method(mTTF, "set_font_outline", sdl2r_ttf_set_font_outline, 2);
     rb_define_singleton_method(mTTF, "get_font_style", sdl2r_ttf_get_font_style, 1);
@@ -321,6 +376,10 @@ void Init_sdl2r_ttf(void)
     rb_define_singleton_method(mTTF, "font_face_is_fixed_width", sdl2r_ttf_font_face_is_fixed_width, 1);
     rb_define_singleton_method(mTTF, "font_face_family_name", sdl2r_ttf_font_face_family_name, 1);
     rb_define_singleton_method(mTTF, "font_face_style_name", sdl2r_ttf_font_face_style_name, 1);
+    rb_define_singleton_method(mTTF, "glyph_is_provided", sdl2r_ttf_glyph_is_provided, 2);
+    rb_define_singleton_method(mTTF, "glyph_metrics", sdl2r_ttf_glyph_metrics, 2);
+    rb_define_singleton_method(mTTF, "size", sdl2r_ttf_size, 2);
+    rb_define_singleton_method(mTTF, "size_utf8", sdl2r_ttf_size, 2);
 
     // SDL::TTF::Font class
     cFont = rb_define_class_under(mTTF, "Font", rb_cObject);

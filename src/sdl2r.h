@@ -7,6 +7,7 @@ extern VALUE mSDL;
 extern VALUE eSDLError;
 extern VALUE eSDL2RError;
 extern rb_encoding *g_enc_utf8;
+extern rb_encoding *g_enc_utf16;
 extern VALUE cPoint;
 extern VALUE cRect;
 extern VALUE cColor;
