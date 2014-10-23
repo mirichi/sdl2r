@@ -30,6 +30,7 @@ static void sdl2r_rwops_free(void *ptr)
     if (rw->rwops) {
         SDL_RWclose(rw->rwops);
         rw->rwops = 0;
+        rw->vstr = Qnil;
     }
     xfree(rw);
 }
