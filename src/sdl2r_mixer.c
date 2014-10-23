@@ -1,6 +1,7 @@
 #define SDL2RMIXER
 #include "sdl2r.h"
 #include "sdl2r_mixer.h"
+#include "sdl2r_rwops.h"
 
 VALUE mMixer;
 VALUE cChunk;
@@ -98,12 +99,13 @@ static VALUE sdl2r_mix_close_audio(VALUE klass)
 }
 
 
-static VALUE sdl2r_mix_load_wav(VALUE klass, VALUE filename)
+static VALUE sdl2r_mix_load_wav(VALUE klass, VALUE vfilename)
 {
     VALUE vchunk = sdl2r_chunk_alloc(cChunk);
     struct SDL2RChunk *cnk = SDL2R_GET_STRUCT(Chunk, vchunk);
 
-    SDL2R_RETRY(cnk->chunk = Mix_LoadWAV(RSTRING_PTR(filename)));
+    Check_Type(vfilename, T_STRING);
+    SDL2R_RETRY(cnk->chunk = Mix_LoadWAV(RSTRING_PTR(vfilename)));
     if (!cnk->chunk) {
         rb_raise(eSDLError, Mix_GetError());
     }
@@ -112,12 +114,33 @@ static VALUE sdl2r_mix_load_wav(VALUE klass, VALUE filename)
 }
 
 
-static VALUE sdl2r_mix_load_mus(VALUE klass, VALUE filename)
+static VALUE sdl2r_mix_load_wav_rw(VALUE klass, VALUE vrwops, VALUE vfreesrc)
+{
+    VALUE vchunk = sdl2r_chunk_alloc(cChunk);
+    struct SDL2RChunk *cnk = SDL2R_GET_STRUCT(Chunk, vchunk);
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+
+    SDL2R_RETRY(cnk->chunk = Mix_LoadWAV_RW(rw->rwops, NUM2INT(vfreesrc)));
+    if (!cnk->chunk) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+
+    if (NUM2INT(vfreesrc) != 0) {
+        rw->rwops = 0;
+        rw->vstr = Qnil;
+    }
+
+    return vchunk;
+}
+
+
+static VALUE sdl2r_mix_load_mus(VALUE klass, VALUE vfilename)
 {
     VALUE vmusic = sdl2r_music_alloc(cMusic);
     struct SDL2RMusic *mus = SDL2R_GET_STRUCT(Music, vmusic);
 
-    SDL2R_RETRY(mus->music = Mix_LoadMUS(RSTRING_PTR(filename)));
+    Check_Type(vfilename, T_STRING);
+    SDL2R_RETRY(mus->music = Mix_LoadMUS(RSTRING_PTR(vfilename)));
     if (!mus->music) {
         rb_raise(eSDLError, Mix_GetError());
     }
@@ -160,6 +183,7 @@ void Init_sdl2r_mixer(void)
     rb_define_singleton_method(mMixer, "open_audio", sdl2r_mix_open_audio, 4);
     rb_define_singleton_method(mMixer, "close_audio", sdl2r_mix_close_audio, 0);
     rb_define_singleton_method(mMixer, "load_wav", sdl2r_mix_load_wav, 1);
+    rb_define_singleton_method(mMixer, "load_wav_rw", sdl2r_mix_load_wav_rw, 2);
     rb_define_singleton_method(mMixer, "load_mus", sdl2r_mix_load_mus, 1);
     rb_define_singleton_method(mMixer, "play_channel", sdl2r_mix_play_channel, 3);
     rb_define_singleton_method(mMixer, "play_music", sdl2r_mix_play_music, 2);
