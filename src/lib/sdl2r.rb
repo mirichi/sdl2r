@@ -32,7 +32,7 @@ module SDL
   end
 
   class Color < Array
-    def initialize(r, g, b, a)
+    def initialize(r, g, b, a=255)
       super(4)
       self[0] = r
       self[1] = g
