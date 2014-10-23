@@ -10,6 +10,7 @@
 #include "sdl2r_image.h"
 #include "sdl2r_ttf.h"
 #include "sdl2r_joystick.h"
+#include "sdl2r_filesystem.h"
 
 VALUE mSDL;
 VALUE eSDLError;
@@ -282,6 +283,7 @@ void Init_sdl2r(void)
     Init_sdl2r_image();
     Init_sdl2r_ttf();
     Init_sdl2r_joystick();
+    Init_sdl2r_filesystem();
 }
 
 
