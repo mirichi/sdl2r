@@ -106,21 +106,77 @@ static VALUE sdl2r_rw_close(VALUE klass, VALUE vrwops)
 }
 
 
-static VALUE sdl2r_rw_read(VALUE klass)
+static VALUE sdl2r_rw_read(VALUE klass, VALUE vrwops, VALUE vsize, VALUE vmaxnum)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    char *buf = ALLOCA_N(char, NUM2UINT(vsize) * NUM2UINT(vmaxnum));
+    size_t result;
+
+    result = SDL_RWread(rw->rwops, buf, NUM2UINT(vsize), NUM2UINT(vmaxnum));
+    if (result == 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return rb_str_new(buf, result * NUM2UINT(vsize));
 }
-static VALUE sdl2r_rw_seek(VALUE klass)
+
+
+static VALUE sdl2r_rw_seek(VALUE klass, VALUE vrwops, VALUE voffset, VALUE vwhence)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    LONG_LONG result;
+
+    result = SDL_RWseek(rw->rwops, NUM2LL(voffset), NUM2INT(vwhence));
+    if (result == -1) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return LL2NUM(result);
 }
-static VALUE sdl2r_rw_size(VALUE klass)
+
+
+static VALUE sdl2r_rw_size(VALUE klass, VALUE vrwops)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    LONG_LONG result;
+
+    result = SDL_RWsize(rw->rwops);
+     if (result == -1) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return LL2NUM(result);
 }
-static VALUE sdl2r_rw_tell(VALUE klass)
+
+
+static VALUE sdl2r_rw_tell(VALUE klass, VALUE vrwops)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    LONG_LONG result;
+
+    result = SDL_RWtell(rw->rwops);
+     if (result == -1) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return LL2NUM(result);
 }
-static VALUE sdl2r_rw_write(VALUE klass)
+
+
+static VALUE sdl2r_rw_write(VALUE klass, VALUE vrwops, VALUE vstr, VALUE vsize, VALUE vnum)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    size_t result;
+
+    result = SDL_RWwrite(rw->rwops, RSTRING_PTR(vstr), NUM2UINT(vsize), NUM2UINT(vnum));
+    if (result < NUM2UINT(vnum)) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vrwops;
 }
+
+
 static VALUE sdl2r_read_be_16(VALUE klass)
 {
 }
@@ -165,7 +221,7 @@ void Init_sdl2r_rwops(void)
     rb_define_singleton_method(mSDL, "rw_from_file", sdl2r_rw_from_file, 2);
     rb_define_singleton_method(mSDL, "rw_from_mem", sdl2r_rw_from_mem, 2);
     rb_define_singleton_method(mSDL, "rw_close", sdl2r_rw_close, 1);
-    rb_define_singleton_method(mSDL, "rw_read", sdl2r_rw_read, 4);
+    rb_define_singleton_method(mSDL, "rw_read", sdl2r_rw_read, 3);
     rb_define_singleton_method(mSDL, "rw_seek", sdl2r_rw_seek, 3);
     rb_define_singleton_method(mSDL, "rw_size", sdl2r_rw_size, 1);
     rb_define_singleton_method(mSDL, "rw_tell", sdl2r_rw_tell, 1);
@@ -188,6 +244,11 @@ void Init_sdl2r_rwops(void)
     rb_define_alloc_func(cRWops, sdl2r_rwops_alloc);
 
     rb_define_method(cRWops, "destroyed?", sdl2r_rwops_get_destroyed, 0);
+
+    // Constants
+    rb_define_const(mSDL, "RW_SEEK_SET", INT2FIX(RW_SEEK_SET));
+    rb_define_const(mSDL, "RW_SEEK_CUR", INT2FIX(RW_SEEK_CUR));
+    rb_define_const(mSDL, "RW_SEEK_END", INT2FIX(RW_SEEK_END));
 }
 
 
