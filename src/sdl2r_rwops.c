@@ -177,41 +177,117 @@ static VALUE sdl2r_rw_write(VALUE klass, VALUE vrwops, VALUE vstr, VALUE vsize, 
 }
 
 
-static VALUE sdl2r_read_be_16(VALUE klass)
+static VALUE sdl2r_read_be_16(VALUE klass, VALUE vrwops)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    return INT2NUM(SDL_ReadBE16(rw->rwops));
 }
-static VALUE sdl2r_read_be_32(VALUE klass)
+
+
+static VALUE sdl2r_read_be_32(VALUE klass, VALUE vrwops)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    return INT2NUM(SDL_ReadBE32(rw->rwops));
 }
-static VALUE sdl2r_read_be_64(VALUE klass)
+
+
+static VALUE sdl2r_read_be_64(VALUE klass, VALUE vrwops)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    return LL2NUM(SDL_ReadBE64(rw->rwops));
 }
-static VALUE sdl2r_read_le_16(VALUE klass)
+
+
+static VALUE sdl2r_read_le_16(VALUE klass, VALUE vrwops)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    return INT2NUM(SDL_ReadLE16(rw->rwops));
 }
-static VALUE sdl2r_read_le_32(VALUE klass)
+
+
+static VALUE sdl2r_read_le_32(VALUE klass, VALUE vrwops)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    return INT2NUM(SDL_ReadLE32(rw->rwops));
 }
-static VALUE sdl2r_read_le_64(VALUE klass)
+
+
+static VALUE sdl2r_read_le_64(VALUE klass, VALUE vrwops)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+    return LL2NUM(SDL_ReadLE64(rw->rwops));
 }
-static VALUE sdl2r_write_be_16(VALUE klass)
+
+
+static VALUE sdl2r_write_be_16(VALUE klass, VALUE vrwops, VALUE vdata)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+
+    if (!SDL_WriteBE16(rw->rwops, NUM2INT(vdata))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vdata;
 }
-static VALUE sdl2r_write_be_32(VALUE klass)
+
+
+static VALUE sdl2r_write_be_32(VALUE klass, VALUE vrwops, VALUE vdata)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+
+    if (!SDL_WriteBE32(rw->rwops, NUM2INT(vdata))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vdata;
 }
-static VALUE sdl2r_write_be_64(VALUE klass)
+
+
+static VALUE sdl2r_write_be_64(VALUE klass, VALUE vrwops, VALUE vdata)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+
+    if (!SDL_WriteBE64(rw->rwops, NUM2LL(vdata))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vdata;
 }
-static VALUE sdl2r_write_le_16(VALUE klass)
+
+
+static VALUE sdl2r_write_le_16(VALUE klass, VALUE vrwops, VALUE vdata)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+
+    if (!SDL_WriteLE16(rw->rwops, NUM2INT(vdata))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vdata;
 }
-static VALUE sdl2r_write_le_32(VALUE klass)
+
+
+static VALUE sdl2r_write_le_32(VALUE klass, VALUE vrwops, VALUE vdata)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+
+    if (!SDL_WriteLE32(rw->rwops, NUM2INT(vdata))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vdata;
 }
-static VALUE sdl2r_write_le_64(VALUE klass)
+
+
+static VALUE sdl2r_write_le_64(VALUE klass, VALUE vrwops, VALUE vdata)
 {
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+
+    if (!SDL_WriteLE64(rw->rwops, NUM2LL(vdata))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vdata;
 }
 
 
