@@ -3,8 +3,10 @@
 #include "sdl2r_window.h"
 #include "sdl2r_surface.h"
 #include "sdl2r_renderer.h"
+#include "sdl2r_hash.h"
 
 VALUE cWindow;
+static struct SDL2RHash *wh;
 
 static void sdl2r_window_free(void *ptr);
 
@@ -25,6 +27,7 @@ void sdl2r_dispose_window(struct SDL2RWindow *win)
     }
 
     SDL_DestroyWindow(win->window);
+    sdl2r_del_hash(wh, sdl2r_get_hash(wh, (HASHKEY)win->window));
     win->window = 0;
 }
 
@@ -44,10 +47,12 @@ static void sdl2r_window_free(void *ptr)
 VALUE sdl2r_window_alloc(VALUE klass)
 {
     struct SDL2RWindow *win;
-    VALUE vwin = TypedData_Make_Struct(klass, struct SDL2RWindow, &sdl2r_window_data_type, win);
+
+    VALUE vwindow = TypedData_Make_Struct(klass, struct SDL2RWindow, &sdl2r_window_data_type, win);
     win->window = 0;
     win->vrenderer = Qnil;
-    return vwin;
+
+    return vwindow;
 }
 
 
@@ -146,15 +151,18 @@ static VALUE sdl2r_get_renderer(VALUE klass, VALUE vwindow)
 
 static VALUE sdl2r_create_window(VALUE klass, VALUE vstr, VALUE vx, VALUE vy, VALUE vw, VALUE vh, VALUE vflags)
 {
-    VALUE vwin = sdl2r_window_alloc(cWindow);
-    struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, vwin);
+    VALUE vwindow = sdl2r_window_alloc(cWindow);
+    struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, vwindow);
+    int k;
 
     SDL2R_RETRY(win->window = SDL_CreateWindow(RSTRING_PTR(vstr), NUM2INT(vx), NUM2INT(vy), NUM2INT(vw), NUM2INT(vh), NUM2INT(vflags)));
     if (!win->window) {
         rb_raise(eSDLError, SDL_GetError());
     }
+    k = sdl2r_put_hash(wh, (HASHKEY)win->window, 0);
+    wh->vals[k] = vwindow;
 
-    return vwin;
+    return vwindow;
 }
 
 
@@ -191,6 +199,41 @@ static VALUE sdl2r_set_window_size(VALUE klass, VALUE vwindow, VALUE vw, VALUE v
 }
 
 
+static VALUE sdl2r_get_window_id(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    return UINT2NUM(SDL_GetWindowID(win->window));
+}
+
+
+static VALUE sdl2r_get_window_from_id(VALUE klass, VALUE vid)
+{
+    VALUE vwindow;
+    SDL_Window *w;
+    int k;
+
+    w = SDL_GetWindowFromID(NUM2UINT(vid));
+    if (!w) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    k = sdl2r_get_hash(wh, (HASHKEY)w);
+    vwindow = wh->vals[k];
+
+    return vwindow;
+}
+
+
+//static VALUE sdl2r_window_test(VALUE klass)
+//{
+//    printf("n_buckets = %d\n", wh->n_buckets);
+//    printf("size = %d\n", wh->size);
+//    printf("n_occupied = %d\n", wh->n_occupied);
+//    return Qnil;
+//}
+
+
 void Init_sdl2r_window(void)
 {
     // SDL module methods
@@ -205,6 +248,11 @@ void Init_sdl2r_window(void)
     rb_define_singleton_method(mSDL, "get_window_pixel_format", sdl2r_get_window_pixel_format, 1);
     rb_define_singleton_method(mSDL, "show_window", sdl2r_show_window, 1);
     rb_define_singleton_method(mSDL, "set_window_size", sdl2r_set_window_size, 3);
+
+    rb_define_singleton_method(mSDL, "get_window_id", sdl2r_get_window_id, 1);
+    rb_define_singleton_method(mSDL, "get_window_from_id", sdl2r_get_window_from_id, 1);
+
+//    rb_define_singleton_method(mSDL, "window_test", sdl2r_window_test, 0);
 
     // SDL::Window class
     cWindow = rb_define_class_under(mSDL, "Window", rb_cObject);
@@ -230,4 +278,6 @@ void Init_sdl2r_window(void)
     rb_define_const(mSDL, "WINDOW_MOUSE_FOCUS", INT2FIX(SDL_WINDOW_MOUSE_FOCUS));
     rb_define_const(mSDL, "WINDOW_FOREIGN", INT2FIX(SDL_WINDOW_FOREIGN));
     rb_define_const(mSDL, "WINDOW_ALLOW_HIGHDPI", INT2FIX(SDL_WINDOW_ALLOW_HIGHDPI));
+
+    wh = sdl2r_hash_alloc(8);
 }
