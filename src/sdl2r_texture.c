@@ -3,6 +3,7 @@
 #include "sdl2r_surface.h"
 #include "sdl2r_window.h"
 #include "sdl2r_texture.h"
+#include "sdl2r_renderer.h"
 
 VALUE cTexture;
 
@@ -19,12 +20,23 @@ const rb_data_type_t sdl2r_texture_data_type = {
 };
 
 
+void sdl2r_dispose_texture(struct SDL2RTexture *tex)
+{
+    int k;
+    k = sdl2r_get_hash(SDL2R_GET_STRUCT(Renderer, tex->vrenderer)->th, (HASHKEY)tex->texture);
+    sdl2r_del_hash(SDL2R_GET_STRUCT(Renderer, tex->vrenderer)->th, k);
+    SDL_DestroyTexture(tex->texture);
+    tex->texture = 0;
+    tex->vrenderer = Qnil;
+}
+
+
 static void sdl2r_texture_free(void *ptr)
 {
     struct SDL2RTexture *tex = ptr;
 
     if (tex->texture) {
-        SDL_DestroyTexture(tex->texture);
+        sdl2r_dispose_texture(tex);
     }
 
     xfree(tex);
@@ -48,6 +60,13 @@ VALUE sdl2r_texture_alloc(VALUE klass)
 }
 
 
+static VALUE sdl2r_destroy_texture(VALUE klass, VALUE vtexture)
+{
+    sdl2r_dispose_texture(SDL2R_GET_TEXTURE_STRUCT(vtexture));
+    return vtexture;
+}
+
+
 static VALUE sdl2r_query_texture(VALUE klass, VALUE vtexture)
 {
     struct SDL2RTexture *tex = SDL2R_GET_TEXTURE_STRUCT(vtexture);
@@ -59,17 +78,6 @@ static VALUE sdl2r_query_texture(VALUE klass, VALUE vtexture)
     }
 
     return rb_ary_new3(4, INT2NUM(format), INT2NUM(access), INT2NUM(w), INT2NUM(h));
-}
-
-
-static VALUE sdl2r_destroy_texture(VALUE klass, VALUE vtexture)
-{
-    struct SDL2RTexture *tex = SDL2R_GET_TEXTURE_STRUCT(vtexture);
-
-    SDL_DestroyTexture(tex->texture);
-    tex->texture = 0;
-
-    return vtexture;
 }
 
 

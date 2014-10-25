@@ -4,16 +4,6 @@
 #include "sdl2r.h"
 #include "sdl2r_hash.h"
 
-
-static const Uint8 __m_empty[]  = {0x02, 0x08, 0x20, 0x80};
-static const Uint8 __m_del[]    = {0x01, 0x04, 0x10, 0x40};
-static const Uint8 __m_either[] = {0x03, 0x0c, 0x30, 0xc0};
-
-#define __ac_isempty(ed_flag, i) (ed_flag[(i)/4]&__m_empty[(i)%4])
-#define __ac_isdel(ed_flag, i) (ed_flag[(i)/4]&__m_del[(i)%4])
-#define __ac_iseither(ed_flag, i) (ed_flag[(i)/4]&__m_either[(i)%4])
-
-
 void sdl2r_hash_alloc_internal(struct SDL2RHash *h)
 {
     int size = h->n_buckets;
