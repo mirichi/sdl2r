@@ -17,15 +17,26 @@ const rb_data_type_t sdl2r_window_data_type = {
     },
 };
 
+
+void sdl2r_dispose_window(struct SDL2RWindow *win)
+{
+    if (win->vrenderer != Qnil) {
+        sdl2r_dispose_renderer(SDL2R_GET_STRUCT(Renderer, win->vrenderer));
+    }
+
+    SDL_DestroyWindow(win->window);
+    win->window = 0;
+}
+
+
 static void sdl2r_window_free(void *ptr)
 {
     struct SDL2RWindow *win = ptr;
-    if (win->renderer) {
-        SDL_DestroyRenderer(win->renderer);
-    }
+
     if (win->window) {
-        SDL_DestroyWindow(win->window);
+        sdl2r_dispose_window(win);
     }
+
     xfree(win);
 }
 
@@ -35,8 +46,15 @@ VALUE sdl2r_window_alloc(VALUE klass)
     struct SDL2RWindow *win;
     VALUE vwin = TypedData_Make_Struct(klass, struct SDL2RWindow, &sdl2r_window_data_type, win);
     win->window = 0;
-    win->renderer = 0;
+    win->vrenderer = Qnil;
     return vwin;
+}
+
+
+static VALUE sdl2r_destroy_window(VALUE klass, VALUE vwindow)
+{
+    sdl2r_dispose_window(SDL2R_GET_WINDOW_STRUCT(vwindow));
+    return vwindow;
 }
 
 
@@ -108,11 +126,12 @@ static VALUE sdl2r_create_renderer(VALUE klass, VALUE vwindow, VALUE vindex, VAL
     VALUE vrenderer = sdl2r_renderer_alloc(cRenderer);
     struct SDL2RRenderer *ren = SDL2R_GET_STRUCT(Renderer, vrenderer);
 
-    SDL2R_RETRY(win->renderer = SDL_CreateRenderer(win->window, NUM2INT(vindex), (Uint32)NUM2UINT(vflags)));
-    if (!win->renderer) {
+    SDL2R_RETRY(ren->renderer = SDL_CreateRenderer(win->window, NUM2INT(vindex), (Uint32)NUM2UINT(vflags)));
+    if (!ren->renderer) {
         rb_raise(eSDLError, SDL_GetError());
     }
     ren->vwindow = vwindow;
+    win->vrenderer = vrenderer;
 
     return vrenderer;
 }
@@ -121,16 +140,7 @@ static VALUE sdl2r_create_renderer(VALUE klass, VALUE vwindow, VALUE vindex, VAL
 static VALUE sdl2r_get_renderer(VALUE klass, VALUE vwindow)
 {
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
-    VALUE vrenderer = sdl2r_renderer_alloc(cRenderer);
-    struct SDL2RRenderer *ren = SDL2R_GET_STRUCT(Renderer, vrenderer);
-
-    win->renderer = SDL_GetRenderer(win->window);
-    if (!win->renderer) {
-        rb_raise(eSDLError, SDL_GetError());
-    }
-    ren->vwindow = vwindow;
-
-    return vrenderer;
+    return win->vrenderer;
 }
 
 
@@ -145,21 +155,6 @@ static VALUE sdl2r_create_window(VALUE klass, VALUE vstr, VALUE vx, VALUE vy, VA
     }
 
     return vwin;
-}
-
-
-static VALUE sdl2r_destroy_window(VALUE klass, VALUE vwindow)
-{
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
-
-    if (win->renderer) {
-        SDL_DestroyRenderer(win->renderer);
-        win->renderer = 0;
-    }
-    SDL_DestroyWindow(win->window);
-    win->window = 0;
-
-    return vwindow;
 }
 
 

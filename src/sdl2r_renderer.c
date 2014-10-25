@@ -20,9 +20,24 @@ const rb_data_type_t sdl2r_renderer_data_type = {
 };
 
 
+void sdl2r_dispose_renderer(struct SDL2RRenderer *ren)
+{
+    struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, ren->vwindow);
+    SDL_DestroyRenderer(ren->renderer);
+    ren->renderer = 0;
+    ren->vwindow = Qnil;
+    win->vrenderer = Qnil;
+}
+
+
 static void sdl2r_renderer_free(void *ptr)
 {
     struct SDL2RRenderer *ren = ptr;
+
+    if (ren->renderer) {
+        sdl2r_dispose_renderer(ren);
+    }
+
     xfree(ren);
 }
 
@@ -37,16 +52,31 @@ static void sdl2r_renderer_mark(void *ptr)
 VALUE sdl2r_renderer_alloc(VALUE klass)
 {
     struct SDL2RRenderer *ren;
-    VALUE vren = TypedData_Make_Struct(klass, struct SDL2RRenderer, &sdl2r_renderer_data_type, ren);
+    VALUE vrenderer = TypedData_Make_Struct(klass, struct SDL2RRenderer, &sdl2r_renderer_data_type, ren);
+    ren->renderer = 0;
     ren->vwindow = Qnil;
-    return vren;
+    return vrenderer;
+}
+
+
+static VALUE sdl2r_destroy_renderer(VALUE klass, VALUE vrenderer)
+{
+    sdl2r_dispose_renderer(SDL2R_GET_RENDERER_STRUCT(vrenderer));
+    return vrenderer;
+}
+
+
+static VALUE sdl2r_renderer_get_destroyed(VALUE self)
+{
+    struct SDL2RRenderer *ren = SDL2R_GET_STRUCT(Renderer, self);
+
+    return ren->renderer ? Qfalse : Qtrue;
 }
 
 
 static VALUE sdl2r_render_copy(VALUE klass, VALUE vrenderer, VALUE vtexture, VALUE vsrcrect, VALUE vdstrect)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
     struct SDL2RTexture *tex = SDL2R_GET_TEXTURE_STRUCT(vtexture);
     SDL_Rect srcrect, dstrect;
     SDL_Rect *psr=0, *pdr=0;
@@ -68,7 +98,7 @@ static VALUE sdl2r_render_copy(VALUE klass, VALUE vrenderer, VALUE vtexture, VAL
         pdr = &dstrect;
     }
 
-    if (SDL_RenderCopy(win->renderer, tex->texture, psr, pdr)) {
+    if (SDL_RenderCopy(ren->renderer, tex->texture, psr, pdr)) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -79,7 +109,6 @@ static VALUE sdl2r_render_copy(VALUE klass, VALUE vrenderer, VALUE vtexture, VAL
 static VALUE sdl2r_render_copy_ex(VALUE klass, VALUE vrenderer, VALUE vtexture, VALUE vsrcrect, VALUE vdstrect, VALUE vangle, VALUE vcenter, VALUE vflip)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
     struct SDL2RTexture *tex = SDL2R_GET_TEXTURE_STRUCT(vtexture);
     SDL_Rect srcrect, dstrect;
     SDL_Rect *psr=0, *pdr=0;
@@ -109,7 +138,7 @@ static VALUE sdl2r_render_copy_ex(VALUE klass, VALUE vrenderer, VALUE vtexture, 
         pp = &point;
     }
 
-    if (SDL_RenderCopyEx(win->renderer, tex->texture, psr, pdr, NUM2DBL(vangle), pp, NUM2INT(vflip))) {
+    if (SDL_RenderCopyEx(ren->renderer, tex->texture, psr, pdr, NUM2DBL(vangle), pp, NUM2INT(vflip))) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -120,32 +149,10 @@ static VALUE sdl2r_render_copy_ex(VALUE klass, VALUE vrenderer, VALUE vtexture, 
 static VALUE sdl2r_render_present(VALUE klass, VALUE vrenderer)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
 
-    SDL_RenderPresent(win->renderer);
-
-    return vrenderer;
-}
-
-
-static VALUE sdl2r_destroy_renderer(VALUE klass, VALUE vrenderer)
-{
-    struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
-
-    SDL_DestroyRenderer(win->renderer);
-    win->renderer = 0;
+    SDL_RenderPresent(ren->renderer);
 
     return vrenderer;
-}
-
-
-static VALUE sdl2r_renderer_get_destroyed(VALUE self)
-{
-    struct SDL2RRenderer *ren = SDL2R_GET_STRUCT(Renderer, self);
-    struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, ren->vwindow);
-
-    return win->renderer ? Qfalse : Qtrue;
 }
 
 
@@ -156,7 +163,7 @@ static VALUE sdl2r_create_texture_from_surface(VALUE klass, VALUE vrenderer, VAL
     VALUE vtexture = sdl2r_texture_alloc(cTexture);
     struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, vtexture);
 
-    SDL2R_RETRY(tex->texture = SDL_CreateTextureFromSurface(SDL2R_GET_STRUCT(Window, ren->vwindow)->renderer, sur->surface));
+    SDL2R_RETRY(tex->texture = SDL_CreateTextureFromSurface(ren->renderer, sur->surface));
     if (!tex->texture) {
         rb_raise(eSDLError, SDL_GetError());
     }
@@ -168,9 +175,8 @@ static VALUE sdl2r_create_texture_from_surface(VALUE klass, VALUE vrenderer, VAL
 static VALUE sdl2r_render_clear(VALUE klass, VALUE vrenderer)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
 
-    if (SDL_RenderClear(win->renderer)) {
+    if (SDL_RenderClear(ren->renderer)) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -181,9 +187,8 @@ static VALUE sdl2r_render_clear(VALUE klass, VALUE vrenderer)
 static VALUE sdl2r_set_render_draw_color(VALUE klass, VALUE vrenderer, VALUE vr, VALUE vg, VALUE vb, VALUE va)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
 
-    if (SDL_SetRenderDrawColor(win->renderer, NUM2INT(vr), NUM2INT(vg), NUM2INT(vb), NUM2INT(va))) {
+    if (SDL_SetRenderDrawColor(ren->renderer, NUM2INT(vr), NUM2INT(vg), NUM2INT(vb), NUM2INT(va))) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -194,11 +199,10 @@ static VALUE sdl2r_set_render_draw_color(VALUE klass, VALUE vrenderer, VALUE vr,
 static VALUE sdl2r_create_texture(VALUE klass, VALUE vrenderer, VALUE vformat, VALUE vaccess, VALUE vw, VALUE vh)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
     VALUE vtexture = sdl2r_texture_alloc(cTexture);
     struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, vtexture);
 
-    SDL2R_RETRY(tex->texture = SDL_CreateTexture(win->renderer, NUM2UINT(vformat), NUM2INT(vaccess), NUM2INT(vw), NUM2INT(vh)));
+    SDL2R_RETRY(tex->texture = SDL_CreateTexture(ren->renderer, NUM2UINT(vformat), NUM2INT(vaccess), NUM2INT(vw), NUM2INT(vh)));
     if (!tex->texture) {
         rb_raise(eSDLError, SDL_GetError());
     }
@@ -210,7 +214,6 @@ static VALUE sdl2r_create_texture(VALUE klass, VALUE vrenderer, VALUE vformat, V
 static VALUE sdl2r_set_render_target(VALUE klass, VALUE vrenderer, VALUE vtexture)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
     SDL_Texture *t;
 
     if (vtexture == Qnil) {
@@ -219,7 +222,7 @@ static VALUE sdl2r_set_render_target(VALUE klass, VALUE vrenderer, VALUE vtextur
         t = SDL2R_GET_TEXTURE_STRUCT(vtexture)->texture;
     }
 
-    if (SDL_SetRenderTarget(win->renderer, t)) {
+    if (SDL_SetRenderTarget(ren->renderer, t)) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -230,9 +233,8 @@ static VALUE sdl2r_set_render_target(VALUE klass, VALUE vrenderer, VALUE vtextur
 static VALUE sdl2r_set_render_draw_blend_mode(VALUE klass, VALUE vrenderer, VALUE vblendmode)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
 
-    if (SDL_SetRenderDrawBlendMode(win->renderer, NUM2INT(vblendmode))) {
+    if (SDL_SetRenderDrawBlendMode(ren->renderer, NUM2INT(vblendmode))) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -243,10 +245,9 @@ static VALUE sdl2r_set_render_draw_blend_mode(VALUE klass, VALUE vrenderer, VALU
 static VALUE sdl2r_get_render_draw_blend_mode(VALUE klass, VALUE vrenderer)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
     SDL_BlendMode bm;
 
-    if (SDL_GetRenderDrawBlendMode(win->renderer, &bm)) {
+    if (SDL_GetRenderDrawBlendMode(ren->renderer, &bm)) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -257,7 +258,6 @@ static VALUE sdl2r_get_render_draw_blend_mode(VALUE klass, VALUE vrenderer)
 static VALUE sdl2r_render_fill_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(ren->vwindow);
     SDL_Rect rect;
     SDL_Rect *pr=0;
 
@@ -270,7 +270,7 @@ static VALUE sdl2r_render_fill_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
         pr = &rect;
     }
 
-    if (SDL_RenderFillRect(win->renderer, pr)) {
+    if (SDL_RenderFillRect(ren->renderer, pr)) {
         rb_raise(eSDLError, SDL_GetError());
     }
 

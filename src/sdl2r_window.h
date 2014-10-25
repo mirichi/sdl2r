@@ -1,9 +1,10 @@
 struct SDL2RWindow {
     SDL_Window *window;
-    SDL_Renderer *renderer;
+    VALUE vrenderer; // weak ref
 };
 
 void Init_sdl2r_window(void);
+void sdl2r_dispose_window(struct SDL2RWindow *win);
 VALUE sdl2r_window_alloc(VALUE klass);
 
 #ifndef SDL2RWINDOW
@@ -13,7 +14,7 @@ extern VALUE cWindow;
 
 #define SDL2R_GET_WINDOW_STRUCT(obj) (\
         (RB_TYPE_P(obj, T_DATA) && RTYPEDDATA_TYPE(obj) == &sdl2r_window_data_type) ?\
-            ((SDL2R_GET_STRUCT(Window, obj)->window == NULL) ?\
+            (SDL2R_GET_STRUCT(Window, obj)->window == NULL ?\
                 rb_raise(eSDL2RError, "destroyed Window object"), SDL2R_GET_STRUCT(Window, obj)\
               : SDL2R_GET_STRUCT(Window, obj)\
             )\
