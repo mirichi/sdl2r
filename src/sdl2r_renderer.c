@@ -237,28 +237,7 @@ static VALUE sdl2r_set_render_draw_color(VALUE klass, VALUE vrenderer, VALUE vr,
 static VALUE sdl2r_get_render_target(VALUE klass, VALUE vrenderer)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    struct SDL2RTexture *tex;
-    SDL_Texture *t;
-    VALUE vtexture;
-    int k;
-
-    t = SDL_GetRenderTarget(ren->renderer);
-    if (!t) {
-        return Qnil;
-    }
-
-    k = sdl2r_get_hash(ren->th, (HASHKEY)t);
-    if (k == ren->th->n_buckets) {
-        vtexture = sdl2r_texture_alloc(cTexture);
-        tex = SDL2R_GET_STRUCT(Texture, vtexture);
-        tex->texture = t;
-        tex->vrenderer = vrenderer;
-        k = sdl2r_put_hash(ren->th, (HASHKEY)t, 0);
-        ren->th->vals[k] = vtexture;
-    } else {
-        vtexture = ren->th->vals[k];
-    }
-    return vtexture;
+    return ren->vrender_target_texture;
 }
 
 
@@ -277,7 +256,7 @@ static VALUE sdl2r_set_render_target(VALUE klass, VALUE vrenderer, VALUE vtextur
         rb_raise(eSDLError, SDL_GetError());
     }
 
-    ren->vrender_target_texture = sdl2r_get_render_target(cRenderer, vrenderer);
+    ren->vrender_target_texture = vtexture;
 
     return vrenderer;
 }
