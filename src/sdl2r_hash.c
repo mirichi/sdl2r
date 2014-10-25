@@ -1,3 +1,5 @@
+// mruby khash base. https://github.com/mruby/mruby
+
 #define SDL2RHASH
 #include "sdl2r.h"
 #include "sdl2r_hash.h"
@@ -120,8 +122,3 @@ void sdl2r_del_hash(struct SDL2RHash *h, int x)
     h->ed_flags[x/4] |= __m_del[x%4];
     h->size--;
 }
-
-
-
-
-
