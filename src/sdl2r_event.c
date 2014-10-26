@@ -2,22 +2,26 @@
 #include "sdl2r.h"
 #include "sdl2r_event.h"
 
-VALUE cKeyboardEvent;
-VALUE cKeysym;
-VALUE cQuitEvent;
-VALUE cMouseMotionEvent;
-VALUE cMouseButtonEvent;
-VALUE cJoyAxisEvent;
-VALUE cJoyBallEvent;
-VALUE cJoyButtonEvent;
-VALUE cJoyDeviceEvent;
-VALUE cJoyHatEvent;
+static VALUE cKeyboardEvent;
+static VALUE cKeysym;
+static VALUE cQuitEvent;
+static VALUE cMouseMotionEvent;
+static VALUE cMouseButtonEvent;
+static VALUE cJoyAxisEvent;
+static VALUE cJoyBallEvent;
+static VALUE cJoyButtonEvent;
+static VALUE cJoyDeviceEvent;
+static VALUE cJoyHatEvent;
+static VALUE cUserEvent;
+
+static Sint32 g_user_event_id = 0;
+static VALUE g_user_event_data = Qnil;
 
 static VALUE sdl2r_poll_event(VALUE klass)
 {
     SDL_Event event;
 
-    if (SDL_PollEvent(&event)) {
+    while (SDL_PollEvent(&event)) {
         switch(event.type) {
         case SDL_QUIT:
             {
@@ -132,13 +136,57 @@ static VALUE sdl2r_poll_event(VALUE klass)
             }
             break;
         default:
-            return Qnil;
+            if (event.type >= SDL_USEREVENT) {
+                VALUE vevent = rb_hash_lookup(g_user_event_data, INT2NUM(event.user.code));
+                rb_hash_delete(g_user_event_data, INT2NUM(event.user.code));
+                return vevent;
+            }
             break;
         }
-    } else {
-        return Qnil;
     }
+
+    return Qnil;
 }
+
+
+static VALUE sdl2r_push_event(VALUE klass, VALUE vevent)
+{
+    SDL_Event ev;
+
+    if (NUM2UINT(rb_struct_aref(vevent, INT2FIX(0))) < SDL_USEREVENT) {
+        rb_raise(eSDL2RError, "not userevent");
+    }
+
+    ev.user.type = NUM2UINT(rb_struct_aref(vevent, INT2FIX(0)));
+    ev.user.timestamp = 0;
+    ev.user.windowID = 0;
+    ev.user.code = g_user_event_id;
+
+    ev.user.data1 = 0;
+    ev.user.data2 = 0;
+    rb_hash_aset(g_user_event_data, INT2NUM(g_user_event_id), vevent);
+    g_user_event_id++;
+
+    if (SDL_PushEvent(&ev) < 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return Qnil;
+}
+
+
+static VALUE sdl2r_register_events(VALUE klass, VALUE vnum)
+{
+    Uint32 result;
+
+    result = SDL_RegisterEvents(NUM2UINT(vnum));
+    if (result == (Uint32)-1) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return UINT2NUM(result);
+}
+
 
 static VALUE sdl2r_macro_button(VALUE klass, VALUE vx)
 {
@@ -150,6 +198,8 @@ void Init_sdl2r_event(void)
 {
     // SDL module methods
     rb_define_singleton_method(mSDL, "poll_event", sdl2r_poll_event, 0);
+    rb_define_singleton_method(mSDL, "push_event", sdl2r_push_event, 1);
+    rb_define_singleton_method(mSDL, "register_events", sdl2r_register_events, 1);
 
     // SDL macro
     rb_define_singleton_method(mSDL, "BUTTON", sdl2r_macro_button, 1);
@@ -184,6 +234,13 @@ void Init_sdl2r_event(void)
 
     cJoyHatEvent = rb_struct_define(NULL, "type", "timestamp", "which", "hat", "value", NULL);
     rb_define_const(mSDL, "JoyHatEvent", cJoyHatEvent);
+
+    cUserEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "code", "data1", "data2", NULL);
+    rb_define_const(mSDL, "UserEvent", cUserEvent);
+
+    // User Event hash
+    g_user_event_data = rb_hash_new();
+    rb_global_variable(&g_user_event_data);
 
     // Constants
     rb_define_const(mSDL, "PRESSED", INT2FIX(SDL_PRESSED));
