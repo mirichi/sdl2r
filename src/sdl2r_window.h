@@ -1,6 +1,7 @@
 struct SDL2RWindow {
     SDL_Window *window;
     VALUE vrenderer; // weak ref
+    VALUE vglcontext; // weak ref
 };
 
 void Init_sdl2r_window(void);

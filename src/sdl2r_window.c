@@ -3,6 +3,7 @@
 #include "sdl2r_window.h"
 #include "sdl2r_surface.h"
 #include "sdl2r_renderer.h"
+#include "sdl2r_opengl.h"
 #include "sdl2r_hash.h"
 
 VALUE cWindow;
@@ -24,6 +25,10 @@ void sdl2r_dispose_window(struct SDL2RWindow *win)
 {
     if (win->vrenderer != Qnil) {
         sdl2r_dispose_renderer(SDL2R_GET_STRUCT(Renderer, win->vrenderer));
+    }
+
+    if (win->vglcontext != Qnil) {
+        sdl2r_dispose_glcontext(SDL2R_GET_STRUCT(GLContext, win->vglcontext));
     }
 
     SDL_DestroyWindow(win->window);
@@ -51,6 +56,7 @@ VALUE sdl2r_window_alloc(VALUE klass)
     VALUE vwindow = TypedData_Make_Struct(klass, struct SDL2RWindow, &sdl2r_window_data_type, win);
     win->window = 0;
     win->vrenderer = Qnil;
+    win->vglcontext = Qnil;
 
     return vwindow;
 }
@@ -235,6 +241,23 @@ static VALUE sdl2r_get_window_from_id(VALUE klass, VALUE vid)
 }
 
 
+static VALUE sdl2r_gl_create_context(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+    VALUE vglcontext = sdl2r_glcontext_alloc(cGLContext);
+    struct SDL2RGLContext *glc = SDL2R_GET_STRUCT(GLContext, vglcontext);
+
+    SDL2R_RETRY(glc->glcontext = SDL_GL_CreateContext(win->window));
+    if (!glc->glcontext) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+    glc->vwindow = vwindow;
+    win->vglcontext = vglcontext;
+
+    return vglcontext;
+}
+
+
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
 //    printf("n_buckets = %d\n", sdl2r_window_hash->n_buckets);
@@ -258,6 +281,7 @@ void Init_sdl2r_window(void)
     rb_define_singleton_method(mSDL, "get_window_pixel_format", sdl2r_get_window_pixel_format, 1);
     rb_define_singleton_method(mSDL, "show_window", sdl2r_show_window, 1);
     rb_define_singleton_method(mSDL, "set_window_size", sdl2r_set_window_size, 3);
+    rb_define_singleton_method(mSDL, "gl_create_context", sdl2r_gl_create_context, 1);
 
     rb_define_singleton_method(mSDL, "get_window_id", sdl2r_get_window_id, 1);
     rb_define_singleton_method(mSDL, "get_window_from_id", sdl2r_get_window_from_id, 1);
