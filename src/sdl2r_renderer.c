@@ -28,7 +28,7 @@ void sdl2r_dispose_renderer(struct SDL2RRenderer *ren)
     ren->renderer = 0;
     ren->vwindow = Qnil;
     win->vrenderer = Qnil;
-    for (k = 0; k < ren->th->n_buckets; k++) {
+    for (k = 0; k < sdl2r_hash_end(ren->th); k++) {
         if (sdl2r_hash_exist(ren->th, k)) {
             struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, ren->th->vals[k]);
             if (tex->texture) {

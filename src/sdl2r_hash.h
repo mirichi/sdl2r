@@ -28,4 +28,6 @@ static const Uint8 __m_either[] = {0x03, 0x0c, 0x30, 0xc0};
 
 #define sdl2r_hash_exist(h, x) (!__ac_iseither((h)->ed_flags, (x)))
 
+#define sdl2r_hash_end(h) ((h)->n_buckets)
+
 #endif

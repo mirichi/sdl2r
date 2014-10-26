@@ -6,8 +6,10 @@ struct SDL2RWindow {
 void Init_sdl2r_window(void);
 void sdl2r_dispose_window(struct SDL2RWindow *win);
 VALUE sdl2r_window_alloc(VALUE klass);
+VALUE sdl2r_window_sdl_to_ruby(SDL_Window *w);
 
 #ifndef SDL2RWINDOW
+extern struct SDL2RHash *sdl2r_window_hash;
 extern const rb_data_type_t sdl2r_window_data_type;
 extern VALUE cWindow;
 #endif

@@ -1,5 +1,6 @@
 #define SDL2RKEYBOARD
 #include "sdl2r.h"
+#include "sdl2r_window.h"
 #include "sdl2r_keyboard.h"
 
 
@@ -12,10 +13,75 @@ static VALUE sdl2r_get_key_name(VALUE klass, VALUE vkeycode)
 }
 
 
+static VALUE sdl2r_get_key_from_name(VALUE klass, VALUE vkeyname)
+{
+    SDL_Keycode result;
+
+    Check_Type(vkeyname, T_STRING);
+
+    result = SDL_GetKeyFromName(RSTRING_PTR(vkeyname));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_get_key_from_scancode(VALUE klass, VALUE vscancode)
+{
+    SDL_Keycode result;
+
+    result = SDL_GetKeyFromScancode(NUM2INT(vscancode));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_get_keyboard_focus(VALUE klass)
+{
+    SDL_Window *w;
+
+    w = SDL_GetKeyboardFocus();
+
+    return sdl2r_window_sdl_to_ruby(w);
+}
+
+
+static VALUE sdl2r_get_scancode_from_key(VALUE klass, VALUE vkeycode)
+{
+    SDL_Scancode result;
+
+    result = SDL_GetScancodeFromKey(NUM2INT(vkeycode));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_get_scancode_from_name(VALUE klass, VALUE vkeyname)
+{
+    SDL_Scancode result;
+
+    Check_Type(vkeyname, T_STRING);
+
+    result = SDL_GetScancodeFromName(RSTRING_PTR(vkeyname));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_get_scancode_name(VALUE klass, VALUE vscancode)
+{
+    const char *result;
+
+    result = SDL_GetScancodeName((SDL_Scancode)NUM2INT(vscancode));
+    return rb_enc_str_new(result, strlen(result), g_enc_utf8);
+}
+
+
 void Init_sdl2r_keyboard(void)
 {
     // SDL module methods
     rb_define_singleton_method(mSDL, "get_key_name", sdl2r_get_key_name, 1);
+    rb_define_singleton_method(mSDL, "get_key_from_name", sdl2r_get_key_from_name, 1);
+    rb_define_singleton_method(mSDL, "get_key_from_scancode", sdl2r_get_key_from_scancode, 1);
+    rb_define_singleton_method(mSDL, "get_keyboard_focus", sdl2r_get_keyboard_focus, 0);
+    rb_define_singleton_method(mSDL, "get_scancode_name", sdl2r_get_scancode_name, 1);
+    rb_define_singleton_method(mSDL, "get_scancode_from_key", sdl2r_get_scancode_from_key, 1);
+    rb_define_singleton_method(mSDL, "get_scancode_from_name", sdl2r_get_scancode_from_name, 1);
 
     // Constants
     rb_define_const(mSDL, "SCANCODE_UNKNOWN", INT2FIX(SDL_SCANCODE_UNKNOWN));

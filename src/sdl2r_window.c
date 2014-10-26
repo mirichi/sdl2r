@@ -6,7 +6,7 @@
 #include "sdl2r_hash.h"
 
 VALUE cWindow;
-static struct SDL2RHash *wh;
+struct SDL2RHash *sdl2r_window_hash;
 
 static void sdl2r_window_free(void *ptr);
 
@@ -27,7 +27,7 @@ void sdl2r_dispose_window(struct SDL2RWindow *win)
     }
 
     SDL_DestroyWindow(win->window);
-    sdl2r_del_hash(wh, sdl2r_get_hash(wh, (HASHKEY)win->window));
+    sdl2r_del_hash(sdl2r_window_hash, sdl2r_get_hash(sdl2r_window_hash, (HASHKEY)win->window));
     win->window = 0;
 }
 
@@ -70,7 +70,17 @@ static VALUE sdl2r_window_get_destroyed(VALUE self)
 }
 
 
-// SDL module methods
+VALUE sdl2r_window_sdl_to_ruby(SDL_Window *w)
+{
+    int k;
+    k = sdl2r_get_hash(sdl2r_window_hash, (HASHKEY)w);
+    if (k == sdl2r_hash_end(sdl2r_window_hash)) {
+        return Qnil;
+    }
+    return sdl2r_window_hash->vals[k];
+}
+
+
 static VALUE sdl2r_get_window_title(VALUE klass, VALUE vwindow)
 {
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
@@ -159,8 +169,8 @@ static VALUE sdl2r_create_window(VALUE klass, VALUE vstr, VALUE vx, VALUE vy, VA
     if (!win->window) {
         rb_raise(eSDLError, SDL_GetError());
     }
-    k = sdl2r_put_hash(wh, (HASHKEY)win->window, 0);
-    wh->vals[k] = vwindow;
+    k = sdl2r_put_hash(sdl2r_window_hash, (HASHKEY)win->window, 0);
+    sdl2r_window_hash->vals[k] = vwindow;
 
     return vwindow;
 }
@@ -218,8 +228,8 @@ static VALUE sdl2r_get_window_from_id(VALUE klass, VALUE vid)
         rb_raise(eSDLError, SDL_GetError());
     }
 
-    k = sdl2r_get_hash(wh, (HASHKEY)w);
-    vwindow = wh->vals[k];
+    k = sdl2r_get_hash(sdl2r_window_hash, (HASHKEY)w);
+    vwindow = sdl2r_window_hash->vals[k];
 
     return vwindow;
 }
@@ -227,9 +237,9 @@ static VALUE sdl2r_get_window_from_id(VALUE klass, VALUE vid)
 
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
-//    printf("n_buckets = %d\n", wh->n_buckets);
-//    printf("size = %d\n", wh->size);
-//    printf("n_occupied = %d\n", wh->n_occupied);
+//    printf("n_buckets = %d\n", sdl2r_window_hash->n_buckets);
+//    printf("size = %d\n", sdl2r_window_hash->size);
+//    printf("n_occupied = %d\n", sdl2r_window_hash->n_occupied);
 //    return Qnil;
 //}
 
@@ -279,5 +289,5 @@ void Init_sdl2r_window(void)
     rb_define_const(mSDL, "WINDOW_FOREIGN", INT2FIX(SDL_WINDOW_FOREIGN));
     rb_define_const(mSDL, "WINDOW_ALLOW_HIGHDPI", INT2FIX(SDL_WINDOW_ALLOW_HIGHDPI));
 
-    wh = sdl2r_hash_alloc(8);
+    sdl2r_window_hash = sdl2r_hash_alloc(8);
 }
