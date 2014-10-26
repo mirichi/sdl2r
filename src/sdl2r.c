@@ -13,6 +13,7 @@
 #include "sdl2r_filesystem.h"
 #include "sdl2r_rwops.h"
 #include "sdl2r_keyboard.h"
+#include "sdl2r_clipboard.h"
 
 VALUE mSDL;
 VALUE eSDLError;
@@ -288,6 +289,7 @@ void Init_sdl2r(void)
     Init_sdl2r_filesystem();
     Init_sdl2r_rwops();
     Init_sdl2r_keyboard();
+    Init_sdl2r_clipboard();
 }
 
 
