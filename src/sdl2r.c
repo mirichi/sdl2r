@@ -15,6 +15,7 @@
 #include "sdl2r_keyboard.h"
 #include "sdl2r_clipboard.h"
 #include "sdl2r_opengl.h"
+#include "sdl2r_mouse.h"
 
 VALUE mSDL;
 VALUE eSDLError;
@@ -292,6 +293,7 @@ void Init_sdl2r(void)
     Init_sdl2r_keyboard();
     Init_sdl2r_clipboard();
     Init_sdl2r_opengl();
+    Init_sdl2r_mouse();
 }
 
 

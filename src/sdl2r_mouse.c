@@ -1,0 +1,122 @@
+#define SDL2RMOUSE
+#include "sdl2r.h"
+#include "sdl2r_mouse.h"
+
+VALUE cCursor;
+
+static void sdl2r_cursor_free(void *ptr);
+
+const rb_data_type_t sdl2r_cursor_data_type = {
+    "Cursor",
+    {
+    0,
+    sdl2r_cursor_free,
+    0,
+    },
+};
+
+
+static void sdl2r_cursor_free(void *ptr)
+{
+    struct SDL2RCursor *cs = ptr;
+
+    if (cs->cursor) {
+        SDL_FreeCursor(cs->cursor);
+    }
+
+    xfree(cs);
+}
+
+
+VALUE sdl2r_cursor_alloc(VALUE klass)
+{
+    struct SDL2RCursor *cs;
+    VALUE vcursor = TypedData_Make_Struct(klass, struct SDL2RCursor, &sdl2r_cursor_data_type, cs);
+    cs->cursor = 0;
+    return vcursor;
+}
+
+
+static VALUE sdl2r_cursor_get_destroyed(VALUE self)
+{
+    struct SDL2RCursor *cs = SDL2R_GET_STRUCT(Cursor, self);
+    return cs->cursor ? Qfalse : Qtrue;
+}
+
+
+static VALUE sdl2r_free_cursor(VALUE klass, VALUE vcursor)
+{
+    struct SDL2RCursor *cs = SDL2R_GET_CURSOR_STRUCT(vcursor);
+
+    SDL_FreeCursor(cs->cursor);
+    cs->cursor = 0;
+
+    return vcursor;
+}
+
+
+static VALUE sdl2r_create_system_cursor(VALUE klass, VALUE vid)
+{
+    VALUE vcursor = sdl2r_cursor_alloc(cCursor);
+    struct SDL2RCursor *cur = SDL2R_GET_STRUCT(Cursor, vcursor);
+
+    cur->cursor = SDL_CreateSystemCursor(NUM2INT(vid));
+    if (!cur->cursor) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vcursor;
+}
+
+
+static VALUE sdl2r_set_cursor(VALUE klass, VALUE vcursor)
+{
+    struct SDL2RCursor *cur = SDL2R_GET_CURSOR_STRUCT(vcursor);
+
+    SDL_SetCursor(cur->cursor);
+
+    return vcursor;
+}
+
+
+void Init_sdl2r_mouse(void)
+{
+    // SDL module methods
+//    rb_define_singleton_method(mSDL, "capture_mouse", sdl2r_capture_mouse, 0);
+//    rb_define_singleton_method(mSDL, "create_color_cursor", sdl2r_create_color_cursor, 0);
+//    rb_define_singleton_method(mSDL, "create_cursor", sdl2r_create_cursor, 0);
+    rb_define_singleton_method(mSDL, "create_system_cursor", sdl2r_create_system_cursor, 1);
+    rb_define_singleton_method(mSDL, "free_cursor", sdl2r_free_cursor, 1);
+//    rb_define_singleton_method(mSDL, "get_cursor", sdl2r_get_cursor, 0);
+//    rb_define_singleton_method(mSDL, "get_default_cursor", sdl2r_get_default_cursor, 0);
+//    rb_define_singleton_method(mSDL, "get_global_mouse_state", sdl2r_get_global_mouse_state, 0);
+//    rb_define_singleton_method(mSDL, "get_mouse_focus", sdl2r_get_mouse_focus, 0);
+//    rb_define_singleton_method(mSDL, "get_mouse_state", sdl2r_get_mouse_state, 0);
+//    rb_define_singleton_method(mSDL, "get_relative_mouse_mode", sdl2r_get_relative_mouse_mode, 0);
+//    rb_define_singleton_method(mSDL, "get_relative_mouse_state", sdl2r_get_relative_mouse_state, 0);
+    rb_define_singleton_method(mSDL, "set_cursor", sdl2r_set_cursor, 1);
+//    rb_define_singleton_method(mSDL, "set_relative_mouse_mode", sdl2r_set_relative_mouse_mode, 0);
+//    rb_define_singleton_method(mSDL, "show_cursor", sdl2r_show_cursor, 0);
+//    rb_define_singleton_method(mSDL, "warp_mouse_global", sdl2r_warp_mouse_global, 0);
+//    rb_define_singleton_method(mSDL, "warp_mouse_in_window", sdl2r_warp_mouse_in_window, 0);
+
+    // SDL::Cursor class
+    cCursor = rb_define_class_under(mSDL, "Cursor", rb_cObject);
+    rb_define_alloc_func(cCursor, sdl2r_cursor_alloc);
+    rb_define_method(cCursor, "destroyed?", sdl2r_cursor_get_destroyed, 0);
+
+    // Constants
+    rb_define_const(mSDL, "SYSTEM_CURSOR_ARROW", INT2FIX(SDL_SYSTEM_CURSOR_ARROW));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_IBEAM", INT2FIX(SDL_SYSTEM_CURSOR_IBEAM));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_WAIT", INT2FIX(SDL_SYSTEM_CURSOR_WAIT));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_CROSSHAIR", INT2FIX(SDL_SYSTEM_CURSOR_CROSSHAIR));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_WAITARROW", INT2FIX(SDL_SYSTEM_CURSOR_WAITARROW));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_SIZENWSE", INT2FIX(SDL_SYSTEM_CURSOR_SIZENWSE));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_SIZENESW", INT2FIX(SDL_SYSTEM_CURSOR_SIZENESW));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_SIZEWE", INT2FIX(SDL_SYSTEM_CURSOR_SIZEWE));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_SIZENS", INT2FIX(SDL_SYSTEM_CURSOR_SIZENS));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_SIZEALL", INT2FIX(SDL_SYSTEM_CURSOR_SIZEALL));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_NO", INT2FIX(SDL_SYSTEM_CURSOR_NO));
+    rb_define_const(mSDL, "SYSTEM_CURSOR_HAND", INT2FIX(SDL_SYSTEM_CURSOR_HAND));
+
+}
