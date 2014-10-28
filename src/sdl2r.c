@@ -21,7 +21,6 @@
 VALUE mSDL;
 VALUE eSDLError;
 VALUE eSDL2RError;
-VALUE cPoint;
 VALUE cColor;
 
 // encoding
