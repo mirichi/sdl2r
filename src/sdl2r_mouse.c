@@ -60,7 +60,7 @@ static VALUE sdl2r_create_system_cursor(VALUE klass, VALUE vid)
     VALUE vcursor = sdl2r_cursor_alloc(cCursor);
     struct SDL2RCursor *cur = SDL2R_GET_STRUCT(Cursor, vcursor);
 
-    cur->cursor = SDL_CreateSystemCursor(NUM2INT(vid));
+    SDL2R_RETRY(cur->cursor = SDL_CreateSystemCursor(NUM2INT(vid)));
     if (!cur->cursor) {
         rb_raise(eSDLError, SDL_GetError());
     }
