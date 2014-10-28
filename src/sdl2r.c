@@ -16,12 +16,12 @@
 #include "sdl2r_clipboard.h"
 #include "sdl2r_opengl.h"
 #include "sdl2r_mouse.h"
+#include "sdl2r_rect.h"
 
 VALUE mSDL;
 VALUE eSDLError;
 VALUE eSDL2RError;
 VALUE cPoint;
-VALUE cRect;
 VALUE cColor;
 
 // encoding
@@ -268,12 +268,6 @@ void Init_sdl2r(void)
     g_enc_utf8 = rb_enc_find("UTF-8");
     g_enc_utf16 = rb_enc_find("UTF-16LE");
 
-    // SDL::Point class
-    cPoint = rb_define_class_under(mSDL, "Point", rb_cArray);
-
-    // SDL::Rect class
-    cRect = rb_define_class_under(mSDL, "Rect", rb_cArray);
-
     // SDL::Color class
     cColor = rb_define_class_under(mSDL, "Color", rb_cArray);
 
@@ -294,6 +288,7 @@ void Init_sdl2r(void)
     Init_sdl2r_clipboard();
     Init_sdl2r_opengl();
     Init_sdl2r_mouse();
+    Init_sdl2r_rect();
 }
 
 
