@@ -17,6 +17,7 @@
 #include "sdl2r_opengl.h"
 #include "sdl2r_mouse.h"
 #include "sdl2r_rect.h"
+#include "sdl2r_version.h"
 
 VALUE mSDL;
 VALUE eSDLError;
@@ -288,6 +289,7 @@ void Init_sdl2r(void)
     Init_sdl2r_opengl();
     Init_sdl2r_mouse();
     Init_sdl2r_rect();
+    Init_sdl2r_version();
 }
 
 
