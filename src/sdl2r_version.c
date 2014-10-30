@@ -70,7 +70,7 @@ void Init_sdl2r_version(void)
     rb_define_const(mSDL, "Version", cVersion);
 
     // Constants
-    rb_define_const(mSDL, "COMPILEDVERSION", INT2FIX(SDL_COMPILEDVERSION));
+    SDL2R_DEFINE_CONST(mSDL, COMPILEDVERSION);
     rb_define_const(mSDL, "REVISION", rb_enc_str_new(SDL_REVISION, strlen(SDL_REVISION), g_enc_utf8));
     rb_define_const(mSDL, "VERSION", sdl2r_macro_VERSION(mSDL));
 

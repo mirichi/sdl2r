@@ -15,3 +15,4 @@ extern VALUE cColor;
 #define SDL2R_RETRY(test) {SDL_bool retry_flag = SDL_FALSE;do {\
                             if (!(test) && !retry_flag) {rb_gc_start();retry_flag = SDL_TRUE;}else{retry_flag = SDL_FALSE;}\
 }                          while(retry_flag);}
+#define SDL2R_DEFINE_CONST(c, t) rb_define_const(c, #t, INT2NUM(SDL_##t))
