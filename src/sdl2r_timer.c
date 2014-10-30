@@ -5,7 +5,8 @@
 
 VALUE sdl2r_delay(VALUE klass, VALUE vms)
 {
-    Sleep(NUM2INT(vms));
+//    Sleep(NUM2INT(vms));
+    rb_thread_wait_for(rb_time_interval(rb_float_new(NUM2DBL(vms)/1000.0)));
     return Qnil;
 }
 
