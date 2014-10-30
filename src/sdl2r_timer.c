@@ -5,7 +5,7 @@
 
 VALUE sdl2r_delay(VALUE klass, VALUE vms)
 {
-    SDL_Delay(NUM2INT(vms));
+    Sleep(NUM2INT(vms));
     return Qnil;
 }
 
