@@ -102,12 +102,7 @@ static VALUE sdl2r_set_window_title(VALUE klass, VALUE vwindow, VALUE vstr)
 {
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
 
-    Check_Type(vstr, T_STRING);
-
-    if (rb_enc_get_index(vstr) != 0) {
-        vstr = rb_str_export_to_enc(vstr, g_enc_utf8);
-    }
-    SDL_SetWindowTitle(win->window, RSTRING_PTR(vstr));
+    SDL_SetWindowTitle(win->window, SDL2R_TO_UTF8_PTR(vstr));
 
     return vstr;
 }

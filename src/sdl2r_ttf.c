@@ -67,12 +67,7 @@ static VALUE sdl2r_ttf_open_font(VALUE klass, VALUE vfilename, VALUE vsize)
     VALUE vfont = sdl2r_font_alloc(cFont);
     struct SDL2RFont *fnt = SDL2R_GET_STRUCT(Font, vfont);
 
-    Check_Type(vfilename, T_STRING);
-    if (rb_enc_get_index(vfilename) != 0) {
-        vfilename = rb_str_export_to_enc(vfilename, g_enc_utf8);
-    }
-
-    SDL2R_RETRY(fnt->font = TTF_OpenFont(RSTRING_PTR(vfilename), NUM2INT(vsize)));
+    SDL2R_RETRY(fnt->font = TTF_OpenFont(SDL2R_TO_UTF8_PTR(vfilename), NUM2INT(vsize)));
     if (!fnt->font) {
         rb_raise(eSDLError, TTF_GetError());
     }
@@ -86,12 +81,7 @@ static VALUE sdl2r_ttf_open_font_index(VALUE klass, VALUE vfilename, VALUE vsize
     VALUE vfont = sdl2r_font_alloc(cFont);
     struct SDL2RFont *fnt = SDL2R_GET_STRUCT(Font, vfont);
 
-    Check_Type(vfilename, T_STRING);
-    if (rb_enc_get_index(vfilename) != 0) {
-        vfilename = rb_str_export_to_enc(vfilename, g_enc_utf8);
-    }
-
-    SDL2R_RETRY(fnt->font = TTF_OpenFontIndex(RSTRING_PTR(vfilename), NUM2INT(vsize), NUM2INT(vindex)));
+    SDL2R_RETRY(fnt->font = TTF_OpenFontIndex(SDL2R_TO_UTF8_PTR(vfilename), NUM2INT(vsize), NUM2INT(vindex)));
     if (!fnt->font) {
         rb_raise(eSDLError, TTF_GetError());
     }
@@ -118,13 +108,8 @@ static VALUE sdl2r_ttf_render_solid(VALUE klass, VALUE vfont, VALUE vtext, VALUE
     VALUE vsurface = sdl2r_surface_alloc(cSurface);
     struct SDL2RSurface *sur = SDL2R_GET_STRUCT(Surface, vsurface);
 
-    Check_Type(vtext, T_STRING);
-    if (rb_enc_get_index(vtext) != 0) {
-        vtext = rb_str_export_to_enc(vtext, g_enc_utf8);
-    }
-
     SDL2R_SET_COLOR(col, vcolor);
-    SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Solid(fnt->font, RSTRING_PTR(vtext), col));
+    SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Solid(fnt->font, SDL2R_TO_UTF8_PTR(vtext), col));
     if (!sur->surface) {
         rb_raise(eSDLError, TTF_GetError());
     }
@@ -140,14 +125,9 @@ static VALUE sdl2r_ttf_render_shaded(VALUE klass, VALUE vfont, VALUE vtext, VALU
     VALUE vsurface = sdl2r_surface_alloc(cSurface);
     struct SDL2RSurface *sur = SDL2R_GET_STRUCT(Surface, vsurface);
 
-    Check_Type(vtext, T_STRING);
-    if (rb_enc_get_index(vtext) != 0) {
-        vtext = rb_str_export_to_enc(vtext, g_enc_utf8);
-    }
-
     SDL2R_SET_COLOR(fgcol, vfgcolor);
     SDL2R_SET_COLOR(bgcol, vbgcolor);
-    SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Shaded(fnt->font, RSTRING_PTR(vtext), fgcol, bgcol));
+    SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Shaded(fnt->font, SDL2R_TO_UTF8_PTR(vtext), fgcol, bgcol));
     if (!sur->surface) {
         rb_raise(eSDLError, TTF_GetError());
     }
@@ -163,13 +143,8 @@ static VALUE sdl2r_ttf_render_blended(VALUE klass, VALUE vfont, VALUE vtext, VAL
     VALUE vsurface = sdl2r_surface_alloc(cSurface);
     struct SDL2RSurface *sur = SDL2R_GET_STRUCT(Surface, vsurface);
 
-    Check_Type(vtext, T_STRING);
-    if (rb_enc_get_index(vtext) != 0) {
-        vtext = rb_str_export_to_enc(vtext, g_enc_utf8);
-    }
-
     SDL2R_SET_COLOR(col, vcolor);
-    SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Blended(fnt->font, RSTRING_PTR(vtext), col));
+    SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Blended(fnt->font, SDL2R_TO_UTF8_PTR(vtext), col));
     if (!sur->surface) {
         rb_raise(eSDLError, TTF_GetError());
     }
@@ -338,12 +313,8 @@ static VALUE sdl2r_ttf_glyph_is_provided(VALUE klass, VALUE vfont, VALUE vstr)
 {
     struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(vfont);
     int result;
-    Check_Type(vstr, T_STRING);
 
-    if (rb_enc_get_index(vstr) != 0) {
-        vstr = rb_str_export_to_enc(vstr, g_enc_utf16);
-    }
-    result = TTF_GlyphIsProvided(fnt->font, *(Uint16*)RSTRING_PTR(vstr));
+    result = TTF_GlyphIsProvided(fnt->font, *(Uint16*)SDL2R_TO_UTF16_PTR(vstr));
 
     return INT2NUM(result);
 }
@@ -356,10 +327,7 @@ static VALUE sdl2r_ttf_glyph_metrics(VALUE klass, VALUE vfont, VALUE vstr)
     int minx, maxx, miny, maxy, advance;
     Check_Type(vstr, T_STRING);
 
-    if (rb_enc_get_index(vstr) != 0) {
-        vstr = rb_str_export_to_enc(vstr, g_enc_utf16);
-    }
-    result = TTF_GlyphMetrics(fnt->font, *(Uint16*)RSTRING_PTR(vstr)
+    result = TTF_GlyphMetrics(fnt->font, *(Uint16*)SDL2R_TO_UTF16_PTR(vstr)
                             , &minx, &maxx, &miny, &maxy, &advance);
     if (result == -1) {
         rb_raise(eSDLError, TTF_GetError());
@@ -374,12 +342,8 @@ static VALUE sdl2r_ttf_size(VALUE klass, VALUE vfont, VALUE vstr)
     struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(vfont);
     int result;
     int w, h;
-    Check_Type(vstr, T_STRING);
 
-    if (rb_enc_get_index(vstr) != 0) {
-        vstr = rb_str_export_to_enc(vstr, g_enc_utf8);
-    }
-    result = TTF_SizeUTF8(fnt->font, RSTRING_PTR(vstr), &w, &h);
+    result = TTF_SizeUTF8(fnt->font, SDL2R_TO_UTF8_PTR(vstr), &w, &h);
     if (result == -1) {
         rb_raise(eSDLError, TTF_GetError());
     }

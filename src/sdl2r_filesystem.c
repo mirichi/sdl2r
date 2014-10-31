@@ -19,14 +19,7 @@ static VALUE sdl2r_get_pref_path(VALUE klass, VALUE vorg, VALUE vapp)
 {
     char *result;
 
-    if (rb_enc_get_index(vorg) != 0) {
-        vorg = rb_str_export_to_enc(vorg, g_enc_utf8);
-    }
-    if (rb_enc_get_index(vapp) != 0) {
-        vapp = rb_str_export_to_enc(vapp, g_enc_utf8);
-    }
-
-    result = SDL_GetPrefPath(RSTRING_PTR(vorg), RSTRING_PTR(vapp));
+    result = SDL_GetPrefPath(SDL2R_TO_UTF8_PTR(vorg), SDL2R_TO_UTF8_PTR(vapp));
     if (!result) {
         rb_raise(eSDLError, SDL_GetError());
     }

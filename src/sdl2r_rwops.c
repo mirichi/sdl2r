@@ -58,16 +58,7 @@ static VALUE sdl2r_rw_from_file(VALUE klass, VALUE vfilename, VALUE vmode)
     VALUE vrwops = sdl2r_rwops_alloc(cRWops);
     struct SDL2RRWops *rw = SDL2R_GET_STRUCT(RWops, vrwops);
 
-    Check_Type(vfilename, T_STRING);
-    if (rb_enc_get_index(vfilename) != 0) {
-        vfilename = rb_str_export_to_enc(vfilename, g_enc_utf8);
-    }
-    Check_Type(vmode, T_STRING);
-    if (rb_enc_get_index(vmode) != 0) {
-        vmode = rb_str_export_to_enc(vmode, g_enc_utf8);
-    }
-
-    rw->rwops = SDL_RWFromFile(RSTRING_PTR(vfilename), RSTRING_PTR(vmode));
+    rw->rwops = SDL_RWFromFile(SDL2R_TO_UTF8_PTR(vfilename), SDL2R_TO_UTF8_PTR(vmode));
     if (!rw->rwops) {
         rb_raise(eSDLError, SDL_GetError());
     }

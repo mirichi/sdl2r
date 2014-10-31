@@ -31,4 +31,6 @@ extern VALUE cColor;
             color.b = NUM2INT(rb_ary_entry(vcolor, 2));\
             color.a = NUM2INT(rb_ary_entry(vcolor, 3));\
         }
+#define SDL2R_TO_UTF8_PTR(vstr) RSTRING_PTR(rb_str_export_to_enc(vstr, g_enc_utf8))
+#define SDL2R_TO_UTF16_PTR(vstr) RSTRING_PTR(rb_str_export_to_enc(vstr, g_enc_utf16))
 

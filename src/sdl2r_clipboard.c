@@ -28,12 +28,7 @@ VALUE sdl2r_has_clipboard_text(VALUE klass)
 
 VALUE sdl2r_set_clipboard_text(VALUE klass, VALUE vstr)
 {
-    Check_Type(vstr, T_STRING);
-    if (rb_enc_get_index(vstr) != 0) {
-        vstr = rb_str_export_to_enc(vstr, g_enc_utf8);
-    }
-
-    if (SDL_SetClipboardText(RSTRING_PTR(vstr))) {
+    if (SDL_SetClipboardText(SDL2R_TO_UTF8_PTR(vstr))) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
