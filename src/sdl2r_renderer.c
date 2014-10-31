@@ -95,19 +95,11 @@ static VALUE sdl2r_render_copy(VALUE klass, VALUE vrenderer, VALUE vtexture, VAL
     SDL_Rect *psr=0, *pdr=0;
 
     if (vsrcrect != Qnil) {
-        Check_Type(vsrcrect, T_ARRAY);
-        srcrect.x = NUM2INT(rb_ary_entry(vsrcrect, 0));
-        srcrect.y = NUM2INT(rb_ary_entry(vsrcrect, 1));
-        srcrect.w = NUM2INT(rb_ary_entry(vsrcrect, 2));
-        srcrect.h = NUM2INT(rb_ary_entry(vsrcrect, 3));
+        SDL2R_SET_RECT(srcrect, vsrcrect);
         psr = &srcrect;
     }
     if (vdstrect != Qnil) {
-        Check_Type(vdstrect, T_ARRAY);
-        dstrect.x = NUM2INT(rb_ary_entry(vdstrect, 0));
-        dstrect.y = NUM2INT(rb_ary_entry(vdstrect, 1));
-        dstrect.w = NUM2INT(rb_ary_entry(vdstrect, 2));
-        dstrect.h = NUM2INT(rb_ary_entry(vdstrect, 3));
+        SDL2R_SET_RECT(dstrect, vdstrect);
         pdr = &dstrect;
     }
 
@@ -294,11 +286,7 @@ static VALUE sdl2r_render_fill_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
     SDL_Rect *pr=0;
 
     if (vrect != Qnil) {
-        Check_Type(vrect, T_ARRAY);
-        rect.x = NUM2INT(rb_ary_entry(vrect, 0));
-        rect.y = NUM2INT(rb_ary_entry(vrect, 1));
-        rect.w = NUM2INT(rb_ary_entry(vrect, 2));
-        rect.h = NUM2INT(rb_ary_entry(vrect, 3));
+        SDL2R_SET_RECT(rect, vrect);
         pr = &rect;
     }
 

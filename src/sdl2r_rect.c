@@ -9,17 +9,10 @@ VALUE sdl2r_has_intersection(VALUE klass, VALUE vrecta, VALUE vrectb)
 {
     SDL_Rect a, b;
 
+    SDL2R_SET_RECT(a, vrecta);
     Check_Type(vrecta, T_ARRAY);
-    a.x = NUM2INT(rb_ary_entry(vrecta, 0));
-    a.y = NUM2INT(rb_ary_entry(vrecta, 1));
-    a.w = NUM2INT(rb_ary_entry(vrecta, 2));
-    a.h = NUM2INT(rb_ary_entry(vrecta, 3));
 
-    Check_Type(vrectb, T_ARRAY);
-    b.x = NUM2INT(rb_ary_entry(vrectb, 0));
-    b.y = NUM2INT(rb_ary_entry(vrectb, 1));
-    b.w = NUM2INT(rb_ary_entry(vrectb, 2));
-    b.h = NUM2INT(rb_ary_entry(vrectb, 3));
+    SDL2R_SET_RECT(b, vrectb);
 
     return SDL_HasIntersection(&a, &b) ? Qtrue : Qfalse;
 }

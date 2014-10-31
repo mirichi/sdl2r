@@ -123,12 +123,7 @@ static VALUE sdl2r_ttf_render_solid(VALUE klass, VALUE vfont, VALUE vtext, VALUE
         vtext = rb_str_export_to_enc(vtext, g_enc_utf8);
     }
 
-    Check_Type(vcolor, T_ARRAY);
-    col.r = NUM2INT(rb_ary_entry(vcolor, 0));
-    col.g = NUM2INT(rb_ary_entry(vcolor, 1));
-    col.b = NUM2INT(rb_ary_entry(vcolor, 2));
-    col.a = NUM2INT(rb_ary_entry(vcolor, 3));
-
+    SDL2R_SET_COLOR(col, vcolor);
     SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Solid(fnt->font, RSTRING_PTR(vtext), col));
     if (!sur->surface) {
         rb_raise(eSDLError, TTF_GetError());
@@ -150,18 +145,8 @@ static VALUE sdl2r_ttf_render_shaded(VALUE klass, VALUE vfont, VALUE vtext, VALU
         vtext = rb_str_export_to_enc(vtext, g_enc_utf8);
     }
 
-    Check_Type(vfgcolor, T_ARRAY);
-    fgcol.r = NUM2INT(rb_ary_entry(vfgcolor, 0));
-    fgcol.g = NUM2INT(rb_ary_entry(vfgcolor, 1));
-    fgcol.b = NUM2INT(rb_ary_entry(vfgcolor, 2));
-    fgcol.a = NUM2INT(rb_ary_entry(vfgcolor, 3));
-
-    Check_Type(vbgcolor, T_ARRAY);
-    bgcol.r = NUM2INT(rb_ary_entry(vbgcolor, 0));
-    bgcol.g = NUM2INT(rb_ary_entry(vbgcolor, 1));
-    bgcol.b = NUM2INT(rb_ary_entry(vbgcolor, 2));
-    bgcol.a = NUM2INT(rb_ary_entry(vbgcolor, 3));
-
+    SDL2R_SET_COLOR(fgcol, vfgcolor);
+    SDL2R_SET_COLOR(bgcol, vbgcolor);
     SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Shaded(fnt->font, RSTRING_PTR(vtext), fgcol, bgcol));
     if (!sur->surface) {
         rb_raise(eSDLError, TTF_GetError());
@@ -183,12 +168,7 @@ static VALUE sdl2r_ttf_render_blended(VALUE klass, VALUE vfont, VALUE vtext, VAL
         vtext = rb_str_export_to_enc(vtext, g_enc_utf8);
     }
 
-    Check_Type(vcolor, T_ARRAY);
-    col.r = NUM2INT(rb_ary_entry(vcolor, 0));
-    col.g = NUM2INT(rb_ary_entry(vcolor, 1));
-    col.b = NUM2INT(rb_ary_entry(vcolor, 2));
-    col.a = NUM2INT(rb_ary_entry(vcolor, 3));
-
+    SDL2R_SET_COLOR(col, vcolor);
     SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Blended(fnt->font, RSTRING_PTR(vtext), col));
     if (!sur->surface) {
         rb_raise(eSDLError, TTF_GetError());
