@@ -9,7 +9,9 @@ VALUE sdl2r_get_clipboard_text(VALUE klass)
     VALUE vresult;
 
     result = SDL_GetClipboardText();
-    SDL2R_CHECK_RESULT(result);
+    if (!result) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
 
     vresult = SDL2R_TO_UTF8_STRING(result);
     SDL_free(result);
@@ -28,7 +30,10 @@ VALUE sdl2r_has_clipboard_text(VALUE klass)
 VALUE sdl2r_set_clipboard_text(VALUE klass, VALUE vstr)
 {
     int result = SDL_SetClipboardText(SDL2R_TO_UTF8_PTR(vstr));
-    SDL2R_CHECK_RESULT(result == 0);
+
+    if (result) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
     return vstr;
 }
 
