@@ -14,13 +14,14 @@ static VALUE cJoyButtonEvent;
 static VALUE cJoyDeviceEvent;
 static VALUE cJoyHatEvent;
 static VALUE cWindowEvent;
-static VALUE cUserEvent;
+static VALUE cDropEvent;
 static VALUE cAppTerminating;
 static VALUE cAppLowMemory;
 static VALUE cAppWillEnterBackground;
 static VALUE cAppDidEnterBackground;
 static VALUE cAppWillEnterForeground;
 static VALUE cAppDidEnterForeground;
+static VALUE cUserEvent;
 
 static Sint32 g_user_event_id = 0;
 static VALUE g_user_event_data = Qnil;
@@ -165,6 +166,15 @@ static VALUE sdl2r_poll_event(VALUE klass)
                 ary[4] = INT2NUM(event.window.data1);
                 ary[5] = INT2NUM(event.window.data2);
                 return rb_class_new_instance(6, ary, cWindowEvent);
+            }
+            break;
+        case SDL_DROPFILE:
+            {
+                VALUE ary[3];
+                ary[0] = INT2NUM(event.drop.type);
+                ary[1] = INT2NUM(event.drop.timestamp);
+                ary[2] = SDL2R_TO_UTF8_STRING(event.drop.file);
+                return rb_class_new_instance(3, ary, cDropEvent);
             }
             break;
         case SDL_APP_TERMINATING:
@@ -326,6 +336,9 @@ void Init_sdl2r_event(void)
 
     cWindowEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "event", "data1", "data2", NULL);
     rb_define_const(mSDL, "WindowEvent", cWindowEvent);
+
+    cDropEvent = rb_struct_define(NULL, "type", "timestamp", "file", NULL);
+    rb_define_const(mSDL, "DropEvent", cDropEvent);
 
     cAppTerminating = rb_struct_define(NULL, "type", NULL);
     rb_define_const(mSDL, "AppTerminating", cAppTerminating);
