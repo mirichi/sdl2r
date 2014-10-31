@@ -152,6 +152,7 @@ static VALUE sdl2r_poll_event(VALUE klass)
 static VALUE sdl2r_push_event(VALUE klass, VALUE vevent)
 {
     SDL_Event ev;
+    int result;
 
     if (NUM2UINT(rb_struct_aref(vevent, INT2FIX(0))) < SDL_USEREVENT) {
         rb_raise(eSDL2RError, "not userevent");
@@ -167,11 +168,12 @@ static VALUE sdl2r_push_event(VALUE klass, VALUE vevent)
     rb_hash_aset(g_user_event_data, INT2NUM(g_user_event_id), vevent);
     g_user_event_id++;
 
-    if (SDL_PushEvent(&ev) < 0) {
+    result = SDL_PushEvent(&ev);
+    if (result < 0) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
-    return Qnil;
+    return INT2NUM(result);
 }
 
 
