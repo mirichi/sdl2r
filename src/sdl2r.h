@@ -16,7 +16,7 @@ extern VALUE cColor;
                             if (!(test) && !retry_flag) {rb_gc_start();retry_flag = SDL_TRUE;}else{retry_flag = SDL_FALSE;}\
 }                          while(retry_flag);}
 #define SDL2R_DEFINE_CONST(c, t) rb_define_const(c, #t, INT2NUM(SDL_##t))
-
+#define SDL2R_DEFINE_SINGLETON_METHOD(c, name, arity) rb_define_singleton_method(c, #name, sdl2r_##name, arity)
 #define SDL2R_SET_RECT(rect, vrect) {\
             Check_Type(vrect, T_ARRAY);\
             rect.x = NUM2INT(rb_ary_entry(vrect, 0));\
@@ -34,4 +34,6 @@ extern VALUE cColor;
 #define SDL2R_TO_UTF8_PTR(vstr) RSTRING_PTR(rb_str_export_to_enc(vstr, g_enc_utf8))
 #define SDL2R_TO_UTF16_PTR(vstr) RSTRING_PTR(rb_str_export_to_enc(vstr, g_enc_utf16))
 #define SDL2R_TO_UTF8_STRING(str) rb_enc_str_new(str, strlen(str), g_enc_utf8)
+#define SDL2R_CHECK_RESULT(check) {if(!(check))rb_raise(eSDLError, SDL_GetError());}
+#define SDL2R_TO_BOOL(b) ((b) ? Qtrue : Qfalse)
 
