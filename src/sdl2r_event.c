@@ -7,12 +7,20 @@ static VALUE cKeysym;
 static VALUE cQuitEvent;
 static VALUE cMouseMotionEvent;
 static VALUE cMouseButtonEvent;
+static VALUE cMouseWheelEvent;
 static VALUE cJoyAxisEvent;
 static VALUE cJoyBallEvent;
 static VALUE cJoyButtonEvent;
 static VALUE cJoyDeviceEvent;
 static VALUE cJoyHatEvent;
+static VALUE cWindowEvent;
 static VALUE cUserEvent;
+static VALUE cAppTerminating;
+static VALUE cAppLowMemory;
+static VALUE cAppWillEnterBackground;
+static VALUE cAppDidEnterBackground;
+static VALUE cAppWillEnterForeground;
+static VALUE cAppDidEnterForeground;
 
 static Sint32 g_user_event_id = 0;
 static VALUE g_user_event_data = Qnil;
@@ -79,6 +87,18 @@ static VALUE sdl2r_poll_event(VALUE klass)
                 return rb_class_new_instance(9, ary, cMouseButtonEvent);
             }
             break;
+        case SDL_MOUSEWHEEL:
+            {
+                VALUE ary[6];
+                ary[0] = INT2NUM(event.wheel.type);
+                ary[1] = INT2NUM(event.wheel.timestamp);
+                ary[2] = INT2NUM(event.wheel.windowID);
+                ary[3] = INT2NUM(event.wheel.which);
+                ary[4] = INT2NUM(event.wheel.x);
+                ary[5] = INT2NUM(event.wheel.y);
+                return rb_class_new_instance(6, ary, cMouseWheelEvent);
+            }
+            break;
         case SDL_JOYAXISMOTION:
             {
                 VALUE ary[5];
@@ -133,6 +153,60 @@ static VALUE sdl2r_poll_event(VALUE klass)
                 ary[3] = INT2NUM(event.jhat.hat);
                 ary[4] = INT2NUM(event.jhat.value);
                 return rb_class_new_instance(5, ary, cJoyHatEvent);
+            }
+            break;
+        case SDL_WINDOWEVENT:
+            {
+                VALUE ary[6];
+                ary[0] = INT2NUM(event.window.type);
+                ary[1] = INT2NUM(event.window.timestamp);
+                ary[2] = INT2NUM(event.window.windowID);
+                ary[3] = INT2NUM(event.window.event);
+                ary[4] = INT2NUM(event.window.data1);
+                ary[5] = INT2NUM(event.window.data2);
+                return rb_class_new_instance(6, ary, cWindowEvent);
+            }
+            break;
+        case SDL_APP_TERMINATING:
+            {
+                VALUE ary[1];
+                ary[0] = INT2NUM(event.type);
+                return rb_class_new_instance(1, ary, cAppTerminating);
+            }
+            break;
+        case SDL_APP_LOWMEMORY:
+            {
+                VALUE ary[1];
+                ary[0] = INT2NUM(event.type);
+                return rb_class_new_instance(1, ary, cAppLowMemory);
+            }
+            break;
+        case SDL_APP_WILLENTERBACKGROUND:
+            {
+                VALUE ary[1];
+                ary[0] = INT2NUM(event.type);
+                return rb_class_new_instance(1, ary, cAppWillEnterBackground);
+            }
+            break;
+        case SDL_APP_DIDENTERBACKGROUND:
+            {
+                VALUE ary[1];
+                ary[0] = INT2NUM(event.type);
+                return rb_class_new_instance(1, ary, cAppDidEnterBackground);
+            }
+            break;
+        case SDL_APP_WILLENTERFOREGROUND:
+            {
+                VALUE ary[1];
+                ary[0] = INT2NUM(event.type);
+                return rb_class_new_instance(1, ary, cAppWillEnterForeground);
+            }
+            break;
+        case SDL_APP_DIDENTERFOREGROUND:
+            {
+                VALUE ary[1];
+                ary[0] = INT2NUM(event.type);
+                return rb_class_new_instance(1, ary, cAppDidEnterForeground);
             }
             break;
         default:
@@ -222,6 +296,9 @@ void Init_sdl2r_event(void)
     cMouseButtonEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "which", "button", "state", "clicks", "x", "y", NULL);
     rb_define_const(mSDL, "MouseButtonEvent", cMouseButtonEvent);
 
+    cMouseWheelEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "which", "x", "y", NULL);
+    rb_define_const(mSDL, "MouseWheelEvent", cMouseWheelEvent);
+
     cJoyAxisEvent = rb_struct_define(NULL, "type", "timestamp", "which", "axis", "value", NULL);
     rb_define_const(mSDL, "JoyAxisEvent", cJoyAxisEvent);
 
@@ -236,6 +313,27 @@ void Init_sdl2r_event(void)
 
     cJoyHatEvent = rb_struct_define(NULL, "type", "timestamp", "which", "hat", "value", NULL);
     rb_define_const(mSDL, "JoyHatEvent", cJoyHatEvent);
+
+    cWindowEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "event", "data1", "data2", NULL);
+    rb_define_const(mSDL, "WindowEvent", cWindowEvent);
+
+    cAppTerminating = rb_struct_define(NULL, "type", NULL);
+    rb_define_const(mSDL, "AppTerminating", cAppTerminating);
+
+    cAppLowMemory = rb_struct_define(NULL, "type", NULL);
+    rb_define_const(mSDL, "AppLowMemory", cAppLowMemory);
+
+    cAppWillEnterBackground = rb_struct_define(NULL, "type", NULL);
+    rb_define_const(mSDL, "AppWillEnterBackground", cAppWillEnterBackground);
+
+    cAppDidEnterBackground = rb_struct_define(NULL, "type", NULL);
+    rb_define_const(mSDL, "AppDidEnterBackground", cAppDidEnterBackground);
+
+    cAppWillEnterForeground = rb_struct_define(NULL, "type", NULL);
+    rb_define_const(mSDL, "AppWillEnterForeground", cAppWillEnterForeground);
+
+    cAppDidEnterForeground = rb_struct_define(NULL, "type", NULL);
+    rb_define_const(mSDL, "AppDidEnterForeground", cAppDidEnterForeground);
 
     cUserEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "code", "data1", "data2", NULL);
     rb_define_const(mSDL, "UserEvent", cUserEvent);
@@ -300,6 +398,7 @@ void Init_sdl2r_event(void)
     SDL2R_DEFINE_CONST(mSDL, CLIPBOARDUPDATE);
     SDL2R_DEFINE_CONST(mSDL, DROPFILE);
     SDL2R_DEFINE_CONST(mSDL, RENDER_TARGETS_RESET);
+//    SDL2R_DEFINE_CONST(mSDL, SDL_RENDER_DEVICE_RESET);
     SDL2R_DEFINE_CONST(mSDL, USEREVENT);
     SDL2R_DEFINE_CONST(mSDL, LASTEVENT);
 
@@ -313,6 +412,22 @@ void Init_sdl2r_event(void)
     SDL2R_DEFINE_CONST(mSDL, BUTTON_RMASK);
     SDL2R_DEFINE_CONST(mSDL, BUTTON_X1MASK);
     SDL2R_DEFINE_CONST(mSDL, BUTTON_X2MASK);
+
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_NONE);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_SHOWN);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_HIDDEN);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_EXPOSED);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_MOVED);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_RESIZED);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_SIZE_CHANGED);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_MINIMIZED);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_MAXIMIZED);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_RESTORED);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_ENTER);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_LEAVE);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_FOCUS_GAINED);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_FOCUS_LOST);
+    SDL2R_DEFINE_CONST(mSDL, WINDOWEVENT_CLOSE);
 }
 
 
