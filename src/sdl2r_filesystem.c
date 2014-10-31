@@ -11,7 +11,7 @@ static VALUE sdl2r_get_base_path(VALUE klass)
         rb_raise(eSDLError, SDL_GetError());
     }
 
-    return rb_enc_str_new(result, strlen(result), g_enc_utf8);
+    return SDL2R_TO_UTF8_STRING(result);
 }
 
 
@@ -24,7 +24,7 @@ static VALUE sdl2r_get_pref_path(VALUE klass, VALUE vorg, VALUE vapp)
         rb_raise(eSDLError, SDL_GetError());
     }
 
-    return rb_enc_str_new(result, strlen(result), g_enc_utf8);
+    return SDL2R_TO_UTF8_STRING(result);
 }
 
 

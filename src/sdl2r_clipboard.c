@@ -13,7 +13,7 @@ VALUE sdl2r_get_clipboard_text(VALUE klass)
         rb_raise(eSDLError, SDL_GetError());
     }
 
-    vresult = rb_enc_str_new(result, strlen(result), g_enc_utf8);
+    vresult = SDL2R_TO_UTF8_STRING(result);
     SDL_free(result);
 
     return vresult;

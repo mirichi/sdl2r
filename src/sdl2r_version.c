@@ -8,7 +8,7 @@ VALUE cVersion;
 VALUE sdl2r_get_revision(VALUE klass)
 {
     const char *result = SDL_GetRevision();
-    return rb_enc_str_new(result, strlen(result), g_enc_utf8);
+    return SDL2R_TO_UTF8_STRING(result);
 }
 
 
@@ -71,7 +71,7 @@ void Init_sdl2r_version(void)
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, COMPILEDVERSION);
-    rb_define_const(mSDL, "REVISION", rb_enc_str_new(SDL_REVISION, strlen(SDL_REVISION), g_enc_utf8));
+    rb_define_const(mSDL, "REVISION", SDL2R_TO_UTF8_STRING(SDL_REVISION));
     rb_define_const(mSDL, "VERSION", sdl2r_macro_VERSION(mSDL));
 
     // SDL macro

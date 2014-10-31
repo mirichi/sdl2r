@@ -9,7 +9,7 @@ static VALUE sdl2r_get_key_name(VALUE klass, VALUE vkeycode)
     const char *result;
 
     result = SDL_GetKeyName((SDL_Keycode)NUM2INT(vkeycode));
-    return rb_enc_str_new(result, strlen(result), g_enc_utf8);
+    return SDL2R_TO_UTF8_STRING(result);
 }
 
 
@@ -68,7 +68,7 @@ static VALUE sdl2r_get_scancode_name(VALUE klass, VALUE vscancode)
     const char *result;
 
     result = SDL_GetScancodeName((SDL_Scancode)NUM2INT(vscancode));
-    return rb_enc_str_new(result, strlen(result), g_enc_utf8);
+    return SDL2R_TO_UTF8_STRING(result);
 }
 
 

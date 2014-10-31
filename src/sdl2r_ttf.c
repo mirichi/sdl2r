@@ -295,7 +295,7 @@ static VALUE sdl2r_ttf_font_face_family_name(VALUE klass, VALUE vfont)
     char *result;
 
     result = TTF_FontFaceFamilyName(fnt->font);
-    return rb_enc_str_new(result, strlen(result), g_enc_utf8);
+    return SDL2R_TO_UTF8_STRING(result);
 }
 
 
@@ -305,7 +305,7 @@ static VALUE sdl2r_ttf_font_face_style_name(VALUE klass, VALUE vfont)
     char *result;
 
     result = TTF_FontFaceStyleName(fnt->font);
-    return rb_enc_str_new(result, strlen(result), g_enc_utf8);
+    return SDL2R_TO_UTF8_STRING(result);
 }
 
 
