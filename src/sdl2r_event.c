@@ -264,6 +264,15 @@ static VALUE sdl2r_register_events(VALUE klass, VALUE vnum)
 }
 
 
+static VALUE sdl2r_event_state(VALUE klass, VALUE vtype, VALUE vstate)
+{
+    Uint32 result;
+
+    result = SDL_EventState(NUM2UINT(vtype), NUM2INT(vstate));
+    return UINT2NUM(result);
+}
+
+
 static VALUE sdl2r_BUTTON(VALUE klass, VALUE vx)
 {
     return INT2FIX(SDL_BUTTON(NUM2INT(vx)));
@@ -276,6 +285,7 @@ void Init_sdl2r_event(void)
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, poll_event, 0);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, push_event, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, register_events, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, event_state, 2);
 
     // SDL macro
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, BUTTON, 1);
@@ -354,9 +364,6 @@ void Init_sdl2r_event(void)
     SDL2R_DEFINE_CONST(mSDL, HAT_RIGHTDOWN);
     SDL2R_DEFINE_CONST(mSDL, HAT_LEFTUP);
     SDL2R_DEFINE_CONST(mSDL, HAT_LEFTDOWN);
-    SDL2R_DEFINE_CONST(mSDL, QUERY);
-    SDL2R_DEFINE_CONST(mSDL, IGNORE);
-    SDL2R_DEFINE_CONST(mSDL, ENABLE);
 
     SDL2R_DEFINE_CONST(mSDL, FIRSTEVENT);
     SDL2R_DEFINE_CONST(mSDL, QUIT);
