@@ -188,7 +188,7 @@ static VALUE sdl2r_register_events(VALUE klass, VALUE vnum)
 }
 
 
-static VALUE sdl2r_macro_button(VALUE klass, VALUE vx)
+static VALUE sdl2r_BUTTON(VALUE klass, VALUE vx)
 {
     return INT2FIX(SDL_BUTTON(NUM2INT(vx)));
 }
@@ -197,12 +197,12 @@ static VALUE sdl2r_macro_button(VALUE klass, VALUE vx)
 void Init_sdl2r_event(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "poll_event", sdl2r_poll_event, 0);
-    rb_define_singleton_method(mSDL, "push_event", sdl2r_push_event, 1);
-    rb_define_singleton_method(mSDL, "register_events", sdl2r_register_events, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, poll_event, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, push_event, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, register_events, 1);
 
     // SDL macro
-    rb_define_singleton_method(mSDL, "BUTTON", sdl2r_macro_button, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, BUTTON, 1);
 
     // Event structs
     cKeyboardEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "state", "repeat", "keysym", NULL);
