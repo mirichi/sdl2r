@@ -48,7 +48,7 @@ int sdl2r_get_hash(struct SDL2RHash *h, HASHKEY key)
 }
 
 
-void sdl2r_resize_hash(struct SDL2RHash *h, int new_n_buckets)
+static void sdl2r_resize_hash(struct SDL2RHash *h, int new_n_buckets)
 {
     Uint8 *old_ed_flags = h->ed_flags;
     HASHKEY *old_keys = h->keys;

@@ -31,12 +31,14 @@ static const Uint8 __m_either[] = {0x03, 0x0c, 0x30, 0xc0};
 #define sdl2r_hash_end(h) ((h)->n_buckets)
 
 #define SDL2R_CLEAR_HASH(p, s, v, f) {\
-        int k;\
-        for (k = 0; k < sdl2r_hash_end(p); k++) {\
-            if (sdl2r_hash_exist(p, k)) {\
-                struct SDL2R##s *tmp = SDL2R_GET_STRUCT(s, p->vals[k]);\
-                if (tmp->v) {\
-                    f(tmp);\
+        if (p) {\
+            int k;\
+            for (k = 0; k < sdl2r_hash_end(p); k++) {\
+                if (sdl2r_hash_exist(p, k)) {\
+                    struct SDL2R##s *tmp = SDL2R_GET_STRUCT(s, p->vals[k]);\
+                    if (tmp->v) {\
+                        f(tmp);\
+                    }\
                 }\
             }\
         }\
