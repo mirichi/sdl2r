@@ -23,19 +23,11 @@ const rb_data_type_t sdl2r_renderer_data_type = {
 void sdl2r_dispose_renderer(struct SDL2RRenderer *ren)
 {
     struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, ren->vwindow);
-    int k;
     SDL_DestroyRenderer(ren->renderer);
     ren->renderer = 0;
     ren->vwindow = Qnil;
     win->vrenderer = Qnil;
-    for (k = 0; k < sdl2r_hash_end(ren->th); k++) {
-        if (sdl2r_hash_exist(ren->th, k)) {
-            struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, ren->th->vals[k]);
-            if (tex->texture) {
-                sdl2r_dispose_texture(tex);
-            }
-        }
-    }
+    SDL2R_CLEAR_HASH(ren->th, Texture, texture, sdl2r_dispose_texture);
     sdl2r_destroy_hash(ren->th);
     ren->th = 0;
 }
