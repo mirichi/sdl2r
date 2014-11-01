@@ -96,6 +96,22 @@ static VALUE sdl2r_set_text_input_rect(VALUE klass, VALUE vrect)
 }
 
 
+static VALUE sdl2r_get_mod_state(VALUE klass)
+{
+    SDL_Keymod result;
+
+    result = SDL_GetModState();
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_set_mod_state(VALUE klass, VALUE vkeymod)
+{
+    SDL_SetModState(NUM2INT(vkeymod));
+    return Qnil;
+}
+
+
 void Init_sdl2r_keyboard(void)
 {
     // SDL module methods
@@ -109,6 +125,8 @@ void Init_sdl2r_keyboard(void)
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, start_text_input, 0);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, stop_text_input, 0);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, set_text_input_rect, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_mod_state, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, set_mod_state, 1);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, SCANCODE_UNKNOWN);
@@ -355,7 +373,6 @@ void Init_sdl2r_keyboard(void)
     SDL2R_DEFINE_CONST(mSDL, NUM_SCANCODES);
 
 #define SDL2R_DEFINE_CONST_K(c, t) rb_define_const(c, #t, INT2NUM(SDL##t))
-
     SDL2R_DEFINE_CONST_K(mSDL, K_UNKNOWN);
     SDL2R_DEFINE_CONST_K(mSDL, K_RETURN);
     SDL2R_DEFINE_CONST_K(mSDL, K_ESCAPE);
@@ -592,6 +609,23 @@ void Init_sdl2r_keyboard(void)
     SDL2R_DEFINE_CONST_K(mSDL, K_KBDILLUMUP);
     SDL2R_DEFINE_CONST_K(mSDL, K_EJECT);
     SDL2R_DEFINE_CONST_K(mSDL, K_SLEEP);
+
+#define SDL2R_DEFINE_CONST_N(c, t) rb_define_const(c, #t, INT2NUM(t))
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_NONE);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_LSHIFT);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_RSHIFT);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_LCTRL);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_RCTRL);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_LALT);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_RALT);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_LGUI);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_RGUI);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_NUM);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_CAPS);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_MODE);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_RESERVED);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_CTRL);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_SHIFT);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_ALT);
+    SDL2R_DEFINE_CONST_N(mSDL, KMOD_GUI);
 }
-
-
