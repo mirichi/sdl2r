@@ -46,10 +46,40 @@ VALUE sdl2r_rwops_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_rwops_get_disposed(VALUE self)
+static VALUE sdl2r_rwops_im_dispose(VALUE self)
+{
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(self);
+
+    if (SDL_RWclose(rw->rwops)) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    rw->rwops = 0;
+    rw->vstr = Qnil;
+
+    return self;
+}
+
+
+static VALUE sdl2r_rwops_im_get_disposed(VALUE self)
 {
     struct SDL2RRWops *rw = SDL2R_GET_STRUCT(RWops, self);
     return rw->rwops ? Qfalse : Qtrue;
+}
+
+
+static VALUE sdl2r_rw_close(VALUE klass, VALUE vrwops)
+{
+    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
+
+    if (SDL_RWclose(rw->rwops)) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    rw->rwops = 0;
+    rw->vstr = Qnil;
+
+    return vrwops;
 }
 
 
@@ -77,21 +107,6 @@ static VALUE sdl2r_rw_from_mem(VALUE klass, VALUE vstr, VALUE vsize)
         rb_raise(eSDLError, SDL_GetError());
     }
     rw->vstr = vstr;
-
-    return vrwops;
-}
-
-
-static VALUE sdl2r_rw_close(VALUE klass, VALUE vrwops)
-{
-    struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
-
-    if (SDL_RWclose(rw->rwops)) {
-        rb_raise(eSDLError, SDL_GetError());
-    }
-
-    rw->rwops = 0;
-    rw->vstr = Qnil;
 
     return vrwops;
 }
@@ -310,7 +325,8 @@ void Init_sdl2r_rwops(void)
     cRWops = rb_define_class_under(mSDL, "RWops", rb_cObject);
     rb_define_alloc_func(cRWops, sdl2r_rwops_alloc);
 
-    rb_define_method(cRWops, "disposed?", sdl2r_rwops_get_disposed, 0);
+    rb_define_method(cRWops, "dispose", sdl2r_rwops_im_dispose, 0);
+    rb_define_method(cRWops, "disposed?", sdl2r_rwops_im_get_disposed, 0);
 
     // Constants
     rb_define_const(mSDL, "RW_SEEK_SET", INT2FIX(RW_SEEK_SET));

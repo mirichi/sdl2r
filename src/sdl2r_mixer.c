@@ -48,6 +48,14 @@ VALUE sdl2r_chunk_alloc(VALUE klass)
 }
 
 
+static VALUE sdl2r_chunk_im_dispose(VALUE self)
+{
+    struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(self);
+    Mix_FreeChunk(cnk->chunk);
+    return Qnil;
+}
+
+
 static VALUE sdl2r_chunk_im_get_disposed(VALUE self)
 {
     struct SDL2RChunk *cnk = SDL2R_GET_STRUCT(Chunk, self);
@@ -80,6 +88,14 @@ VALUE sdl2r_music_alloc(VALUE klass)
     VALUE vmusic = TypedData_Make_Struct(klass, struct SDL2RMusic, &sdl2r_music_data_type, mus);
     mus->music = 0;
     return vmusic;
+}
+
+
+static VALUE sdl2r_music_im_dispose(VALUE self)
+{
+    struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(self);
+    Mix_FreeMusic(mus->music);
+    return Qnil;
 }
 
 
@@ -210,12 +226,14 @@ void Init_sdl2r_mixer(void)
     cChunk = rb_define_class_under(mMixer, "Chunk", rb_cObject);
     rb_define_alloc_func(cChunk, sdl2r_chunk_alloc);
 
+    rb_define_method(cChunk, "dispose", sdl2r_chunk_im_dispose, 0);
     rb_define_method(cChunk, "disposed?", sdl2r_chunk_im_get_disposed, 0);
 
     // SDL::Mix::Music class
     cMusic = rb_define_class_under(mMixer, "Music", rb_cObject);
     rb_define_alloc_func(cMusic, sdl2r_music_alloc);
 
+    rb_define_method(cMusic, "dispose", sdl2r_music_im_dispose, 0);
     rb_define_method(cMusic, "disposed?", sdl2r_music_im_get_disposed, 0);
 
     // Constants

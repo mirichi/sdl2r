@@ -71,10 +71,38 @@ VALUE sdl2r_surface_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_surface_get_disposed(VALUE self)
+static VALUE sdl2r_surface_im_dispose(VALUE self)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
+
+    if (sur->vwindow != Qnil) {
+        rb_raise(eSDL2RError, "WindowSurface don't free");
+    }
+    SDL_FreeSurface(sur->surface);
+    sur->surface = 0;
+
+    return self;
+}
+
+
+static VALUE sdl2r_surface_im_get_disposed(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_STRUCT(Surface, self);
     return sur->surface ? Qfalse : Qtrue;
+}
+
+
+static VALUE sdl2r_free_surface(VALUE klass, VALUE vsurface)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+
+    if (sur->vwindow != Qnil) {
+        rb_raise(eSDL2RError, "WindowSurface don't free");
+    }
+    SDL_FreeSurface(sur->surface);
+    sur->surface = 0;
+
+    return vsurface;
 }
 
 
@@ -182,20 +210,6 @@ static VALUE sdl2r_unlock_surface(VALUE klass, VALUE vsurface)
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
 
     SDL_UnlockSurface(sur->surface);
-
-    return vsurface;
-}
-
-
-static VALUE sdl2r_free_surface(VALUE klass, VALUE vsurface)
-{
-    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
-
-    if (sur->vwindow != Qnil) {
-        rb_raise(eSDL2RError, "WindowSurface don't free");
-    }
-    SDL_FreeSurface(sur->surface);
-    sur->surface = 0;
 
     return vsurface;
 }
@@ -324,7 +338,8 @@ void Init_sdl2r_surface(void)
     cSurface = rb_define_class_under(mSDL, "Surface", rb_cObject);
     rb_define_alloc_func(cSurface, sdl2r_surface_alloc);
 
-    rb_define_method(cSurface, "disposed?", sdl2r_surface_get_disposed, 0);
+    rb_define_method(cSurface, "dispose", sdl2r_surface_im_dispose, 0);
+    rb_define_method(cSurface, "disposed?", sdl2r_surface_im_get_disposed, 0);
     rb_define_method(cSurface, "w", sdl2r_w, 0);
     rb_define_method(cSurface, "h", sdl2r_h, 0);
     rb_define_method(cSurface, "pixels", sdl2r_get_pixels, 0);

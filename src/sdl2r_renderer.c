@@ -63,18 +63,25 @@ VALUE sdl2r_renderer_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_destroy_renderer(VALUE klass, VALUE vrenderer)
+static VALUE sdl2r_renderer_im_dispose(VALUE self)
 {
-    sdl2r_dispose_renderer(SDL2R_GET_RENDERER_STRUCT(vrenderer));
-    return vrenderer;
+    sdl2r_dispose_renderer(SDL2R_GET_RENDERER_STRUCT(self));
+    return self;
 }
 
 
-static VALUE sdl2r_renderer_get_disposed(VALUE self)
+static VALUE sdl2r_renderer_im_get_disposed(VALUE self)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_STRUCT(Renderer, self);
 
     return ren->renderer ? Qfalse : Qtrue;
+}
+
+
+static VALUE sdl2r_destroy_renderer(VALUE klass, VALUE vrenderer)
+{
+    sdl2r_dispose_renderer(SDL2R_GET_RENDERER_STRUCT(vrenderer));
+    return vrenderer;
 }
 
 
@@ -324,7 +331,8 @@ void Init_sdl2r_renderer(void)
     cRenderer = rb_define_class_under(mSDL, "Renderer", rb_cObject);
     rb_define_alloc_func(cRenderer, sdl2r_renderer_alloc);
 
-    rb_define_method(cRenderer, "disposed?", sdl2r_renderer_get_disposed, 0);
+    rb_define_method(cRenderer, "dispose", sdl2r_renderer_im_dispose, 0);
+    rb_define_method(cRenderer, "disposed?", sdl2r_renderer_im_get_disposed, 0);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, RENDERER_SOFTWARE);

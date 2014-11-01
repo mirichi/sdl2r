@@ -62,17 +62,24 @@ VALUE sdl2r_window_alloc(VALUE klass)
 }
 
 
+static VALUE sdl2r_window_im_dispose(VALUE self)
+{
+    sdl2r_dispose_window(SDL2R_GET_WINDOW_STRUCT(self));
+    return self;
+}
+
+
+static VALUE sdl2r_window_im_get_disposed(VALUE self)
+{
+    struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, self);
+    return win->window ? Qfalse : Qtrue;
+}
+
+
 static VALUE sdl2r_destroy_window(VALUE klass, VALUE vwindow)
 {
     sdl2r_dispose_window(SDL2R_GET_WINDOW_STRUCT(vwindow));
     return vwindow;
-}
-
-
-static VALUE sdl2r_window_get_disposed(VALUE self)
-{
-    struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, self);
-    return win->window ? Qfalse : Qtrue;
 }
 
 
@@ -275,7 +282,8 @@ void Init_sdl2r_window(void)
     cWindow = rb_define_class_under(mSDL, "Window", rb_cObject);
     rb_define_alloc_func(cWindow, sdl2r_window_alloc);
 
-    rb_define_method(cWindow, "disposed?", sdl2r_window_get_disposed, 0);
+    rb_define_method(cWindow, "dispose", sdl2r_window_im_dispose, 0);
+    rb_define_method(cWindow, "disposed?", sdl2r_window_im_get_disposed, 0);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, WINDOWPOS_CENTERED);

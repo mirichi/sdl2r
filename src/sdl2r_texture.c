@@ -58,6 +58,20 @@ VALUE sdl2r_texture_alloc(VALUE klass)
 }
 
 
+static VALUE sdl2r_texture_im_dispose(VALUE self)
+{
+    sdl2r_dispose_texture(SDL2R_GET_TEXTURE_STRUCT(self));
+    return self;
+}
+
+
+static VALUE sdl2r_texture_im_get_disposed(VALUE self)
+{
+    struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, self);
+    return tex->texture ? Qfalse : Qtrue;
+}
+
+
 static VALUE sdl2r_destroy_texture(VALUE klass, VALUE vtexture)
 {
     sdl2r_dispose_texture(SDL2R_GET_TEXTURE_STRUCT(vtexture));
@@ -76,13 +90,6 @@ static VALUE sdl2r_query_texture(VALUE klass, VALUE vtexture)
     }
 
     return rb_ary_new3(4, INT2NUM(format), INT2NUM(access), INT2NUM(w), INT2NUM(h));
-}
-
-
-static VALUE sdl2r_texture_get_disposed(VALUE self)
-{
-    struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, self);
-    return tex->texture ? Qfalse : Qtrue;
 }
 
 
@@ -123,7 +130,8 @@ void Init_sdl2r_texture(void)
     cTexture = rb_define_class_under(mSDL, "Texture", rb_cObject);
     rb_define_alloc_func(cTexture, sdl2r_texture_alloc);
 
-    rb_define_method(cTexture, "disposed?", sdl2r_texture_get_disposed, 0);
+    rb_define_method(cTexture, "dispose", sdl2r_texture_im_dispose, 0);
+    rb_define_method(cTexture, "disposed?", sdl2r_texture_im_get_disposed, 0);
 
     // Constants
 }

@@ -57,18 +57,25 @@ VALUE sdl2r_glcontext_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_gl_delete_glcontext(VALUE klass, VALUE vglcontext)
+static VALUE sdl2r_glcontext_im_dispose(VALUE self)
 {
-    sdl2r_dispose_glcontext(SDL2R_GET_GLCONTEXT_STRUCT(vglcontext));
-    return vglcontext;
+    sdl2r_dispose_glcontext(SDL2R_GET_GLCONTEXT_STRUCT(self));
+    return self;
 }
 
 
-static VALUE sdl2r_glcontext_get_disposed(VALUE self)
+static VALUE sdl2r_glcontext_im_get_disposed(VALUE self)
 {
     struct SDL2RGLContext *glc = SDL2R_GET_STRUCT(GLContext, self);
 
     return glc->glcontext ? Qfalse : Qtrue;
+}
+
+
+static VALUE sdl2r_gl_delete_glcontext(VALUE klass, VALUE vglcontext)
+{
+    sdl2r_dispose_glcontext(SDL2R_GET_GLCONTEXT_STRUCT(vglcontext));
+    return vglcontext;
 }
 
 
@@ -118,7 +125,8 @@ void Init_sdl2r_opengl(void)
     cGLContext = rb_define_class_under(mSDL, "GLContext", rb_cObject);
     rb_define_alloc_func(cGLContext, sdl2r_glcontext_alloc);
 
-    rb_define_method(cGLContext, "disposed?", sdl2r_glcontext_get_disposed, 0);
+    rb_define_method(cGLContext, "dispose", sdl2r_glcontext_im_dispose, 0);
+    rb_define_method(cGLContext, "disposed?", sdl2r_glcontext_im_get_disposed, 0);
 }
 
 

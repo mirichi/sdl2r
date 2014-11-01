@@ -38,10 +38,32 @@ VALUE sdl2r_font_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_font_get_disposed(VALUE self)
+static VALUE sdl2r_font_im_dispose(VALUE self)
+{
+    struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(self);
+
+    TTF_CloseFont(fnt->font);
+    fnt->font = 0;
+
+    return self;
+}
+
+
+static VALUE sdl2r_font_im_get_disposed(VALUE self)
 {
     struct SDL2RFont *fnt = SDL2R_GET_STRUCT(Font, self);
     return fnt->font ? Qfalse : Qtrue;
+}
+
+
+static VALUE sdl2r_ttf_close_font(VALUE klass, VALUE vfont)
+{
+    struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(vfont);
+
+    TTF_CloseFont(fnt->font);
+    fnt->font = 0;
+
+    return vfont;
 }
 
 
@@ -85,17 +107,6 @@ static VALUE sdl2r_ttf_open_font_index(VALUE klass, VALUE vfilename, VALUE vsize
     if (!fnt->font) {
         rb_raise(eSDLError, TTF_GetError());
     }
-
-    return vfont;
-}
-
-
-static VALUE sdl2r_ttf_close_font(VALUE klass, VALUE vfont)
-{
-    struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(vfont);
-
-    TTF_CloseFont(fnt->font);
-    fnt->font = 0;
 
     return vfont;
 }
@@ -393,7 +404,8 @@ void Init_sdl2r_ttf(void)
     cFont = rb_define_class_under(mTTF, "Font", rb_cObject);
     rb_define_alloc_func(cFont, sdl2r_font_alloc);
 
-    rb_define_method(cFont, "disposed?", sdl2r_font_get_disposed, 0);
+    rb_define_method(cFont, "dispose", sdl2r_font_im_dispose, 0);
+    rb_define_method(cFont, "disposed?", sdl2r_font_im_get_disposed, 0);
 
     rb_define_const(mTTF, "STYLE_BOLD", INT2FIX(TTF_STYLE_BOLD));
     rb_define_const(mTTF, "STYLE_ITALIC", INT2FIX(TTF_STYLE_ITALIC));
