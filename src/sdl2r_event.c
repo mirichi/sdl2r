@@ -15,6 +15,8 @@ static VALUE cJoyDeviceEvent;
 static VALUE cJoyHatEvent;
 static VALUE cWindowEvent;
 static VALUE cDropEvent;
+static VALUE cTextInputEvent;
+static VALUE cTextEditingEvent;
 static VALUE cAppTerminating;
 static VALUE cAppLowMemory;
 static VALUE cAppWillEnterBackground;
@@ -175,6 +177,28 @@ static VALUE sdl2r_poll_event(VALUE klass)
                 ary[1] = INT2NUM(event.drop.timestamp);
                 ary[2] = SDL2R_TO_UTF8_STRING(event.drop.file);
                 return rb_class_new_instance(3, ary, cDropEvent);
+            }
+            break;
+        case SDL_TEXTINPUT:
+            {
+                VALUE ary[4];
+                ary[0] = INT2NUM(event.text.type);
+                ary[1] = INT2NUM(event.text.timestamp);
+                ary[2] = INT2NUM(event.text.windowID);
+                ary[3] = SDL2R_TO_UTF8_STRING(event.text.text);
+                return rb_class_new_instance(4, ary, cTextInputEvent);
+            }
+            break;
+        case SDL_TEXTEDITING:
+            {
+                VALUE ary[6];
+                ary[0] = INT2NUM(event.edit.type);
+                ary[1] = INT2NUM(event.edit.timestamp);
+                ary[2] = INT2NUM(event.edit.windowID);
+                ary[3] = SDL2R_TO_UTF8_STRING(event.edit.text);
+                ary[4] = INT2NUM(event.edit.start);
+                ary[5] = INT2NUM(event.edit.length);
+                return rb_class_new_instance(6, ary, cTextEditingEvent);
             }
             break;
         case SDL_APP_TERMINATING:
@@ -339,6 +363,12 @@ void Init_sdl2r_event(void)
 
     cDropEvent = rb_struct_define(NULL, "type", "timestamp", "file", NULL);
     rb_define_const(mSDL, "DropEvent", cDropEvent);
+
+    cTextInputEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "text", NULL);
+    rb_define_const(mSDL, "TextInputEvent", cTextInputEvent);
+
+    cTextEditingEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "text", "start", "length", NULL);
+    rb_define_const(mSDL, "TextEditingEvent", cTextEditingEvent);
 
     cAppTerminating = rb_struct_define(NULL, "type", NULL);
     rb_define_const(mSDL, "AppTerminating", cAppTerminating);

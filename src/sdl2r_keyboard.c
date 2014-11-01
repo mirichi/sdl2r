@@ -67,6 +67,35 @@ static VALUE sdl2r_get_scancode_name(VALUE klass, VALUE vscancode)
 }
 
 
+static VALUE sdl2r_start_text_input(VALUE klass)
+{
+    SDL_StartTextInput();
+    return Qnil;
+}
+
+
+static VALUE sdl2r_stop_text_input(VALUE klass)
+{
+    SDL_StopTextInput();
+    return Qnil;
+}
+
+
+static VALUE sdl2r_set_text_input_rect(VALUE klass, VALUE vrect)
+{
+    SDL_Rect rect;
+    SDL_Rect *pr=0;
+
+    if (vrect != Qnil) {
+        SDL2R_SET_RECT(rect, vrect);
+        pr = &rect;
+    }
+
+    SDL_SetTextInputRect(pr);
+    return Qnil;
+}
+
+
 void Init_sdl2r_keyboard(void)
 {
     // SDL module methods
@@ -77,6 +106,9 @@ void Init_sdl2r_keyboard(void)
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_scancode_name, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_scancode_from_key, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_scancode_from_name, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, start_text_input, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, stop_text_input, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, set_text_input_rect, 1);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, SCANCODE_UNKNOWN);
