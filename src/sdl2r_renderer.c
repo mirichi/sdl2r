@@ -121,25 +121,15 @@ static VALUE sdl2r_render_copy_ex(VALUE klass, VALUE vrenderer, VALUE vtexture, 
     SDL_Point *pp=0;
 
     if (vsrcrect != Qnil) {
-        Check_Type(vsrcrect, T_ARRAY);
-        srcrect.x = NUM2INT(rb_ary_entry(vsrcrect, 0));
-        srcrect.y = NUM2INT(rb_ary_entry(vsrcrect, 1));
-        srcrect.w = NUM2INT(rb_ary_entry(vsrcrect, 2));
-        srcrect.h = NUM2INT(rb_ary_entry(vsrcrect, 3));
+        SDL2R_SET_RECT(srcrect, vsrcrect);
         psr = &srcrect;
     }
     if (vdstrect != Qnil) {
-        Check_Type(vdstrect, T_ARRAY);
-        dstrect.x = NUM2INT(rb_ary_entry(vdstrect, 0));
-        dstrect.y = NUM2INT(rb_ary_entry(vdstrect, 1));
-        dstrect.w = NUM2INT(rb_ary_entry(vdstrect, 2));
-        dstrect.h = NUM2INT(rb_ary_entry(vdstrect, 3));
+        SDL2R_SET_RECT(dstrect, vdstrect);
         pdr = &dstrect;
     }
     if (vcenter != Qnil) {
-        Check_Type(vcenter, T_ARRAY);
-        point.x = NUM2INT(rb_ary_entry(vcenter, 0));
-        point.y = NUM2INT(rb_ary_entry(vcenter, 1));
+        SDL2R_SET_POINT(point, vcenter);
         pp = &point;
     }
 

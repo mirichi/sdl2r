@@ -17,6 +17,11 @@ extern VALUE cColor;
 }                          while(retry_flag);}
 #define SDL2R_DEFINE_CONST(c, t) rb_define_const(c, #t, INT2NUM(SDL_##t))
 #define SDL2R_DEFINE_SINGLETON_METHOD(c, name, arity) rb_define_singleton_method(c, #name, sdl2r_##name, arity)
+#define SDL2R_SET_POINT(point, vpoint) {\
+            Check_Type(vpoint, T_ARRAY);\
+            point.x = NUM2INT(rb_ary_entry(vpoint, 0));\
+            point.y = NUM2INT(rb_ary_entry(vpoint, 1));\
+        }
 #define SDL2R_SET_RECT(rect, vrect) {\
             Check_Type(vrect, T_ARRAY);\
             rect.x = NUM2INT(rb_ary_entry(vrect, 0));\
