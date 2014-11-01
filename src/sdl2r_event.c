@@ -345,6 +345,7 @@ static VALUE sdl2r_make_event(SDL_Event *event)
         if (event->type >= SDL_USEREVENT) {
             VALUE vevent = rb_hash_lookup(g_user_event_data, INT2NUM(event->user.code));
             rb_hash_delete(g_user_event_data, INT2NUM(event->user.code));
+            rb_struct_aset(vevent, INT2FIX(1), INT2NUM(event->user.timestamp);
             return vevent;
         }
         break;
@@ -377,12 +378,7 @@ static VALUE sdl2r_push_event(VALUE klass, VALUE vevent)
     }
 
     ev.user.type = NUM2UINT(rb_struct_aref(vevent, INT2FIX(0)));
-    ev.user.timestamp = 0;
-    ev.user.windowID = 0;
     ev.user.code = g_user_event_id;
-
-    ev.user.data1 = 0;
-    ev.user.data2 = 0;
     rb_hash_aset(g_user_event_data, INT2NUM(g_user_event_id), vevent);
     g_user_event_id++;
 
