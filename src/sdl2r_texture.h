@@ -4,7 +4,7 @@ struct SDL2RTexture {
 };
 
 void Init_sdl2r_texture(void);
-void sdl2r_dispose_texture(struct SDL2RTexture *tex);
+void sdl2r_texture_dispose(struct SDL2RTexture *tex);
 VALUE sdl2r_texture_alloc(VALUE klass);
 
 #ifndef SDL2RTEXTURE

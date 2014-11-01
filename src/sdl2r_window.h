@@ -5,7 +5,7 @@ struct SDL2RWindow {
 };
 
 void Init_sdl2r_window(void);
-void sdl2r_dispose_window(struct SDL2RWindow *win);
+void sdl2r_window_dispose(struct SDL2RWindow *win);
 VALUE sdl2r_window_alloc(VALUE klass);
 VALUE sdl2r_window_sdl_to_ruby(SDL_Window *w);
 

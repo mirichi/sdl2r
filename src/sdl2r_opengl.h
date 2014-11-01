@@ -4,7 +4,7 @@ struct SDL2RGLContext {
 };
 
 void Init_sdl2r_opengl(void);
-void sdl2r_dispose_glcontext(struct SDL2RGLContext *glc);
+void sdl2r_glcontext_dispose(struct SDL2RGLContext *glc);
 VALUE sdl2r_glcontext_alloc(VALUE klass);
 
 

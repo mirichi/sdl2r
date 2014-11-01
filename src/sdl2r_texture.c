@@ -20,7 +20,7 @@ const rb_data_type_t sdl2r_texture_data_type = {
 };
 
 
-void sdl2r_dispose_texture(struct SDL2RTexture *tex)
+void sdl2r_texture_dispose(struct SDL2RTexture *tex)
 {
     sdl2r_del_hash(SDL2R_GET_STRUCT(Renderer, tex->vrenderer)->th, (HASHKEY)tex->texture);
     SDL_DestroyTexture(tex->texture);
@@ -34,7 +34,7 @@ static void sdl2r_texture_free(void *ptr)
     struct SDL2RTexture *tex = ptr;
 
     if (tex->texture) {
-        sdl2r_dispose_texture(tex);
+        sdl2r_texture_dispose(tex);
     }
 
     xfree(tex);
@@ -60,7 +60,7 @@ VALUE sdl2r_texture_alloc(VALUE klass)
 
 static VALUE sdl2r_texture_im_dispose(VALUE self)
 {
-    sdl2r_dispose_texture(SDL2R_GET_TEXTURE_STRUCT(self));
+    sdl2r_texture_dispose(SDL2R_GET_TEXTURE_STRUCT(self));
     return self;
 }
 
@@ -74,7 +74,7 @@ static VALUE sdl2r_texture_im_get_disposed(VALUE self)
 
 static VALUE sdl2r_destroy_texture(VALUE klass, VALUE vtexture)
 {
-    sdl2r_dispose_texture(SDL2R_GET_TEXTURE_STRUCT(vtexture));
+    sdl2r_texture_dispose(SDL2R_GET_TEXTURE_STRUCT(vtexture));
     return vtexture;
 }
 

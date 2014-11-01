@@ -18,7 +18,7 @@ const rb_data_type_t sdl2r_glcontext_data_type = {
 };
 
 
-void sdl2r_dispose_glcontext(struct SDL2RGLContext *glc)
+void sdl2r_glcontext_dispose(struct SDL2RGLContext *glc)
 {
     struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, glc->vwindow);
     SDL_GL_DeleteContext(glc->glcontext);
@@ -33,7 +33,7 @@ static void sdl2r_glcontext_free(void *ptr)
     struct SDL2RGLContext *glc = ptr;
 
     if (glc->glcontext) {
-        sdl2r_dispose_glcontext(glc);
+        sdl2r_glcontext_dispose(glc);
     }
 
     xfree(glc);
@@ -59,7 +59,7 @@ VALUE sdl2r_glcontext_alloc(VALUE klass)
 
 static VALUE sdl2r_glcontext_im_dispose(VALUE self)
 {
-    sdl2r_dispose_glcontext(SDL2R_GET_GLCONTEXT_STRUCT(self));
+    sdl2r_glcontext_dispose(SDL2R_GET_GLCONTEXT_STRUCT(self));
     return self;
 }
 
@@ -74,7 +74,7 @@ static VALUE sdl2r_glcontext_im_get_disposed(VALUE self)
 
 static VALUE sdl2r_gl_delete_glcontext(VALUE klass, VALUE vglcontext)
 {
-    sdl2r_dispose_glcontext(SDL2R_GET_GLCONTEXT_STRUCT(vglcontext));
+    sdl2r_glcontext_dispose(SDL2R_GET_GLCONTEXT_STRUCT(vglcontext));
     return vglcontext;
 }
 

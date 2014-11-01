@@ -3,7 +3,7 @@ struct SDL2RJoystick {
 };
 
 void Init_sdl2r_joystick(void);
-void sdl2r_dispose_joystick(struct SDL2RJoystick *js);
+void sdl2r_joystick_dispose(struct SDL2RJoystick *js);
 VALUE sdl2r_joystick_alloc(VALUE klass);
 
 #ifndef SDL2RJOYSTICK

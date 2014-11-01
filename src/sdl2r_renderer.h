@@ -7,7 +7,7 @@ struct SDL2RRenderer {
 };
 
 void Init_sdl2r_renderer(void);
-void sdl2r_dispose_renderer(struct SDL2RRenderer *ren);
+void sdl2r_renderer_dispose(struct SDL2RRenderer *ren);
 VALUE sdl2r_renderer_alloc(VALUE klass);
 
 #ifndef SDL2RRENDERER

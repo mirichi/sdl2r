@@ -20,14 +20,14 @@ const rb_data_type_t sdl2r_renderer_data_type = {
 };
 
 
-void sdl2r_dispose_renderer(struct SDL2RRenderer *ren)
+void sdl2r_renderer_dispose(struct SDL2RRenderer *ren)
 {
     struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, ren->vwindow);
     SDL_DestroyRenderer(ren->renderer);
     ren->renderer = 0;
     ren->vwindow = Qnil;
     win->vrenderer = Qnil;
-    SDL2R_CLEAR_HASH(ren->th, Texture, texture, sdl2r_dispose_texture);
+    SDL2R_CLEAR_HASH(ren->th, Texture, texture, sdl2r_texture_dispose);
     sdl2r_destroy_hash(ren->th);
     ren->th = 0;
 }
@@ -38,7 +38,7 @@ static void sdl2r_renderer_free(void *ptr)
     struct SDL2RRenderer *ren = ptr;
 
     if (ren->renderer) {
-        sdl2r_dispose_renderer(ren);
+        sdl2r_renderer_dispose(ren);
     }
 
     xfree(ren);
@@ -65,7 +65,7 @@ VALUE sdl2r_renderer_alloc(VALUE klass)
 
 static VALUE sdl2r_renderer_im_dispose(VALUE self)
 {
-    sdl2r_dispose_renderer(SDL2R_GET_RENDERER_STRUCT(self));
+    sdl2r_renderer_dispose(SDL2R_GET_RENDERER_STRUCT(self));
     return self;
 }
 
@@ -80,7 +80,7 @@ static VALUE sdl2r_renderer_im_get_disposed(VALUE self)
 
 static VALUE sdl2r_destroy_renderer(VALUE klass, VALUE vrenderer)
 {
-    sdl2r_dispose_renderer(SDL2R_GET_RENDERER_STRUCT(vrenderer));
+    sdl2r_renderer_dispose(SDL2R_GET_RENDERER_STRUCT(vrenderer));
     return vrenderer;
 }
 

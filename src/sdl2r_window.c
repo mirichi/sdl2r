@@ -21,14 +21,14 @@ const rb_data_type_t sdl2r_window_data_type = {
 };
 
 
-void sdl2r_dispose_window(struct SDL2RWindow *win)
+void sdl2r_window_dispose(struct SDL2RWindow *win)
 {
     if (win->vrenderer != Qnil) {
-        sdl2r_dispose_renderer(SDL2R_GET_STRUCT(Renderer, win->vrenderer));
+        sdl2r_renderer_dispose(SDL2R_GET_STRUCT(Renderer, win->vrenderer));
     }
 
     if (win->vglcontext != Qnil) {
-        sdl2r_dispose_glcontext(SDL2R_GET_STRUCT(GLContext, win->vglcontext));
+        sdl2r_glcontext_dispose(SDL2R_GET_STRUCT(GLContext, win->vglcontext));
     }
 
     sdl2r_del_hash(sdl2r_window_hash, (HASHKEY)win->window);
@@ -42,7 +42,7 @@ static void sdl2r_window_free(void *ptr)
     struct SDL2RWindow *win = ptr;
 
     if (win->window) {
-        sdl2r_dispose_window(win);
+        sdl2r_window_dispose(win);
     }
 
     xfree(win);
@@ -64,7 +64,7 @@ VALUE sdl2r_window_alloc(VALUE klass)
 
 static VALUE sdl2r_window_im_dispose(VALUE self)
 {
-    sdl2r_dispose_window(SDL2R_GET_WINDOW_STRUCT(self));
+    sdl2r_window_dispose(SDL2R_GET_WINDOW_STRUCT(self));
     return self;
 }
 
@@ -78,7 +78,7 @@ static VALUE sdl2r_window_im_get_disposed(VALUE self)
 
 static VALUE sdl2r_destroy_window(VALUE klass, VALUE vwindow)
 {
-    sdl2r_dispose_window(SDL2R_GET_WINDOW_STRUCT(vwindow));
+    sdl2r_window_dispose(SDL2R_GET_WINDOW_STRUCT(vwindow));
     return vwindow;
 }
 
