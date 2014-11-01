@@ -127,6 +127,34 @@ static VALUE sdl2r_get_keyboard_state(VALUE klass)
 }
 
 
+static VALUE sdl2r_has_screen_keyboard_support(VALUE klass)
+{
+    SDL_bool result;
+
+    result = SDL_HasScreenKeyboardSupport();
+    return SDL2R_TO_BOOL(result);
+}
+
+
+static VALUE sdl2r_is_screen_keyboard_shown(VALUE klass, VALUE vwindow)
+{
+    SDL_bool result;
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    result = SDL_IsScreenKeyboardShown(win->window);
+    return SDL2R_TO_BOOL(result);
+}
+
+
+static VALUE sdl2r_is_text_input_active(VALUE klass)
+{
+    SDL_bool result;
+
+    result = SDL_IsTextInputActive();
+    return SDL2R_TO_BOOL(result);
+}
+
+
 void Init_sdl2r_keyboard(void)
 {
     // SDL module methods
@@ -143,6 +171,9 @@ void Init_sdl2r_keyboard(void)
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_mod_state, 0);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, set_mod_state, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_keyboard_state, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, has_screen_keyboard_support, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, is_screen_keyboard_shown, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, is_text_input_active, 0);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, SCANCODE_UNKNOWN);
