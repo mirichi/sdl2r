@@ -48,10 +48,18 @@ VALUE sdl2r_chunk_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_chunk_get_disposed(VALUE self)
+static VALUE sdl2r_chunk_im_get_disposed(VALUE self)
 {
     struct SDL2RChunk *cnk = SDL2R_GET_STRUCT(Chunk, self);
     return cnk->chunk ? Qfalse : Qtrue;
+}
+
+
+static VALUE sdl2r_mix_free_chunk(VALUE klass, VALUE vchunk)
+{
+    struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
+    Mix_FreeChunk(cnk->chunk);
+    return Qnil;
 }
 
 
@@ -75,10 +83,18 @@ VALUE sdl2r_music_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_music_get_disposed(VALUE self)
+static VALUE sdl2r_music_im_get_disposed(VALUE self)
 {
     struct SDL2RMusic *mus = SDL2R_GET_STRUCT(Music, self);
     return mus->music ? Qfalse : Qtrue;
+}
+
+
+static VALUE sdl2r_mix_free_music(VALUE klass, VALUE vmusic)
+{
+    struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(vmusic);
+    Mix_FreeMusic(mus->music);
+    return Qnil;
 }
 
 
@@ -187,18 +203,20 @@ void Init_sdl2r_mixer(void)
     rb_define_singleton_method(mMixer, "load_mus", sdl2r_mix_load_mus, 1);
     rb_define_singleton_method(mMixer, "play_channel", sdl2r_mix_play_channel, 3);
     rb_define_singleton_method(mMixer, "play_music", sdl2r_mix_play_music, 2);
+    rb_define_singleton_method(mMixer, "free_chunk", sdl2r_mix_free_chunk, 1);
+    rb_define_singleton_method(mMixer, "free_music", sdl2r_mix_free_music, 1);
 
     // SDL::Mix::Chunk class
     cChunk = rb_define_class_under(mMixer, "Chunk", rb_cObject);
     rb_define_alloc_func(cChunk, sdl2r_chunk_alloc);
 
-    rb_define_method(cChunk, "disposed?", sdl2r_chunk_get_disposed, 0);
+    rb_define_method(cChunk, "disposed?", sdl2r_chunk_im_get_disposed, 0);
 
     // SDL::Mix::Music class
     cMusic = rb_define_class_under(mMixer, "Music", rb_cObject);
     rb_define_alloc_func(cMusic, sdl2r_music_alloc);
 
-    rb_define_method(cMusic, "disposed?", sdl2r_music_get_disposed, 0);
+    rb_define_method(cMusic, "disposed?", sdl2r_music_im_get_disposed, 0);
 
     // Constants
     rb_define_const(mMixer, "DEFAULT_FREQUENCY", INT2FIX(MIX_DEFAULT_FREQUENCY));
