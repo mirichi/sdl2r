@@ -17,9 +17,7 @@ static VALUE sdl2r_get_key_from_name(VALUE klass, VALUE vkeyname)
 {
     SDL_Keycode result;
 
-    Check_Type(vkeyname, T_STRING);
-
-    result = SDL_GetKeyFromName(RSTRING_PTR(vkeyname));
+    result = SDL_GetKeyFromName(SDL2R_TO_UTF8_PTR(vkeyname));
     return INT2NUM(result);
 }
 
@@ -38,7 +36,6 @@ static VALUE sdl2r_get_keyboard_focus(VALUE klass)
     SDL_Window *w;
 
     w = SDL_GetKeyboardFocus();
-
     return sdl2r_window_sdl_to_ruby(w);
 }
 
@@ -56,9 +53,7 @@ static VALUE sdl2r_get_scancode_from_name(VALUE klass, VALUE vkeyname)
 {
     SDL_Scancode result;
 
-    Check_Type(vkeyname, T_STRING);
-
-    result = SDL_GetScancodeFromName(RSTRING_PTR(vkeyname));
+    result = SDL_GetScancodeFromName(SDL2R_TO_UTF8_PTR(vkeyname));
     return INT2NUM(result);
 }
 
@@ -75,13 +70,13 @@ static VALUE sdl2r_get_scancode_name(VALUE klass, VALUE vscancode)
 void Init_sdl2r_keyboard(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "get_key_name", sdl2r_get_key_name, 1);
-    rb_define_singleton_method(mSDL, "get_key_from_name", sdl2r_get_key_from_name, 1);
-    rb_define_singleton_method(mSDL, "get_key_from_scancode", sdl2r_get_key_from_scancode, 1);
-    rb_define_singleton_method(mSDL, "get_keyboard_focus", sdl2r_get_keyboard_focus, 0);
-    rb_define_singleton_method(mSDL, "get_scancode_name", sdl2r_get_scancode_name, 1);
-    rb_define_singleton_method(mSDL, "get_scancode_from_key", sdl2r_get_scancode_from_key, 1);
-    rb_define_singleton_method(mSDL, "get_scancode_from_name", sdl2r_get_scancode_from_name, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_key_name, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_key_from_name, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_key_from_scancode, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_keyboard_focus, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_scancode_name, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_scancode_from_key, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_scancode_from_name, 1);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, SCANCODE_UNKNOWN);
