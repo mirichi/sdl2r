@@ -14,9 +14,9 @@ struct SDL2RHash {
 
 struct SDL2RHash *sdl2r_hash_alloc(int size);
 void sdl2r_destroy_hash(struct SDL2RHash *h);
-int sdl2r_get_hash(struct SDL2RHash *h, HASHKEY key);
-int sdl2r_put_hash(struct SDL2RHash *h, HASHKEY key, int *ret);
-void sdl2r_del_hash(struct SDL2RHash *h, int x);
+VALUE sdl2r_get_hash(struct SDL2RHash *h, HASHKEY key);
+void sdl2r_put_hash(struct SDL2RHash *h, HASHKEY key, VALUE v);
+void sdl2r_del_hash(struct SDL2RHash *h, HASHKEY key);
 
 static const Uint8 __m_empty[]  = {0x02, 0x08, 0x20, 0x80};
 static const Uint8 __m_del[]    = {0x01, 0x04, 0x10, 0x40};
@@ -30,12 +30,12 @@ static const Uint8 __m_either[] = {0x03, 0x0c, 0x30, 0xc0};
 
 #define sdl2r_hash_end(h) ((h)->n_buckets)
 
-#define SDL2R_CLEAR_HASH(p, s, v, f) {\
-        if (p) {\
+#define SDL2R_CLEAR_HASH(h, s, v, f) {\
+        if (h) {\
             int k;\
-            for (k = 0; k < sdl2r_hash_end(p); k++) {\
-                if (sdl2r_hash_exist(p, k)) {\
-                    struct SDL2R##s *tmp = SDL2R_GET_STRUCT(s, p->vals[k]);\
+            for (k = 0; k < sdl2r_hash_end(h); k++) {\
+                if (sdl2r_hash_exist(h, k)) {\
+                    struct SDL2R##s *tmp = SDL2R_GET_STRUCT(s, h->vals[k]);\
                     if (tmp->v) {\
                         f(tmp);\
                     }\

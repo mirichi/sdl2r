@@ -49,7 +49,6 @@ static void sdl2r_renderer_mark(void *ptr)
 {
     struct SDL2RRenderer *ren = ptr;
     rb_gc_mark(ren->vwindow);
-    rb_gc_mark(ren->vrender_target_texture);
 }
 
 
@@ -149,7 +148,6 @@ static VALUE sdl2r_create_texture_from_surface(VALUE klass, VALUE vrenderer, VAL
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
     VALUE vtexture = sdl2r_texture_alloc(cTexture);
     struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, vtexture);
-    int k;
 
     SDL2R_RETRY(tex->texture = SDL_CreateTextureFromSurface(ren->renderer, sur->surface));
     if (!tex->texture) {
@@ -157,8 +155,7 @@ static VALUE sdl2r_create_texture_from_surface(VALUE klass, VALUE vrenderer, VAL
     }
 
     tex->vrenderer = vrenderer;
-    k = sdl2r_put_hash(ren->th, (HASHKEY)tex->texture, 0);
-    ren->th->vals[k] = vtexture;
+    sdl2r_put_hash(ren->th, (HASHKEY)tex->texture, vtexture);
 
     return vtexture;
 }
@@ -169,7 +166,6 @@ static VALUE sdl2r_create_texture(VALUE klass, VALUE vrenderer, VALUE vformat, V
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
     VALUE vtexture = sdl2r_texture_alloc(cTexture);
     struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, vtexture);
-    int k;
 
     SDL2R_RETRY(tex->texture = SDL_CreateTexture(ren->renderer, NUM2UINT(vformat), NUM2INT(vaccess), NUM2INT(vw), NUM2INT(vh)));
     if (!tex->texture) {
@@ -177,8 +173,7 @@ static VALUE sdl2r_create_texture(VALUE klass, VALUE vrenderer, VALUE vformat, V
     }
 
     tex->vrenderer = vrenderer;
-    k = sdl2r_put_hash(ren->th, (HASHKEY)tex->texture, 0);
-    ren->th->vals[k] = vtexture;
+    sdl2r_put_hash(ren->th, (HASHKEY)tex->texture, vtexture);
 
     return vtexture;
 }
@@ -211,7 +206,24 @@ static VALUE sdl2r_set_render_draw_color(VALUE klass, VALUE vrenderer, VALUE vr,
 static VALUE sdl2r_get_render_target(VALUE klass, VALUE vrenderer)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
-    return ren->vrender_target_texture;
+    struct SDL2RTexture *tex;
+    SDL_Texture *t;
+    VALUE vtexture;
+
+    t = SDL_GetRenderTarget(ren->renderer);
+    if (!t) {
+        return Qnil;
+    }
+
+    vtexture = sdl2r_get_hash(ren->th, (HASHKEY)t);
+    if (vtexture == Qnil) {
+        vtexture = sdl2r_texture_alloc(cTexture);
+        tex = SDL2R_GET_STRUCT(Texture, vtexture);
+        tex->texture = t;
+        tex->vrenderer = vrenderer;
+        sdl2r_put_hash(ren->th, (HASHKEY)t, vtexture);
+    }
+    return vtexture;
 }
 
 
@@ -229,8 +241,6 @@ static VALUE sdl2r_set_render_target(VALUE klass, VALUE vrenderer, VALUE vtextur
     if (SDL_SetRenderTarget(ren->renderer, t)) {
         rb_raise(eSDLError, SDL_GetError());
     }
-
-    ren->vrender_target_texture = vtexture;
 
     return vrenderer;
 }

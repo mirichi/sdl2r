@@ -22,9 +22,7 @@ const rb_data_type_t sdl2r_texture_data_type = {
 
 void sdl2r_dispose_texture(struct SDL2RTexture *tex)
 {
-    int k;
-    k = sdl2r_get_hash(SDL2R_GET_STRUCT(Renderer, tex->vrenderer)->th, (HASHKEY)tex->texture);
-    sdl2r_del_hash(SDL2R_GET_STRUCT(Renderer, tex->vrenderer)->th, k);
+    sdl2r_del_hash(SDL2R_GET_STRUCT(Renderer, tex->vrenderer)->th, (HASHKEY)tex->texture);
     SDL_DestroyTexture(tex->texture);
     tex->texture = 0;
     tex->vrenderer = Qnil;

@@ -31,8 +31,8 @@ void sdl2r_dispose_window(struct SDL2RWindow *win)
         sdl2r_dispose_glcontext(SDL2R_GET_STRUCT(GLContext, win->vglcontext));
     }
 
+    sdl2r_del_hash(sdl2r_window_hash, (HASHKEY)win->window);
     SDL_DestroyWindow(win->window);
-    sdl2r_del_hash(sdl2r_window_hash, sdl2r_get_hash(sdl2r_window_hash, (HASHKEY)win->window));
     win->window = 0;
 }
 
@@ -78,12 +78,7 @@ static VALUE sdl2r_window_get_destroyed(VALUE self)
 
 VALUE sdl2r_window_sdl_to_ruby(SDL_Window *w)
 {
-    int k;
-    k = sdl2r_get_hash(sdl2r_window_hash, (HASHKEY)w);
-    if (k == sdl2r_hash_end(sdl2r_window_hash)) {
-        return Qnil;
-    }
-    return sdl2r_window_hash->vals[k];
+    return sdl2r_get_hash(sdl2r_window_hash, (HASHKEY)w);
 }
 
 
@@ -164,14 +159,12 @@ static VALUE sdl2r_create_window(VALUE klass, VALUE vstr, VALUE vx, VALUE vy, VA
 {
     VALUE vwindow = sdl2r_window_alloc(cWindow);
     struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, vwindow);
-    int k;
 
     SDL2R_RETRY(win->window = SDL_CreateWindow(RSTRING_PTR(vstr), NUM2INT(vx), NUM2INT(vy), NUM2INT(vw), NUM2INT(vh), NUM2INT(vflags)));
     if (!win->window) {
         rb_raise(eSDLError, SDL_GetError());
     }
-    k = sdl2r_put_hash(sdl2r_window_hash, (HASHKEY)win->window, 0);
-    sdl2r_window_hash->vals[k] = vwindow;
+    sdl2r_put_hash(sdl2r_window_hash, (HASHKEY)win->window, vwindow);
 
     return vwindow;
 }
@@ -220,19 +213,14 @@ static VALUE sdl2r_get_window_id(VALUE klass, VALUE vwindow)
 
 static VALUE sdl2r_get_window_from_id(VALUE klass, VALUE vid)
 {
-    VALUE vwindow;
     SDL_Window *w;
-    int k;
 
     w = SDL_GetWindowFromID(NUM2UINT(vid));
     if (!w) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
-    k = sdl2r_get_hash(sdl2r_window_hash, (HASHKEY)w);
-    vwindow = sdl2r_window_hash->vals[k];
-
-    return vwindow;
+    return sdl2r_get_hash(sdl2r_window_hash, (HASHKEY)w);
 }
 
 

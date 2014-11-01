@@ -33,18 +33,18 @@ void sdl2r_destroy_hash(struct SDL2RHash *h)
 }
 
 
-int sdl2r_get_hash(struct SDL2RHash *h, HASHKEY key)
+VALUE sdl2r_get_hash(struct SDL2RHash *h, HASHKEY key)
 {
     int k = (key >> 2) & (h->n_buckets - 1);
     int step = 0;
 
     while (!__ac_isempty(h->ed_flags, k)) {
         if (!__ac_isdel(h->ed_flags, k)) {
-            if (h->keys[k] == key) return k;
+            if (h->keys[k] == key) return h->vals[k];
         }
         k = (k+(++step)) & (h->n_buckets - 1);
     }
-    return h->n_buckets;
+    return Qnil;
 }
 
 
@@ -60,15 +60,14 @@ static void sdl2r_resize_hash(struct SDL2RHash *h, int new_n_buckets)
     sdl2r_hash_alloc_internal(h);
     for (i=0 ; i<old_n_buckets ; i++) {
         if (!__ac_iseither(old_ed_flags, i)) {
-            int k = sdl2r_put_hash(h, old_keys[i], NULL);
-            h->vals[k] = old_vals[i];
+            sdl2r_put_hash(h, old_keys[i], old_vals[i]);
         }
     }
     xfree(old_keys);
 }
 
 
-int sdl2r_put_hash(struct SDL2RHash *h, HASHKEY key, int *ret)
+void sdl2r_put_hash(struct SDL2RHash *h, HASHKEY key, VALUE v)
 {
     int k, del_k, step = 0;
 
@@ -81,8 +80,8 @@ int sdl2r_put_hash(struct SDL2RHash *h, HASHKEY key, int *ret)
     while (!__ac_isempty(h->ed_flags, k)) {
         if (!__ac_isdel(h->ed_flags, k)) {
             if (h->keys[k] == key) {
-                if (ret) *ret = 0;
-                return k;
+                h->vals[k] = v;
+                return;
             }
         }
         else if (del_k == h->n_buckets) {
@@ -92,23 +91,34 @@ int sdl2r_put_hash(struct SDL2RHash *h, HASHKEY key, int *ret)
     }
     if (del_k != h->n_buckets) {
         h->keys[del_k] = key;
+        h->vals[del_k] = v;
         h->ed_flags[del_k/4] &= ~__m_del[del_k%4];
         h->size++;
-        if (ret) *ret = 2;
-        return del_k;
+        return;
     } else {
         h->keys[k] = key;
+        h->vals[k] = v;
         h->ed_flags[k/4] &= ~__m_empty[k%4];
         h->size++;
         h->n_occupied++;
-        if (ret) *ret = 1;
-        return k;
+        return;
     }
 }
 
 
-void sdl2r_del_hash(struct SDL2RHash *h, int x)
+void sdl2r_del_hash(struct SDL2RHash *h, HASHKEY key)
 {
-    h->ed_flags[x/4] |= __m_del[x%4];
-    h->size--;
+    int k = (key >> 2) & (h->n_buckets - 1);
+    int step = 0;
+
+    while (!__ac_isempty(h->ed_flags, k)) {
+        if (!__ac_isdel(h->ed_flags, k)) {
+            if (h->keys[k] == key) {
+                h->ed_flags[k/4] |= __m_del[k%4];
+                h->size--;
+                return;
+            }
+        }
+        k = (k+(++step)) & (h->n_buckets - 1);
+    }
 }

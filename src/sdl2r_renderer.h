@@ -4,7 +4,6 @@ struct SDL2RRenderer {
     SDL_Renderer *renderer;
     VALUE vwindow;
     struct SDL2RHash *th;
-    VALUE vrender_target_texture;
 };
 
 void Init_sdl2r_renderer(void);
