@@ -72,7 +72,7 @@ static VALUE sdl2r_glcontext_im_get_disposed(VALUE self)
 }
 
 
-static VALUE sdl2r_gl_delete_glcontext(VALUE klass, VALUE vglcontext)
+static VALUE sdl2r_gl_delete_context(VALUE klass, VALUE vglcontext)
 {
     sdl2r_glcontext_dispose(SDL2R_GET_GLCONTEXT_STRUCT(vglcontext));
     return vglcontext;
@@ -105,7 +105,7 @@ static VALUE sdl2r_gl_swap_window(VALUE klass, VALUE vwindow)
 void Init_sdl2r_opengl(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "gl_delete_context", sdl2r_gl_delete_glcontext, 1);
+    rb_define_singleton_method(mSDL, "gl_delete_context", sdl2r_gl_delete_context, 1);
 //    rb_define_singleton_method(mSDL, "gl_extensionSupported
 //    rb_define_singleton_method(mSDL, "gl_getAttribute
 //    rb_define_singleton_method(mSDL, "gl_getCurglctContext
