@@ -24,6 +24,14 @@ static VALUE cAppDidEnterBackground;
 static VALUE cAppWillEnterForeground;
 static VALUE cAppDidEnterForeground;
 static VALUE cUserEvent;
+static VALUE cControllerAxisEvent;
+static VALUE cControllerButtonEvent;
+static VALUE cControllerDeviceEvent;
+static VALUE cDollarGestureEvent;
+static VALUE cMultiGestureEvent;
+static VALUE cSysWMEvent;
+static VALUE cTouchFingerEvent;
+static VALUE cClipboardUpdateEvent;
 
 static Sint32 g_user_event_id = 0;
 static VALUE g_user_event_data = Qnil;
@@ -34,8 +42,8 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_QUIT:
         {
             VALUE ary[2];
-            ary[0] = INT2NUM(event->quit.type);
-            ary[1] = INT2NUM(event->quit.timestamp);
+            ary[0] = UINT2NUM(event->quit.type);
+            ary[1] = UINT2NUM(event->quit.timestamp);
             return rb_class_new_instance(2, ary, cQuitEvent);
         }
         break;
@@ -45,13 +53,13 @@ static VALUE sdl2r_make_event(SDL_Event *event)
             VALUE ary[6], keysym[4];
             keysym[0] = INT2NUM(event->key.keysym.scancode);
             keysym[1] = INT2NUM(event->key.keysym.sym);
-            keysym[2] = INT2NUM(event->key.keysym.mod);
-            keysym[3] = INT2NUM(event->key.keysym.unused);
-            ary[0] = INT2NUM(event->key.type);
-            ary[1] = INT2NUM(event->key.timestamp);
-            ary[2] = INT2NUM(event->key.windowID);
-            ary[3] = INT2NUM(event->key.state);
-            ary[4] = INT2NUM(event->key.repeat);
+            keysym[2] = UINT2NUM(event->key.keysym.mod);
+            keysym[3] = UINT2NUM(event->key.keysym.unused);
+            ary[0] = UINT2NUM(event->key.type);
+            ary[1] = UINT2NUM(event->key.timestamp);
+            ary[2] = UINT2NUM(event->key.windowID);
+            ary[3] = UINT2NUM(event->key.state);
+            ary[4] = UINT2NUM(event->key.repeat);
             ary[5] = rb_class_new_instance(4, keysym, cKeysym);
             return rb_class_new_instance(6, ary, cKeyboardEvent);
         }
@@ -59,11 +67,11 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_MOUSEMOTION:
         {
             VALUE ary[9];
-            ary[0] = INT2NUM(event->motion.type);
-            ary[1] = INT2NUM(event->motion.timestamp);
-            ary[2] = INT2NUM(event->motion.windowID);
-            ary[3] = INT2NUM(event->motion.which);
-            ary[4] = INT2NUM(event->motion.state);
+            ary[0] = UINT2NUM(event->motion.type);
+            ary[1] = UINT2NUM(event->motion.timestamp);
+            ary[2] = UINT2NUM(event->motion.windowID);
+            ary[3] = UINT2NUM(event->motion.which);
+            ary[4] = UINT2NUM(event->motion.state);
             ary[5] = INT2NUM(event->motion.x);
             ary[6] = INT2NUM(event->motion.y);
             ary[7] = INT2NUM(event->motion.xrel);
@@ -75,13 +83,13 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_MOUSEBUTTONDOWN:
         {
             VALUE ary[9];
-            ary[0] = INT2NUM(event->button.type);
-            ary[1] = INT2NUM(event->button.timestamp);
-            ary[2] = INT2NUM(event->button.windowID);
-            ary[3] = INT2NUM(event->button.which);
-            ary[4] = INT2NUM(event->button.button);
-            ary[5] = INT2NUM(event->button.state);
-            ary[6] = INT2NUM(event->button.clicks);
+            ary[0] = UINT2NUM(event->button.type);
+            ary[1] = UINT2NUM(event->button.timestamp);
+            ary[2] = UINT2NUM(event->button.windowID);
+            ary[3] = UINT2NUM(event->button.which);
+            ary[4] = UINT2NUM(event->button.button);
+            ary[5] = UINT2NUM(event->button.state);
+            ary[6] = UINT2NUM(event->button.clicks);
             ary[7] = INT2NUM(event->button.x);
             ary[8] = INT2NUM(event->button.y);
             return rb_class_new_instance(9, ary, cMouseButtonEvent);
@@ -90,10 +98,10 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_MOUSEWHEEL:
         {
             VALUE ary[6];
-            ary[0] = INT2NUM(event->wheel.type);
-            ary[1] = INT2NUM(event->wheel.timestamp);
-            ary[2] = INT2NUM(event->wheel.windowID);
-            ary[3] = INT2NUM(event->wheel.which);
+            ary[0] = UINT2NUM(event->wheel.type);
+            ary[1] = UINT2NUM(event->wheel.timestamp);
+            ary[2] = UINT2NUM(event->wheel.windowID);
+            ary[3] = UINT2NUM(event->wheel.which);
             ary[4] = INT2NUM(event->wheel.x);
             ary[5] = INT2NUM(event->wheel.y);
             return rb_class_new_instance(6, ary, cMouseWheelEvent);
@@ -102,10 +110,10 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_JOYAXISMOTION:
         {
             VALUE ary[5];
-            ary[0] = INT2NUM(event->jaxis.type);
-            ary[1] = INT2NUM(event->jaxis.timestamp);
+            ary[0] = UINT2NUM(event->jaxis.type);
+            ary[1] = UINT2NUM(event->jaxis.timestamp);
             ary[2] = INT2NUM(event->jaxis.which);
-            ary[3] = INT2NUM(event->jaxis.axis);
+            ary[3] = UINT2NUM(event->jaxis.axis);
             ary[4] = INT2NUM(event->jaxis.value);
             return rb_class_new_instance(5, ary, cJoyAxisEvent);
         }
@@ -113,10 +121,10 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_JOYBALLMOTION:
         {
             VALUE ary[6];
-            ary[0] = INT2NUM(event->jball.type);
-            ary[1] = INT2NUM(event->jball.timestamp);
+            ary[0] = UINT2NUM(event->jball.type);
+            ary[1] = UINT2NUM(event->jball.timestamp);
             ary[2] = INT2NUM(event->jball.which);
-            ary[3] = INT2NUM(event->jball.ball);
+            ary[3] = UINT2NUM(event->jball.ball);
             ary[4] = INT2NUM(event->jball.xrel);
             ary[5] = INT2NUM(event->jball.yrel);
             return rb_class_new_instance(6, ary, cJoyBallEvent);
@@ -126,11 +134,11 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_JOYBUTTONDOWN:
         {
             VALUE ary[5];
-            ary[0] = INT2NUM(event->jbutton.type);
-            ary[1] = INT2NUM(event->jbutton.timestamp);
+            ary[0] = UINT2NUM(event->jbutton.type);
+            ary[1] = UINT2NUM(event->jbutton.timestamp);
             ary[2] = INT2NUM(event->jbutton.which);
-            ary[3] = INT2NUM(event->jbutton.button);
-            ary[4] = INT2NUM(event->jbutton.state);
+            ary[3] = UINT2NUM(event->jbutton.button);
+            ary[4] = UINT2NUM(event->jbutton.state);
             return rb_class_new_instance(5, ary, cJoyButtonEvent);
         }
         break;
@@ -138,8 +146,8 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_JOYDEVICEREMOVED:
         {
             VALUE ary[3];
-            ary[0] = INT2NUM(event->jdevice.type);
-            ary[1] = INT2NUM(event->jdevice.timestamp);
+            ary[0] = UINT2NUM(event->jdevice.type);
+            ary[1] = UINT2NUM(event->jdevice.timestamp);
             ary[2] = INT2NUM(event->jdevice.which);
             return rb_class_new_instance(3, ary, cJoyDeviceEvent);
         }
@@ -147,21 +155,21 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_JOYHATMOTION:
         {
             VALUE ary[5];
-            ary[0] = INT2NUM(event->jhat.type);
-            ary[1] = INT2NUM(event->jhat.timestamp);
+            ary[0] = UINT2NUM(event->jhat.type);
+            ary[1] = UINT2NUM(event->jhat.timestamp);
             ary[2] = INT2NUM(event->jhat.which);
-            ary[3] = INT2NUM(event->jhat.hat);
-            ary[4] = INT2NUM(event->jhat.value);
+            ary[3] = UINT2NUM(event->jhat.hat);
+            ary[4] = UINT2NUM(event->jhat.value);
             return rb_class_new_instance(5, ary, cJoyHatEvent);
         }
         break;
     case SDL_WINDOWEVENT:
         {
             VALUE ary[6];
-            ary[0] = INT2NUM(event->window.type);
-            ary[1] = INT2NUM(event->window.timestamp);
-            ary[2] = INT2NUM(event->window.windowID);
-            ary[3] = INT2NUM(event->window.event);
+            ary[0] = UINT2NUM(event->window.type);
+            ary[1] = UINT2NUM(event->window.timestamp);
+            ary[2] = UINT2NUM(event->window.windowID);
+            ary[3] = UINT2NUM(event->window.event);
             ary[4] = INT2NUM(event->window.data1);
             ary[5] = INT2NUM(event->window.data2);
             return rb_class_new_instance(6, ary, cWindowEvent);
@@ -170,8 +178,8 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_DROPFILE:
         {
             VALUE ary[3];
-            ary[0] = INT2NUM(event->drop.type);
-            ary[1] = INT2NUM(event->drop.timestamp);
+            ary[0] = UINT2NUM(event->drop.type);
+            ary[1] = UINT2NUM(event->drop.timestamp);
             ary[2] = SDL2R_TO_UTF8_STRING(event->drop.file);
             return rb_class_new_instance(3, ary, cDropEvent);
         }
@@ -179,9 +187,9 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_TEXTINPUT:
         {
             VALUE ary[4];
-            ary[0] = INT2NUM(event->text.type);
-            ary[1] = INT2NUM(event->text.timestamp);
-            ary[2] = INT2NUM(event->text.windowID);
+            ary[0] = UINT2NUM(event->text.type);
+            ary[1] = UINT2NUM(event->text.timestamp);
+            ary[2] = UINT2NUM(event->text.windowID);
             ary[3] = SDL2R_TO_UTF8_STRING(event->text.text);
             return rb_class_new_instance(4, ary, cTextInputEvent);
         }
@@ -189,9 +197,9 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_TEXTEDITING:
         {
             VALUE ary[6];
-            ary[0] = INT2NUM(event->edit.type);
-            ary[1] = INT2NUM(event->edit.timestamp);
-            ary[2] = INT2NUM(event->edit.windowID);
+            ary[0] = UINT2NUM(event->edit.type);
+            ary[1] = UINT2NUM(event->edit.timestamp);
+            ary[2] = UINT2NUM(event->edit.windowID);
             ary[3] = SDL2R_TO_UTF8_STRING(event->edit.text);
             ary[4] = INT2NUM(event->edit.start);
             ary[5] = INT2NUM(event->edit.length);
@@ -201,43 +209,136 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     case SDL_APP_TERMINATING:
         {
             VALUE ary[1];
-            ary[0] = INT2NUM(event->type);
+            ary[0] = UINT2NUM(event->type);
             return rb_class_new_instance(1, ary, cAppTerminating);
         }
         break;
     case SDL_APP_LOWMEMORY:
         {
             VALUE ary[1];
-            ary[0] = INT2NUM(event->type);
+            ary[0] = UINT2NUM(event->type);
             return rb_class_new_instance(1, ary, cAppLowMemory);
         }
         break;
     case SDL_APP_WILLENTERBACKGROUND:
         {
             VALUE ary[1];
-            ary[0] = INT2NUM(event->type);
+            ary[0] = UINT2NUM(event->type);
             return rb_class_new_instance(1, ary, cAppWillEnterBackground);
         }
         break;
     case SDL_APP_DIDENTERBACKGROUND:
         {
             VALUE ary[1];
-            ary[0] = INT2NUM(event->type);
+            ary[0] = UINT2NUM(event->type);
             return rb_class_new_instance(1, ary, cAppDidEnterBackground);
         }
         break;
     case SDL_APP_WILLENTERFOREGROUND:
         {
             VALUE ary[1];
-            ary[0] = INT2NUM(event->type);
+            ary[0] = UINT2NUM(event->type);
             return rb_class_new_instance(1, ary, cAppWillEnterForeground);
         }
         break;
     case SDL_APP_DIDENTERFOREGROUND:
         {
             VALUE ary[1];
-            ary[0] = INT2NUM(event->type);
+            ary[0] = UINT2NUM(event->type);
             return rb_class_new_instance(1, ary, cAppDidEnterForeground);
+        }
+        break;
+    case SDL_SYSWMEVENT:
+        {
+            VALUE ary[1];
+            ary[0] = UINT2NUM(event->type);
+            return rb_class_new_instance(1, ary, cSysWMEvent);
+        }
+        break;
+    case SDL_CLIPBOARDUPDATE:
+        {
+            VALUE ary[1];
+            ary[0] = UINT2NUM(event->type);
+            return rb_class_new_instance(1, ary, cClipboardUpdateEvent);
+        }
+        break;
+    case SDL_FINGERMOTION:
+    case SDL_FINGERDOWN:
+    case SDL_FINGERUP:
+        {
+            VALUE ary[9];
+            ary[0] = UINT2NUM(event->tfinger.type);
+            ary[1] = UINT2NUM(event->tfinger.timestamp);
+            ary[2] = LL2NUM(event->tfinger.touchId);
+            ary[3] = LL2NUM(event->tfinger.fingerId);
+            ary[4] = DBL2NUM(event->tfinger.x);
+            ary[5] = DBL2NUM(event->tfinger.y);
+            ary[6] = DBL2NUM(event->tfinger.dx);
+            ary[7] = DBL2NUM(event->tfinger.dy);
+            ary[8] = DBL2NUM(event->tfinger.pressure);
+            return rb_class_new_instance(9, ary, cTouchFingerEvent);
+        }
+        break;
+    case SDL_MULTIGESTURE:
+        {
+            VALUE ary[8];
+            ary[0] = UINT2NUM(event->mgesture.type);
+            ary[1] = UINT2NUM(event->mgesture.timestamp);
+            ary[2] = LL2NUM(event->mgesture.touchId);
+            ary[3] = DBL2NUM(event->mgesture.dTheta);
+            ary[4] = DBL2NUM(event->mgesture.dDist);
+            ary[5] = DBL2NUM(event->mgesture.x);
+            ary[6] = DBL2NUM(event->mgesture.y);
+            ary[7] = INT2NUM(event->mgesture.numFingers);
+            return rb_class_new_instance(8, ary, cMultiGestureEvent);
+        }
+        break;
+    case SDL_DOLLARGESTURE:
+        {
+            VALUE ary[8];
+            ary[0] = UINT2NUM(event->dgesture.type);
+            ary[1] = UINT2NUM(event->dgesture.timestamp);
+            ary[2] = LL2NUM(event->dgesture.touchId);
+            ary[3] = LL2NUM(event->dgesture.gestureId);
+            ary[4] = INT2NUM(event->dgesture.numFingers);
+            ary[5] = DBL2NUM(event->dgesture.error);
+            ary[6] = DBL2NUM(event->dgesture.x);
+            ary[7] = DBL2NUM(event->dgesture.y);
+            return rb_class_new_instance(8, ary, cDollarGestureEvent);
+        }
+        break;
+    case SDL_CONTROLLERAXISMOTION:
+        {
+            VALUE ary[5];
+            ary[0] = UINT2NUM(event->caxis.type);
+            ary[1] = UINT2NUM(event->caxis.timestamp);
+            ary[2] = INT2NUM(event->caxis.which);
+            ary[3] = UINT2NUM(event->caxis.axis);
+            ary[4] = INT2NUM(event->caxis.value);
+            return rb_class_new_instance(5, ary, cControllerAxisEvent);
+        }
+        break;
+    case SDL_CONTROLLERBUTTONDOWN:
+    case SDL_CONTROLLERBUTTONUP:
+        {
+            VALUE ary[5];
+            ary[0] = UINT2NUM(event->cbutton.type);
+            ary[1] = UINT2NUM(event->cbutton.timestamp);
+            ary[2] = INT2NUM(event->cbutton.which);
+            ary[3] = UINT2NUM(event->cbutton.button);
+            ary[4] = UINT2NUM(event->cbutton.state);
+            return rb_class_new_instance(5, ary, cControllerButtonEvent);
+        }
+        break;
+    case SDL_CONTROLLERDEVICEADDED:
+    case SDL_CONTROLLERDEVICEREMOVED:
+    case SDL_CONTROLLERDEVICEREMAPPED:
+        {
+            VALUE ary[3];
+            ary[0] = UINT2NUM(event->cdevice.type);
+            ary[1] = UINT2NUM(event->cdevice.timestamp);
+            ary[2] = INT2NUM(event->cdevice.which);
+            return rb_class_new_instance(3, ary, cControllerDeviceEvent);
         }
         break;
     default:
@@ -445,6 +546,30 @@ void Init_sdl2r_event(void)
 
     cUserEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "code", "data1", "data2", NULL);
     rb_define_const(mSDL, "UserEvent", cUserEvent);
+
+    cControllerAxisEvent = rb_struct_define(NULL, "type", "timestamp", "which", "axis", "value", NULL);
+    rb_define_const(mSDL, "ControllerAxisEvent", cControllerAxisEvent);
+
+    cControllerButtonEvent = rb_struct_define(NULL, "type", "timestamp", "which", "button", "state", NULL);
+    rb_define_const(mSDL, "ControllerButtonEvent", cControllerButtonEvent);
+
+    cControllerDeviceEvent = rb_struct_define(NULL, "type", "timestamp", "which", NULL);
+    rb_define_const(mSDL, "ControllerDeviceEvent", cControllerDeviceEvent);
+
+    cDollarGestureEvent = rb_struct_define(NULL, "type", "timestamp", "touch_id", "gesture_id", "num_fingers", "error", "x", "y", NULL);
+    rb_define_const(mSDL, "DollarGestureEvent", cDollarGestureEvent);
+
+    cTouchFingerEvent = rb_struct_define(NULL, "type", "timestamp", "touch_id", "finger_id", "x", "y", "dx", "dy", "pressure", NULL);
+    rb_define_const(mSDL, "TouchFingerEvent", cTouchFingerEvent);
+
+    cMultiGestureEvent = rb_struct_define(NULL, "type", "timestamp", "window_id", "d_theta", "d_dist", "x", "y", "num_fingers", NULL);
+    rb_define_const(mSDL, "MultiGestureEvent", cMultiGestureEvent);
+
+    cSysWMEvent = rb_struct_define(NULL, "type", "timestamp", "msg", NULL);
+    rb_define_const(mSDL, "SysWMEvent", cSysWMEvent);
+
+    cClipboardUpdateEvent = rb_struct_define(NULL, "type", NULL);
+    rb_define_const(mSDL, "ClipboardUpdateEvent", cClipboardUpdateEvent);
 
     // User Event hash
     g_user_event_data = rb_hash_new();
