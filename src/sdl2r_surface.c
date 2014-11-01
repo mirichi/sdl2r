@@ -71,7 +71,7 @@ VALUE sdl2r_surface_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_surface_get_destroyed(VALUE self)
+static VALUE sdl2r_surface_get_disposed(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_STRUCT(Surface, self);
     return sur->surface ? Qfalse : Qtrue;
@@ -324,7 +324,7 @@ void Init_sdl2r_surface(void)
     cSurface = rb_define_class_under(mSDL, "Surface", rb_cObject);
     rb_define_alloc_func(cSurface, sdl2r_surface_alloc);
 
-    rb_define_method(cSurface, "destroyed?", sdl2r_surface_get_destroyed, 0);
+    rb_define_method(cSurface, "disposed?", sdl2r_surface_get_disposed, 0);
     rb_define_method(cSurface, "w", sdl2r_w, 0);
     rb_define_method(cSurface, "h", sdl2r_h, 0);
     rb_define_method(cSurface, "pixels", sdl2r_get_pixels, 0);

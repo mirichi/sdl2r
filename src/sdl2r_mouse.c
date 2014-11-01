@@ -37,7 +37,7 @@ VALUE sdl2r_cursor_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_cursor_get_destroyed(VALUE self)
+static VALUE sdl2r_cursor_get_disposed(VALUE self)
 {
     struct SDL2RCursor *cs = SDL2R_GET_STRUCT(Cursor, self);
     return cs->cursor ? Qfalse : Qtrue;
@@ -103,7 +103,7 @@ void Init_sdl2r_mouse(void)
     // SDL::Cursor class
     cCursor = rb_define_class_under(mSDL, "Cursor", rb_cObject);
     rb_define_alloc_func(cCursor, sdl2r_cursor_alloc);
-    rb_define_method(cCursor, "destroyed?", sdl2r_cursor_get_destroyed, 0);
+    rb_define_method(cCursor, "disposed?", sdl2r_cursor_get_disposed, 0);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, SYSTEM_CURSOR_ARROW);

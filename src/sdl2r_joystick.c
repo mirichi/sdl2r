@@ -47,7 +47,7 @@ VALUE sdl2r_joystick_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_joystick_get_destroyed(VALUE self)
+static VALUE sdl2r_joystick_get_disposed(VALUE self)
 {
     struct SDL2RJoystick *js = SDL2R_GET_STRUCT(Joystick, self);
     return js->joystick ? Qfalse : Qtrue;
@@ -214,7 +214,7 @@ void Init_sdl2r_joystick(void)
     // SDL::Joystick class
     cJoystick = rb_define_class_under(mSDL, "Joystick", rb_cObject);
     rb_define_alloc_func(cJoystick, sdl2r_joystick_alloc);
-    rb_define_method(cJoystick, "destroyed?", sdl2r_joystick_get_destroyed, 0);
+    rb_define_method(cJoystick, "disposed?", sdl2r_joystick_get_disposed, 0);
 
     sdl2r_joystick_hash = sdl2r_hash_alloc(8);
 }

@@ -69,7 +69,7 @@ static VALUE sdl2r_destroy_window(VALUE klass, VALUE vwindow)
 }
 
 
-static VALUE sdl2r_window_get_destroyed(VALUE self)
+static VALUE sdl2r_window_get_disposed(VALUE self)
 {
     struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, self);
     return win->window ? Qfalse : Qtrue;
@@ -275,7 +275,7 @@ void Init_sdl2r_window(void)
     cWindow = rb_define_class_under(mSDL, "Window", rb_cObject);
     rb_define_alloc_func(cWindow, sdl2r_window_alloc);
 
-    rb_define_method(cWindow, "destroyed?", sdl2r_window_get_destroyed, 0);
+    rb_define_method(cWindow, "disposed?", sdl2r_window_get_disposed, 0);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, WINDOWPOS_CENTERED);

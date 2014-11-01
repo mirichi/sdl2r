@@ -70,7 +70,7 @@ static VALUE sdl2r_destroy_renderer(VALUE klass, VALUE vrenderer)
 }
 
 
-static VALUE sdl2r_renderer_get_destroyed(VALUE self)
+static VALUE sdl2r_renderer_get_disposed(VALUE self)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_STRUCT(Renderer, self);
 
@@ -324,7 +324,7 @@ void Init_sdl2r_renderer(void)
     cRenderer = rb_define_class_under(mSDL, "Renderer", rb_cObject);
     rb_define_alloc_func(cRenderer, sdl2r_renderer_alloc);
 
-    rb_define_method(cRenderer, "destroyed?", sdl2r_renderer_get_destroyed, 0);
+    rb_define_method(cRenderer, "disposed?", sdl2r_renderer_get_disposed, 0);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, RENDERER_SOFTWARE);

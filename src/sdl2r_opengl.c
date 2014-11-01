@@ -64,7 +64,7 @@ static VALUE sdl2r_gl_delete_glcontext(VALUE klass, VALUE vglcontext)
 }
 
 
-static VALUE sdl2r_glcontext_get_destroyed(VALUE self)
+static VALUE sdl2r_glcontext_get_disposed(VALUE self)
 {
     struct SDL2RGLContext *glc = SDL2R_GET_STRUCT(GLContext, self);
 
@@ -118,7 +118,7 @@ void Init_sdl2r_opengl(void)
     cGLContext = rb_define_class_under(mSDL, "GLContext", rb_cObject);
     rb_define_alloc_func(cGLContext, sdl2r_glcontext_alloc);
 
-    rb_define_method(cGLContext, "destroyed?", sdl2r_glcontext_get_destroyed, 0);
+    rb_define_method(cGLContext, "disposed?", sdl2r_glcontext_get_disposed, 0);
 }
 
 

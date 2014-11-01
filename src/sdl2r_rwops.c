@@ -46,7 +46,7 @@ VALUE sdl2r_rwops_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_rwops_get_destroyed(VALUE self)
+static VALUE sdl2r_rwops_get_disposed(VALUE self)
 {
     struct SDL2RRWops *rw = SDL2R_GET_STRUCT(RWops, self);
     return rw->rwops ? Qfalse : Qtrue;
@@ -310,7 +310,7 @@ void Init_sdl2r_rwops(void)
     cRWops = rb_define_class_under(mSDL, "RWops", rb_cObject);
     rb_define_alloc_func(cRWops, sdl2r_rwops_alloc);
 
-    rb_define_method(cRWops, "destroyed?", sdl2r_rwops_get_destroyed, 0);
+    rb_define_method(cRWops, "disposed?", sdl2r_rwops_get_disposed, 0);
 
     // Constants
     rb_define_const(mSDL, "RW_SEEK_SET", INT2FIX(RW_SEEK_SET));

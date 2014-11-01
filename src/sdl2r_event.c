@@ -345,7 +345,7 @@ static VALUE sdl2r_make_event(SDL_Event *event)
         if (event->type >= SDL_USEREVENT) {
             VALUE vevent = rb_hash_lookup(g_user_event_data, INT2NUM(event->user.code));
             rb_hash_delete(g_user_event_data, INT2NUM(event->user.code));
-            rb_struct_aset(vevent, INT2FIX(1), INT2NUM(event->user.timestamp);
+            rb_struct_aset(vevent, INT2FIX(1), INT2NUM(event->user.timestamp));
             return vevent;
         }
         break;

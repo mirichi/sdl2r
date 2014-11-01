@@ -48,7 +48,7 @@ VALUE sdl2r_chunk_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_chunk_get_destroyed(VALUE self)
+static VALUE sdl2r_chunk_get_disposed(VALUE self)
 {
     struct SDL2RChunk *cnk = SDL2R_GET_STRUCT(Chunk, self);
     return cnk->chunk ? Qfalse : Qtrue;
@@ -75,7 +75,7 @@ VALUE sdl2r_music_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_music_get_destroyed(VALUE self)
+static VALUE sdl2r_music_get_disposed(VALUE self)
 {
     struct SDL2RMusic *mus = SDL2R_GET_STRUCT(Music, self);
     return mus->music ? Qfalse : Qtrue;
@@ -192,13 +192,13 @@ void Init_sdl2r_mixer(void)
     cChunk = rb_define_class_under(mMixer, "Chunk", rb_cObject);
     rb_define_alloc_func(cChunk, sdl2r_chunk_alloc);
 
-    rb_define_method(cChunk, "destroyed?", sdl2r_chunk_get_destroyed, 0);
+    rb_define_method(cChunk, "disposed?", sdl2r_chunk_get_disposed, 0);
 
     // SDL::Mix::Music class
     cMusic = rb_define_class_under(mMixer, "Music", rb_cObject);
     rb_define_alloc_func(cMusic, sdl2r_music_alloc);
 
-    rb_define_method(cMusic, "destroyed?", sdl2r_music_get_destroyed, 0);
+    rb_define_method(cMusic, "disposed?", sdl2r_music_get_disposed, 0);
 
     // Constants
     rb_define_const(mMixer, "DEFAULT_FREQUENCY", INT2FIX(MIX_DEFAULT_FREQUENCY));

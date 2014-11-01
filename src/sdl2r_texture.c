@@ -79,7 +79,7 @@ static VALUE sdl2r_query_texture(VALUE klass, VALUE vtexture)
 }
 
 
-static VALUE sdl2r_texture_get_destroyed(VALUE self)
+static VALUE sdl2r_texture_get_disposed(VALUE self)
 {
     struct SDL2RTexture *tex = SDL2R_GET_STRUCT(Texture, self);
     return tex->texture ? Qfalse : Qtrue;
@@ -123,7 +123,7 @@ void Init_sdl2r_texture(void)
     cTexture = rb_define_class_under(mSDL, "Texture", rb_cObject);
     rb_define_alloc_func(cTexture, sdl2r_texture_alloc);
 
-    rb_define_method(cTexture, "destroyed?", sdl2r_texture_get_destroyed, 0);
+    rb_define_method(cTexture, "disposed?", sdl2r_texture_get_disposed, 0);
 
     // Constants
 }

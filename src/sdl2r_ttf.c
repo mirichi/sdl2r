@@ -38,7 +38,7 @@ VALUE sdl2r_font_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_font_get_destroyed(VALUE self)
+static VALUE sdl2r_font_get_disposed(VALUE self)
 {
     struct SDL2RFont *fnt = SDL2R_GET_STRUCT(Font, self);
     return fnt->font ? Qfalse : Qtrue;
@@ -393,7 +393,7 @@ void Init_sdl2r_ttf(void)
     cFont = rb_define_class_under(mTTF, "Font", rb_cObject);
     rb_define_alloc_func(cFont, sdl2r_font_alloc);
 
-    rb_define_method(cFont, "destroyed?", sdl2r_font_get_destroyed, 0);
+    rb_define_method(cFont, "disposed?", sdl2r_font_get_disposed, 0);
 
     rb_define_const(mTTF, "STYLE_BOLD", INT2FIX(TTF_STYLE_BOLD));
     rb_define_const(mTTF, "STYLE_ITALIC", INT2FIX(TTF_STYLE_ITALIC));
