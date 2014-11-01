@@ -30,8 +30,8 @@ static VALUE sdl2r_get_pref_path(VALUE klass, VALUE vorg, VALUE vapp)
 
 void Init_sdl2r_filesystem(void)
 {
-    rb_define_singleton_method(mSDL, "get_base_path", sdl2r_get_base_path, 0);
-    rb_define_singleton_method(mSDL, "get_pref_path", sdl2r_get_pref_path, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_base_path, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_pref_path, 2);
 }
 
 

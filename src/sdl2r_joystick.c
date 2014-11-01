@@ -153,14 +153,14 @@ static VALUE sdl2r_joystick_event_state(VALUE klass, VALUE vstate)
 void Init_sdl2r_joystick(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "num_joysticks", sdl2r_num_joysticks, 0);
-    rb_define_singleton_method(mSDL, "joystick_open", sdl2r_joystick_open, 1);
-    rb_define_singleton_method(mSDL, "joystick_close", sdl2r_joystick_close, 1);
-    rb_define_singleton_method(mSDL, "joystick_num_axes", sdl2r_joystick_num_axes, 1);
-    rb_define_singleton_method(mSDL, "joystick_num_balls", sdl2r_joystick_num_balls, 1);
-    rb_define_singleton_method(mSDL, "joystick_num_buttons", sdl2r_joystick_num_buttons, 1);
-    rb_define_singleton_method(mSDL, "joystick_num_hats", sdl2r_joystick_num_hats, 1);
-    rb_define_singleton_method(mSDL, "joystick_event_state", sdl2r_joystick_event_state, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, num_joysticks, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_open, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_close, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_num_axes, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_num_balls, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_num_buttons, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_num_hats, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_event_state, 1);
 
     // SDL::Joystick class
     cJoystick = rb_define_class_under(mSDL, "Joystick", rb_cObject);
