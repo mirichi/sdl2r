@@ -112,6 +112,21 @@ static VALUE sdl2r_set_mod_state(VALUE klass, VALUE vkeymod)
 }
 
 
+static VALUE sdl2r_get_keyboard_state(VALUE klass)
+{
+    int numkeys, i;
+    const Uint8 *c = SDL_GetKeyboardState(&numkeys);
+    VALUE vresult = rb_ary_new();
+
+    if (numkeys) {
+        for (i = 0; i < numkeys; i++) {
+            rb_ary_push(vresult, UINT2NUM(c[i]));
+        }
+    }
+    return vresult;
+}
+
+
 void Init_sdl2r_keyboard(void)
 {
     // SDL module methods
@@ -127,6 +142,7 @@ void Init_sdl2r_keyboard(void)
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, set_text_input_rect, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_mod_state, 0);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, set_mod_state, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_keyboard_state, 0);
 
     // Constants
     SDL2R_DEFINE_CONST(mSDL, SCANCODE_UNKNOWN);
