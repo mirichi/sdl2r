@@ -44,6 +44,7 @@ static VALUE sdl2r_init_sub_system(VALUE klass, VALUE flags)
 static VALUE sdl2r_quit(VALUE klass)
 {
     SDL2R_CLEAR_HASH(sdl2r_window_hash, Window, window, sdl2r_dispose_window);
+    SDL2R_CLEAR_HASH(sdl2r_joystick_hash, Joystick, joystick, sdl2r_dispose_joystick);
     SDL_Quit();
     return Qnil;
 }
@@ -127,6 +128,7 @@ static VALUE sdl2r_macro_ispixelformat_fourcc(VALUE klass, VALUE vformat)
 static void sdl2r_shutdown(VALUE obj)
 {
     SDL2R_CLEAR_HASH(sdl2r_window_hash, Window, window, sdl2r_dispose_window);
+    SDL2R_CLEAR_HASH(sdl2r_joystick_hash, Joystick, joystick, sdl2r_dispose_joystick);
 }
 
 

@@ -3,9 +3,11 @@ struct SDL2RJoystick {
 };
 
 void Init_sdl2r_joystick(void);
+void sdl2r_dispose_joystick(struct SDL2RJoystick *js);
 VALUE sdl2r_joystick_alloc(VALUE klass);
 
 #ifndef SDL2RJOYSTICK
+extern struct SDL2RHash *sdl2r_joystick_hash;
 extern const rb_data_type_t sdl2r_joystick_data_type;
 extern VALUE cJoystick;
 #endif

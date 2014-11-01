@@ -1,8 +1,10 @@
 #define SDL2RJOYSTICK
 #include "sdl2r.h"
+#include "sdl2r_hash.h"
 #include "sdl2r_joystick.h"
 
 VALUE cJoystick;
+struct SDL2RHash *sdl2r_joystick_hash;
 
 static void sdl2r_joystick_free(void *ptr);
 
@@ -16,12 +18,20 @@ const rb_data_type_t sdl2r_joystick_data_type = {
 };
 
 
+void sdl2r_dispose_joystick(struct SDL2RJoystick *js)
+{
+    sdl2r_del_hash(sdl2r_joystick_hash, (HASHKEY)js->joystick);
+    SDL_JoystickClose(js->joystick);
+    js->joystick = 0;
+}
+
+
 static void sdl2r_joystick_free(void *ptr)
 {
     struct SDL2RJoystick *js = ptr;
 
     if (js->joystick) {
-        SDL_JoystickClose(js->joystick);
+        sdl2r_dispose_joystick(js);
     }
 
     xfree(js);
@@ -65,6 +75,7 @@ static VALUE sdl2r_joystick_open(VALUE klass, VALUE vindex)
     if (!js->joystick) {
         rb_raise(eSDLError, SDL_GetError());
     }
+    sdl2r_put_hash(sdl2r_joystick_hash, (HASHKEY)js->joystick, vjoystick);
 
     return vjoystick;
 }
@@ -72,11 +83,7 @@ static VALUE sdl2r_joystick_open(VALUE klass, VALUE vindex)
 
 static VALUE sdl2r_joystick_close(VALUE klass, VALUE vjoystick)
 {
-    struct SDL2RJoystick *js = SDL2R_GET_JOYSTICK_STRUCT(vjoystick);
-
-    SDL_JoystickClose(js->joystick);
-    js->joystick = 0;
-
+    sdl2r_dispose_joystick(SDL2R_GET_JOYSTICK_STRUCT(vjoystick));
     return vjoystick;
 }
 
@@ -167,6 +174,5 @@ void Init_sdl2r_joystick(void)
     rb_define_alloc_func(cJoystick, sdl2r_joystick_alloc);
     rb_define_method(cJoystick, "destroyed?", sdl2r_joystick_get_destroyed, 0);
 
-
-
+    sdl2r_joystick_hash = sdl2r_hash_alloc(8);
 }
