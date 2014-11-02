@@ -344,8 +344,19 @@ static VALUE sdl2r_make_event(SDL_Event *event)
     default:
         if (event->type >= SDL_USEREVENT) {
             VALUE vevent = rb_hash_lookup(g_user_event_data, INT2NUM(event->user.code));
-            rb_hash_delete(g_user_event_data, INT2NUM(event->user.code));
-            rb_struct_aset(vevent, INT2FIX(1), INT2NUM(event->user.timestamp));
+            if (vevent == Qnil) {
+                VALUE ary[6];
+                ary[0] = UINT2NUM(event->user.type);
+                ary[1] = UINT2NUM(event->user.timestamp);
+                ary[2] = UINT2NUM(event->user.windowID);
+                ary[3] = INT2NUM(event->user.code);
+                ary[4] = Qnil;
+                ary[5] = Qnil;
+                vevent = rb_class_new_instance(6, ary, cUserEvent);
+            } else {
+                rb_hash_delete(g_user_event_data, INT2NUM(event->user.code));
+                rb_struct_aset(vevent, INT2FIX(1), INT2NUM(event->user.timestamp));
+            }
             return vevent;
         }
         break;
@@ -442,6 +453,47 @@ static VALUE sdl2r_wait_event(VALUE klass, VALUE vflag)
 }
 
 
+static Uint32 sdl2r_timer_callback(Uint32 interval, void *param)
+{
+    SDL_Event event;
+    SDL_UserEvent userevent;
+
+    userevent.type = (Uint32)param;
+    userevent.code = 0;
+    userevent.data1 = 0;
+    userevent.data2 = 0;
+
+    event.type = (Uint32)param;
+    event.user = userevent;
+
+    SDL_PushEvent(&event);
+    return(interval);
+}
+
+
+static VALUE sdl2r_add_timer_event(VALUE klass, VALUE vinterval, VALUE vevent_type)
+{
+    SDL_TimerID timer_id;
+
+    timer_id = SDL_AddTimer(NUM2UINT(vinterval), sdl2r_timer_callback, (VOID *)(VALUE)NUM2UINT(vevent_type));
+    if (!timer_id) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return INT2NUM(timer_id);
+}
+
+
+static VALUE sdl2r_remove_timer_event(VALUE klass, VALUE vtimer_id)
+{
+    SDL_bool result;
+
+    result = SDL_RemoveTimer(NUM2UINT(vtimer_id));
+
+    return SDL2R_TO_BOOL(result);
+}
+
+
 void Init_sdl2r_event(void)
 {
     // SDL module methods
@@ -472,6 +524,9 @@ void Init_sdl2r_event(void)
 //    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, set_event_filter, 0);
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, wait_event, 1);
 //    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, wait_event_timeout, 0);
+
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, add_timer_event, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, remove_timer_event, 1);
 
     // SDL macro
     SDL2R_DEFINE_SINGLETON_METHOD(mSDL, BUTTON, 1);
