@@ -233,15 +233,19 @@ void Init_sdl2r_mixer(void)
     mMixer = rb_define_module_under(mSDL, "Mix");
 
     // Mix module methods
-    rb_define_singleton_method(mMixer, "open_audio", sdl2r_mix_open_audio, 4);
-    rb_define_singleton_method(mMixer, "close_audio", sdl2r_mix_close_audio, 0);
-    rb_define_singleton_method(mMixer, "load_wav", sdl2r_mix_load_wav, 1);
-    rb_define_singleton_method(mMixer, "load_wav_rw", sdl2r_mix_load_wav_rw, 2);
-    rb_define_singleton_method(mMixer, "load_mus", sdl2r_mix_load_mus, 1);
-    rb_define_singleton_method(mMixer, "play_channel", sdl2r_mix_play_channel, 3);
-    rb_define_singleton_method(mMixer, "play_music", sdl2r_mix_play_music, 2);
-    rb_define_singleton_method(mMixer, "free_chunk", sdl2r_mix_free_chunk, 1);
-    rb_define_singleton_method(mMixer, "free_music", sdl2r_mix_free_music, 1);
+#define SDL2R_DEFINE_SINGLETON_METHOD_MIX(name, arity) rb_define_singleton_method(mMixer, #name, sdl2r_mix_##name, arity)
+
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(open_audio, 4);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(close_audio, 0);
+
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav_rw, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_channel, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_music, 2);
+
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_mus, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_chunk, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_music, 1);
 
     // SDL::Mix::Chunk class
     cChunk = rb_define_class_under(mMixer, "Chunk", rb_cObject);
@@ -258,19 +262,25 @@ void Init_sdl2r_mixer(void)
     rb_define_method(cMusic, "disposed?", sdl2r_music_im_get_disposed, 0);
 
     // Constants
-    rb_define_const(mMixer, "DEFAULT_FREQUENCY", INT2FIX(MIX_DEFAULT_FREQUENCY));
-    rb_define_const(mMixer, "CHANNELS", INT2FIX(MIX_CHANNELS));
-    rb_define_const(mMixer, "DEFAULT_FORMAT", INT2FIX(MIX_DEFAULT_FORMAT));
-    rb_define_const(mSDL, "AUDIO_U8", INT2FIX(AUDIO_U8));
-    rb_define_const(mSDL, "AUDIO_S8", INT2FIX(AUDIO_S8));
-    rb_define_const(mSDL, "AUDIO_U16LSB", INT2FIX(AUDIO_U16LSB));
-    rb_define_const(mSDL, "AUDIO_S16LSB", INT2FIX(AUDIO_S16LSB));
-    rb_define_const(mSDL, "AUDIO_U16MSB", INT2FIX(AUDIO_U16MSB));
-    rb_define_const(mSDL, "AUDIO_S16MSB", INT2FIX(AUDIO_S16MSB));
-    rb_define_const(mSDL, "AUDIO_U16", INT2FIX(AUDIO_U16));
-    rb_define_const(mSDL, "AUDIO_S16", INT2FIX(AUDIO_S16));
-    rb_define_const(mSDL, "AUDIO_U16SYS", INT2FIX(AUDIO_U16SYS));
-    rb_define_const(mSDL, "AUDIO_S16SYS", INT2FIX(AUDIO_S16SYS));
+#define SDL2R_DEFINE_CONST_MIX(t) rb_define_const(mMixer, #t, INT2NUM(MIX_##t))
+
+    SDL2R_DEFINE_CONST_MIX(DEFAULT_FREQUENCY);
+    SDL2R_DEFINE_CONST_MIX(CHANNELS);
+    SDL2R_DEFINE_CONST_MIX(DEFAULT_FORMAT);
+    SDL2R_DEFINE_CONST_MIX(DEFAULT_CHANNELS);
+    SDL2R_DEFINE_CONST_MIX(MAX_VOLUME);
+
+#define SDL2R_DEFINE_CONST_N(t) rb_define_const(mSDL, #t, INT2NUM(t))
+    SDL2R_DEFINE_CONST_N(AUDIO_U8);
+    SDL2R_DEFINE_CONST_N(AUDIO_S8);
+    SDL2R_DEFINE_CONST_N(AUDIO_U16LSB);
+    SDL2R_DEFINE_CONST_N(AUDIO_S16LSB);
+    SDL2R_DEFINE_CONST_N(AUDIO_U16MSB);
+    SDL2R_DEFINE_CONST_N(AUDIO_S16MSB);
+    SDL2R_DEFINE_CONST_N(AUDIO_U16);
+    SDL2R_DEFINE_CONST_N(AUDIO_S16);
+    SDL2R_DEFINE_CONST_N(AUDIO_U16SYS);
+    SDL2R_DEFINE_CONST_N(AUDIO_S16SYS);
 
     sdl2r_chunk_hash = sdl2r_hash_alloc(8);
     sdl2r_music_hash = sdl2r_hash_alloc(8);
