@@ -368,37 +368,43 @@ void Init_sdl2r_ttf(void)
     mTTF = rb_define_module_under(mSDL, "TTF");
 
     // TTF module methods
-    rb_define_singleton_method(mTTF, "init", sdl2r_ttf_init, 0);
-    rb_define_singleton_method(mTTF, "quit", sdl2r_ttf_quit, 0);
-    rb_define_singleton_method(mTTF, "open_font", sdl2r_ttf_open_font, 2);
-    rb_define_singleton_method(mTTF, "open_font_index", sdl2r_ttf_open_font_index, 3);
-    rb_define_singleton_method(mTTF, "close_font", sdl2r_ttf_close_font, 1);
-    rb_define_singleton_method(mTTF, "render_solid", sdl2r_ttf_render_solid, 3);
+#define SDL2R_DEFINE_SINGLETON_METHOD_TTF(name, arity) rb_define_singleton_method(mTTF, #name, sdl2r_ttf_##name, arity)
+
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(init, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(quit, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(open_font, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(open_font_index, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(close_font, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(render_solid, 3);
+//    SDL2R_DEFINE_SINGLETON_METHOD_TTF(render_utf8_solid, 3);
     rb_define_singleton_method(mTTF, "render_utf8_solid", sdl2r_ttf_render_solid, 3);
-    rb_define_singleton_method(mTTF, "render_shaded", sdl2r_ttf_render_shaded, 4);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(render_shaded, 4);
+//    SDL2R_DEFINE_SINGLETON_METHOD_TTF(render_utf8_shaded, 4);
     rb_define_singleton_method(mTTF, "render_utf8_shaded", sdl2r_ttf_render_shaded, 4);
-    rb_define_singleton_method(mTTF, "render_blended", sdl2r_ttf_render_blended, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(render_blended, 3);
+//    SDL2R_DEFINE_SINGLETON_METHOD_TTF(render_utf8_blended, 3);
     rb_define_singleton_method(mTTF, "render_utf8_blended", sdl2r_ttf_render_blended, 3);
-    rb_define_singleton_method(mTTF, "get_font_outline", sdl2r_ttf_get_font_outline, 1);
-    rb_define_singleton_method(mTTF, "set_font_outline", sdl2r_ttf_set_font_outline, 2);
-    rb_define_singleton_method(mTTF, "get_font_style", sdl2r_ttf_get_font_style, 1);
-    rb_define_singleton_method(mTTF, "set_font_style", sdl2r_ttf_set_font_style, 2);
-    rb_define_singleton_method(mTTF, "get_font_hinting", sdl2r_ttf_get_font_hinting, 1);
-    rb_define_singleton_method(mTTF, "set_font_hinting", sdl2r_ttf_set_font_hinting, 2);
-    rb_define_singleton_method(mTTF, "get_font_kerning", sdl2r_ttf_get_font_kerning, 1);
-    rb_define_singleton_method(mTTF, "set_font_kerning", sdl2r_ttf_set_font_kerning, 2);
-    rb_define_singleton_method(mTTF, "font_height", sdl2r_ttf_font_height, 1);
-    rb_define_singleton_method(mTTF, "font_ascent", sdl2r_ttf_font_ascent, 1);
-    rb_define_singleton_method(mTTF, "font_descent", sdl2r_ttf_font_descent, 1);
-    rb_define_singleton_method(mTTF, "font_line_skip", sdl2r_ttf_font_line_skip, 1);
-    rb_define_singleton_method(mTTF, "font_faces", sdl2r_ttf_font_faces, 1);
-    rb_define_singleton_method(mTTF, "font_face_is_fixed_width", sdl2r_ttf_font_face_is_fixed_width, 1);
-    rb_define_singleton_method(mTTF, "font_face_family_name", sdl2r_ttf_font_face_family_name, 1);
-    rb_define_singleton_method(mTTF, "font_face_style_name", sdl2r_ttf_font_face_style_name, 1);
-    rb_define_singleton_method(mTTF, "glyph_is_provided", sdl2r_ttf_glyph_is_provided, 2);
-    rb_define_singleton_method(mTTF, "glyph_metrics", sdl2r_ttf_glyph_metrics, 2);
-    rb_define_singleton_method(mTTF, "size", sdl2r_ttf_size, 2);
-    rb_define_singleton_method(mTTF, "size_utf8", sdl2r_ttf_size, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(get_font_outline, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(set_font_outline, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(get_font_style, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(set_font_style, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(get_font_hinting, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(set_font_hinting, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(get_font_kerning, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(set_font_kerning, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(font_height, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(font_ascent, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(font_descent, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(font_line_skip, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(font_faces, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(font_face_is_fixed_width, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(font_face_family_name, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(font_face_style_name, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(glyph_is_provided, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(glyph_metrics, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(size, 2);
+//    SDL2R_DEFINE_SINGLETON_METHOD_TTF(size_utf8, 2);
+    rb_define_singleton_method(mTTF, "size_utf8", sdl2r_ttf_size, 3);
 
     // SDL::TTF::Font class
     cFont = rb_define_class_under(mTTF, "Font", rb_cObject);
@@ -407,16 +413,14 @@ void Init_sdl2r_ttf(void)
     rb_define_method(cFont, "dispose", sdl2r_font_im_dispose, 0);
     rb_define_method(cFont, "disposed?", sdl2r_font_im_get_disposed, 0);
 
-    rb_define_const(mTTF, "STYLE_BOLD", INT2FIX(TTF_STYLE_BOLD));
-    rb_define_const(mTTF, "STYLE_ITALIC", INT2FIX(TTF_STYLE_ITALIC));
-    rb_define_const(mTTF, "STYLE_UNDERLINE", INT2FIX(TTF_STYLE_UNDERLINE));
-    rb_define_const(mTTF, "STYLE_STRIKETHROUGH", INT2FIX(TTF_STYLE_STRIKETHROUGH));
-    rb_define_const(mTTF, "STYLE_NORMAL", INT2FIX(TTF_STYLE_NORMAL));
-    rb_define_const(mTTF, "HINTING_NORMAL", INT2FIX(TTF_HINTING_NORMAL));
-    rb_define_const(mTTF, "HINTING_LIGHT", INT2FIX(TTF_HINTING_LIGHT));
-    rb_define_const(mTTF, "HINTING_MONO", INT2FIX(TTF_HINTING_MONO));
-    rb_define_const(mTTF, "HINTING_NONE", INT2FIX(TTF_HINTING_NONE));
-
+#define SDL2R_DEFINE_CONST_TTF(t) rb_define_const(mTTF, #t, INT2NUM(TTF_##t))
+    SDL2R_DEFINE_CONST_TTF(STYLE_BOLD);
+    SDL2R_DEFINE_CONST_TTF(STYLE_ITALIC);
+    SDL2R_DEFINE_CONST_TTF(STYLE_UNDERLINE);
+    SDL2R_DEFINE_CONST_TTF(STYLE_STRIKETHROUGH);
+    SDL2R_DEFINE_CONST_TTF(STYLE_NORMAL);
+    SDL2R_DEFINE_CONST_TTF(HINTING_NORMAL);
+    SDL2R_DEFINE_CONST_TTF(HINTING_LIGHT);
+    SDL2R_DEFINE_CONST_TTF(HINTING_MONO);
+    SDL2R_DEFINE_CONST_TTF(HINTING_NONE);
 }
-
-

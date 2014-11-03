@@ -41,8 +41,10 @@ static VALUE sdl2r_img_load_rw(VALUE klass, VALUE vrwops, VALUE vfreesrc)
 void Init_sdl2r_image(void)
 {
     mImage = rb_define_module_under(mSDL, "IMG");
-    rb_define_singleton_method(mImage, "load", sdl2r_img_load, 1);
-    rb_define_singleton_method(mImage, "load_rw", sdl2r_img_load_rw, 2);
+
+#define SDL2R_DEFINE_SINGLETON_METHOD_IMAGE(name, arity) rb_define_singleton_method(mImage, #name, sdl2r_img_##name, arity)
+    SDL2R_DEFINE_SINGLETON_METHOD_IMAGE(load, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_IMAGE(load_rw, 2);
 }
 
 

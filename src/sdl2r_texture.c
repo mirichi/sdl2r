@@ -121,10 +121,10 @@ static VALUE sdl2r_get_texture_blend_mode(VALUE klass, VALUE vtexture)
 void Init_sdl2r_texture(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "query_texture", sdl2r_query_texture, 1);
-    rb_define_singleton_method(mSDL, "destroy_texture", sdl2r_destroy_texture, 1);
-    rb_define_singleton_method(mSDL, "set_texture_blend_mode", sdl2r_set_texture_blend_mode, 2);
-    rb_define_singleton_method(mSDL, "get_texture_blend_mode", sdl2r_get_texture_blend_mode, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(query_texture, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(destroy_texture, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_texture_blend_mode, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_texture_blend_mode, 1);
 
     // SDL::Texture class
     cTexture = rb_define_class_under(mSDL, "Texture", rb_cObject);

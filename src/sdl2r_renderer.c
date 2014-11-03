@@ -7,6 +7,8 @@
 
 VALUE cRenderer;
 
+VALUE sdl2r_enum_RendererFlagsEnum;
+
 static void sdl2r_renderer_free(void *ptr);
 static void sdl2r_renderer_mark(void *ptr);
 
@@ -311,21 +313,21 @@ static VALUE sdl2r_render_fill_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
 void Init_sdl2r_renderer(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "create_texture_from_surface", sdl2r_create_texture_from_surface, 2);
-    rb_define_singleton_method(mSDL, "render_copy", sdl2r_render_copy, 4);
-    rb_define_singleton_method(mSDL, "render_copy_ex", sdl2r_render_copy_ex, 7);
-    rb_define_singleton_method(mSDL, "render_present", sdl2r_render_present, 1);
-    rb_define_singleton_method(mSDL, "destroy_renderer", sdl2r_destroy_renderer, 1);
-    rb_define_singleton_method(mSDL, "render_clear", sdl2r_render_clear, 1);
-    rb_define_singleton_method(mSDL, "set_render_draw_color", sdl2r_set_render_draw_color, 5);
-    rb_define_singleton_method(mSDL, "create_texture", sdl2r_create_texture, 5);
-    rb_define_singleton_method(mSDL, "set_render_target", sdl2r_set_render_target, 2);
-    rb_define_singleton_method(mSDL, "get_render_target", sdl2r_get_render_target, 1);
-    rb_define_singleton_method(mSDL, "set_render_draw_blend_mode", sdl2r_set_render_draw_blend_mode, 2);
-    rb_define_singleton_method(mSDL, "get_render_draw_blend_mode", sdl2r_get_render_draw_blend_mode, 1);
-    rb_define_singleton_method(mSDL, "render_fill_rect", sdl2r_render_fill_rect, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(create_texture_from_surface, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_copy, 4);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_copy_ex, 7);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_present, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(destroy_renderer, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_clear, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_render_draw_color, 5);
+    SDL2R_DEFINE_SINGLETON_METHOD(create_texture, 5);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_render_target, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_render_target, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_render_draw_blend_mode, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_render_draw_blend_mode, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_fill_rect, 2);
 
-//    rb_define_singleton_method(mSDL, "renderer_test", sdl2r_renderer_test, 1);
+//    rb_define_singleton_method(renderer_test", sdl2r_renderer_test, 1);
 
     // SDL::Renderer class
     cRenderer = rb_define_class_under(mSDL, "Renderer", rb_cObject);
@@ -334,16 +336,17 @@ void Init_sdl2r_renderer(void)
     rb_define_method(cRenderer, "dispose", sdl2r_renderer_im_dispose, 0);
     rb_define_method(cRenderer, "disposed?", sdl2r_renderer_im_get_disposed, 0);
 
-    // Constants
-    SDL2R_DEFINE_CONST(mSDL, RENDERER_SOFTWARE);
-    SDL2R_DEFINE_CONST(mSDL, RENDERER_ACCELERATED);
-    SDL2R_DEFINE_CONST(mSDL, RENDERER_PRESENTVSYNC);
-    SDL2R_DEFINE_CONST(mSDL, RENDERER_TARGETTEXTURE);
-    SDL2R_DEFINE_CONST(mSDL, TEXTUREACCESS_STATIC);
-    SDL2R_DEFINE_CONST(mSDL, TEXTUREACCESS_STREAMING);
-    SDL2R_DEFINE_CONST(mSDL, TEXTUREACCESS_TARGET);
-    SDL2R_DEFINE_CONST(mSDL, FLIP_NONE);
-    SDL2R_DEFINE_CONST(mSDL, FLIP_HORIZONTAL);
-    SDL2R_DEFINE_CONST(mSDL, FLIP_VERTICAL);
+    // enum
+    SDL2R_DEFINE_ENUM(RendererFlagsEnum);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, RENDERER_SOFTWARE);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, RENDERER_ACCELERATED);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, RENDERER_PRESENTVSYNC);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, RENDERER_TARGETTEXTURE);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, TEXTUREACCESS_STATIC);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, TEXTUREACCESS_STREAMING);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, TEXTUREACCESS_TARGET);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, FLIP_NONE);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, FLIP_HORIZONTAL);
+    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, FLIP_VERTICAL);
 }
 

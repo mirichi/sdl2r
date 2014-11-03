@@ -27,14 +27,14 @@ void Init_sdl2r_rect(void)
     cRect = rb_define_class_under(mSDL, "Rect", rb_cArray);
 
     // SDL module methods
-//    rb_define_singleton_method(mSDL, "enclose_points", sdl2r_enclose_points, 2);
-    rb_define_singleton_method(mSDL, "has_intersection", sdl2r_has_intersection, 2);
-//    rb_define_singleton_method(mSDL, "intersect_rect", sdl2r_intersect_rect, 2);
-//    rb_define_singleton_method(mSDL, "intersect_rect_and_line", sdl2r_intersect_rect_and_line, 3);
-//    rb_define_singleton_method(mSDL, "point_in_rect", sdl2r_point_in_rect, 2);
-//    rb_define_singleton_method(mSDL, "rect_rmpty", sdl2r_rect_rmpty, 1);
-//    rb_define_singleton_method(mSDL, "rect_rquals", sdl2r_rect_rquals, 2);
-//    rb_define_singleton_method(mSDL, "union_rect", sdl2r_union_rect, 2);
+//    SDL2R_DEFINE_SINGLETON_METHOD(enclose_points, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(has_intersection, 2);
+//    SDL2R_DEFINE_SINGLETON_METHOD(intersect_rect, 2);
+//    SDL2R_DEFINE_SINGLETON_METHOD(intersect_rect_and_line, 3);
+//    SDL2R_DEFINE_SINGLETON_METHOD(point_in_rect, 2);
+//    SDL2R_DEFINE_SINGLETON_METHOD(rect_rmpty, 1);
+//    SDL2R_DEFINE_SINGLETON_METHOD(rect_rquals, 2);
+//    SDL2R_DEFINE_SINGLETON_METHOD(union_rect, 2);
 }
 
 

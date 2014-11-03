@@ -16,8 +16,10 @@ extern VALUE g_global_array;
 #define SDL2R_RETRY(test) {SDL_bool retry_flag = SDL_FALSE;do {\
                             if (!(test) && !retry_flag) {rb_gc_start();retry_flag = SDL_TRUE;}else{retry_flag = SDL_FALSE;}\
 }                          while(retry_flag);}
-#define SDL2R_DEFINE_CONST(c, t) rb_define_const(c, #t, INT2NUM(SDL_##t))
-#define SDL2R_DEFINE_SINGLETON_METHOD(c, name, arity) rb_define_singleton_method(c, #name, sdl2r_##name, arity)
+#define SDL2R_DEFINE_CONST(t) rb_define_const(mSDL, #t, INT2NUM(SDL_##t))
+#define SDL2R_DEFINE_CONST_N(t) rb_define_const(mSDL, #t, INT2NUM(t))
+#define SDL2R_DEFINE_SINGLETON_METHOD(name, arity) rb_define_singleton_method(mSDL, #name, sdl2r_##name, arity)
+#define SDL2R_DEFINE_SINGLETON_METHOD_MACRO(name, arity) rb_define_singleton_method(mSDL, #name, sdl2r_macro_##name, arity)
 #define SDL2R_SET_POINT(point, vpoint) {\
             Check_Type(vpoint, T_ARRAY);\
             point.x = NUM2INT(rb_ary_entry(vpoint, 0));\
@@ -44,3 +46,4 @@ extern VALUE g_global_array;
 
 #define SDL2R_DEFINE_ENUM(t) {sdl2r_enum_##t = rb_hash_new();rb_ary_push(g_global_array, sdl2r_enum_##t);rb_define_const(mSDL, #t, sdl2r_enum_##t);}
 #define SDL2R_DEFINE_ENUM_VALUE(t, v) {rb_hash_aset(sdl2r_enum_##t, INT2NUM(SDL_##v), rb_str_new(#v, strlen(#v)));rb_define_const(mSDL, #v, INT2NUM(SDL_##v));}
+#define SDL2R_DEFINE_ENUM_VALUE_N(t, v) {rb_hash_aset(sdl2r_enum_##t, INT2NUM(v), rb_str_new(#v, strlen(#v)));rb_define_const(mSDL, #v, INT2NUM(v));}

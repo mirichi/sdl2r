@@ -41,9 +41,9 @@ VALUE sdl2r_set_clipboard_text(VALUE klass, VALUE vstr)
 void Init_sdl2r_clipboard(void)
 {
     // SDL module methods
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, get_clipboard_text, 0);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, has_clipboard_text, 0);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, set_clipboard_text, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_clipboard_text, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(has_clipboard_text, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_clipboard_text, 1);
 }
 
 

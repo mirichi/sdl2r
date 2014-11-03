@@ -105,21 +105,21 @@ static VALUE sdl2r_gl_swap_window(VALUE klass, VALUE vwindow)
 void Init_sdl2r_opengl(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "gl_delete_context", sdl2r_gl_delete_context, 1);
-//    rb_define_singleton_method(mSDL, "gl_extensionSupported
-//    rb_define_singleton_method(mSDL, "gl_getAttribute
-//    rb_define_singleton_method(mSDL, "gl_getCurglctContext
-//    rb_define_singleton_method(mSDL, "gl_getCurglctWindow
-//    rb_define_singleton_method(mSDL, "gl_getDrawableSize
-//    rb_define_singleton_method(mSDL, "gl_getProcAddress
-//    rb_define_singleton_method(mSDL, "gl_getSwapInterval
-//    rb_define_singleton_method(mSDL, "gl_loadLibrary
-    rb_define_singleton_method(mSDL, "gl_make_current", sdl2r_gl_make_current, 2);
-//    rb_define_singleton_method(mSDL, "gl_resetAttributes
-//    rb_define_singleton_method(mSDL, "gl_setAttribute
-//    rb_define_singleton_method(mSDL, "gl_setSwapInterval
-    rb_define_singleton_method(mSDL, "gl_swap_window", sdl2r_gl_swap_window, 1);
-//    rb_define_singleton_method(mSDL, "gl_unloadLibrary
+    SDL2R_DEFINE_SINGLETON_METHOD(gl_delete_context, 1);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_extensionSupported, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_getAttribute, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_getCurglctContext, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_getCurglctWindow, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_getDrawableSize, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_getProcAddress, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_getSwapInterval, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_loadLibrary, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(gl_make_current, 2);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_resetAttributes, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_setAttribute, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_setSwapInterval, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(gl_swap_window, 1);
+//    SDL2R_DEFINE_SINGLETON_METHOD(gl_unloadLibrary, 0);
 
     // SDL::GLContext class
     cGLContext = rb_define_class_under(mSDL, "GLContext", rb_cObject);

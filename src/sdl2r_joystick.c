@@ -319,27 +319,27 @@ static VALUE sdl2r_joystick_update(VALUE klass)
 void Init_sdl2r_joystick(void)
 {
     // SDL module methods
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, num_joysticks, 0);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_open, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_close, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_num_axes, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_num_balls, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_num_buttons, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_num_hats, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_event_state, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_get_attached, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_get_axis, 2);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_get_ball, 2);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_get_button, 2);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_get_device_guid, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_get_guid, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_get_guid_from_string, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_get_guid_string, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_get_hat, 2);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_instance_id, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_name, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_name_for_index, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(mSDL, joystick_update, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(num_joysticks, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_open, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_close, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_num_axes, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_num_balls, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_num_buttons, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_num_hats, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_event_state, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_get_attached, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_get_axis, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_get_ball, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_get_button, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_get_device_guid, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_get_guid, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_get_guid_from_string, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_get_guid_string, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_get_hat, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_instance_id, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_name, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_name_for_index, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(joystick_update, 0);
 
     // SDL::Joystick class
     cJoystick = rb_define_class_under(mSDL, "Joystick", rb_cObject);

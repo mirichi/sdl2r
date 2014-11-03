@@ -300,26 +300,26 @@ static VALUE sdl2r_write_le_64(VALUE klass, VALUE vrwops, VALUE vdata)
 void Init_sdl2r_rwops(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "rw_from_file", sdl2r_rw_from_file, 2);
-    rb_define_singleton_method(mSDL, "rw_from_mem", sdl2r_rw_from_mem, 2);
-    rb_define_singleton_method(mSDL, "rw_close", sdl2r_rw_close, 1);
-    rb_define_singleton_method(mSDL, "rw_read", sdl2r_rw_read, 3);
-    rb_define_singleton_method(mSDL, "rw_seek", sdl2r_rw_seek, 3);
-    rb_define_singleton_method(mSDL, "rw_size", sdl2r_rw_size, 1);
-    rb_define_singleton_method(mSDL, "rw_tell", sdl2r_rw_tell, 1);
-    rb_define_singleton_method(mSDL, "rw_write", sdl2r_rw_write, 4);
-    rb_define_singleton_method(mSDL, "read_be_16", sdl2r_read_be_16, 1);
-    rb_define_singleton_method(mSDL, "read_be_32", sdl2r_read_be_32, 1);
-    rb_define_singleton_method(mSDL, "read_be_64", sdl2r_read_be_64, 1);
-    rb_define_singleton_method(mSDL, "read_le_16", sdl2r_read_le_16, 2);
-    rb_define_singleton_method(mSDL, "read_le_32", sdl2r_read_le_32, 2);
-    rb_define_singleton_method(mSDL, "read_le_64", sdl2r_read_le_64, 2);
-    rb_define_singleton_method(mSDL, "write_be_16", sdl2r_write_be_16, 1);
-    rb_define_singleton_method(mSDL, "write_be_32", sdl2r_write_be_32, 1);
-    rb_define_singleton_method(mSDL, "write_be_64", sdl2r_write_be_64, 1);
-    rb_define_singleton_method(mSDL, "write_le_16", sdl2r_write_le_16, 2);
-    rb_define_singleton_method(mSDL, "write_le_32", sdl2r_write_le_32, 2);
-    rb_define_singleton_method(mSDL, "write_le_64", sdl2r_write_le_64, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(rw_from_file, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(rw_from_mem, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(rw_close, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(rw_read, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(rw_seek, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(rw_size, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(rw_tell, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(rw_write, 4);
+    SDL2R_DEFINE_SINGLETON_METHOD(read_be_16, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(read_be_32, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(read_be_64, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(read_le_16, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(read_le_32, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(read_le_64, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(write_be_16, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(write_be_32, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(write_be_64, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(write_le_16, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(write_le_32, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(write_le_64, 2);
 
     // SDL::RWops class
     cRWops = rb_define_class_under(mSDL, "RWops", rb_cObject);
@@ -329,9 +329,9 @@ void Init_sdl2r_rwops(void)
     rb_define_method(cRWops, "disposed?", sdl2r_rwops_im_get_disposed, 0);
 
     // Constants
-    rb_define_const(mSDL, "RW_SEEK_SET", INT2FIX(RW_SEEK_SET));
-    rb_define_const(mSDL, "RW_SEEK_CUR", INT2FIX(RW_SEEK_CUR));
-    rb_define_const(mSDL, "RW_SEEK_END", INT2FIX(RW_SEEK_END));
+    SDL2R_DEFINE_CONST_N(RW_SEEK_SET);
+    SDL2R_DEFINE_CONST_N(RW_SEEK_CUR);
+    SDL2R_DEFINE_CONST_N(RW_SEEK_END);
 }
 
 

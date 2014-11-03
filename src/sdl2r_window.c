@@ -260,23 +260,22 @@ static VALUE sdl2r_gl_create_context(VALUE klass, VALUE vwindow)
 void Init_sdl2r_window(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "create_window", sdl2r_create_window, 6);
-    rb_define_singleton_method(mSDL, "destroy_window", sdl2r_destroy_window, 1);
-    rb_define_singleton_method(mSDL, "create_renderer", sdl2r_create_renderer, 3);
-    rb_define_singleton_method(mSDL, "get_renderer", sdl2r_get_renderer, 1);
-    rb_define_singleton_method(mSDL, "get_window_surface", sdl2r_get_window_surface, 1);
-    rb_define_singleton_method(mSDL, "update_window_surface", sdl2r_update_window_surface, 1);
-    rb_define_singleton_method(mSDL, "get_window_title", sdl2r_get_window_title, 1);
-    rb_define_singleton_method(mSDL, "set_window_title", sdl2r_set_window_title, 2);
-    rb_define_singleton_method(mSDL, "get_window_pixel_format", sdl2r_get_window_pixel_format, 1);
-    rb_define_singleton_method(mSDL, "show_window", sdl2r_show_window, 1);
-    rb_define_singleton_method(mSDL, "set_window_size", sdl2r_set_window_size, 3);
-    rb_define_singleton_method(mSDL, "gl_create_context", sdl2r_gl_create_context, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(create_window, 6);
+    SDL2R_DEFINE_SINGLETON_METHOD(destroy_window, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(create_renderer, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_renderer, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_surface, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(update_window_surface, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_title, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_title, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_pixel_format, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(show_window, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_size, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(gl_create_context, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_id, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_from_id, 1);
 
-    rb_define_singleton_method(mSDL, "get_window_id", sdl2r_get_window_id, 1);
-    rb_define_singleton_method(mSDL, "get_window_from_id", sdl2r_get_window_from_id, 1);
-
-//    rb_define_singleton_method(mSDL, "window_test", sdl2r_window_test, 0);
+//    rb_define_singleton_method(window_test, 0);
 
     // SDL::Window class
     cWindow = rb_define_class_under(mSDL, "Window", rb_cObject);
@@ -286,23 +285,23 @@ void Init_sdl2r_window(void)
     rb_define_method(cWindow, "disposed?", sdl2r_window_im_get_disposed, 0);
 
     // Constants
-    SDL2R_DEFINE_CONST(mSDL, WINDOWPOS_CENTERED);
-    SDL2R_DEFINE_CONST(mSDL, WINDOWPOS_UNDEFINED);
+    SDL2R_DEFINE_CONST(WINDOWPOS_CENTERED);
+    SDL2R_DEFINE_CONST(WINDOWPOS_UNDEFINED);
 
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_FULLSCREEN);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_FULLSCREEN_DESKTOP);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_OPENGL);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_SHOWN);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_HIDDEN);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_BORDERLESS);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_RESIZABLE);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_MINIMIZED);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_MAXIMIZED);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_INPUT_GRABBED);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_INPUT_FOCUS);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_MOUSE_FOCUS);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_FOREIGN);
-    SDL2R_DEFINE_CONST(mSDL, WINDOW_ALLOW_HIGHDPI);
+    SDL2R_DEFINE_CONST(WINDOW_FULLSCREEN);
+    SDL2R_DEFINE_CONST(WINDOW_FULLSCREEN_DESKTOP);
+    SDL2R_DEFINE_CONST(WINDOW_OPENGL);
+    SDL2R_DEFINE_CONST(WINDOW_SHOWN);
+    SDL2R_DEFINE_CONST(WINDOW_HIDDEN);
+    SDL2R_DEFINE_CONST(WINDOW_BORDERLESS);
+    SDL2R_DEFINE_CONST(WINDOW_RESIZABLE);
+    SDL2R_DEFINE_CONST(WINDOW_MINIMIZED);
+    SDL2R_DEFINE_CONST(WINDOW_MAXIMIZED);
+    SDL2R_DEFINE_CONST(WINDOW_INPUT_GRABBED);
+    SDL2R_DEFINE_CONST(WINDOW_INPUT_FOCUS);
+    SDL2R_DEFINE_CONST(WINDOW_MOUSE_FOCUS);
+    SDL2R_DEFINE_CONST(WINDOW_FOREIGN);
+    SDL2R_DEFINE_CONST(WINDOW_ALLOW_HIGHDPI);
 
     sdl2r_window_hash = sdl2r_hash_alloc(8);
 }

@@ -186,7 +186,7 @@ static VALUE sdl2r_create_rgb_surface(int argc, VALUE *argv, VALUE klass)
 }
 
 
-static VALUE sdl2r_mustlock(VALUE klass, VALUE vsurface)
+static VALUE sdl2r_macro_MUSTLOCK(VALUE klass, VALUE vsurface)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
     return SDL_MUSTLOCK(sur->surface) ? Qtrue : Qfalse;
@@ -327,12 +327,14 @@ static VALUE sdl2r_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
 void Init_sdl2r_surface(void)
 {
     // SDL module methods
-    rb_define_singleton_method(mSDL, "create_rgb_surface", sdl2r_create_rgb_surface, -1);
-    rb_define_singleton_method(mSDL, "free_surface", sdl2r_free_surface, 1);
-    rb_define_singleton_method(mSDL, "blit_surface", sdl2r_blit_surface, 4);
-    rb_define_singleton_method(mSDL, "MUSTLOCK", sdl2r_mustlock, 1);
-    rb_define_singleton_method(mSDL, "lock_surface", sdl2r_lock_surface, 1);
-    rb_define_singleton_method(mSDL, "unlock_surface", sdl2r_unlock_surface, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(create_rgb_surface, -1);
+    SDL2R_DEFINE_SINGLETON_METHOD(free_surface, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(blit_surface, 4);
+    SDL2R_DEFINE_SINGLETON_METHOD(lock_surface, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(unlock_surface, 1);
+
+    // SDL macro
+    SDL2R_DEFINE_SINGLETON_METHOD_MACRO(MUSTLOCK, 1);
 
     // SDL::Surface class
     cSurface = rb_define_class_under(mSDL, "Surface", rb_cObject);
@@ -352,7 +354,5 @@ void Init_sdl2r_surface(void)
 
 
     // Constants
-//    rb_define_const(mSDL, "WINDOWPOS_CENTERED", INT2FIX(SDL_WINDOWPOS_CENTERED));
-//    rb_define_const(mSDL, "WINDOWPOS_UNDEFINED", INT2FIX(SDL_WINDOWPOS_UNDEFINED));
 }
 
