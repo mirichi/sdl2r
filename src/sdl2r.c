@@ -60,6 +60,7 @@ static VALUE sdl2r_quit(VALUE klass)
     SDL2R_CLEAR_HASH(sdl2r_joystick_hash, Joystick, joystick, sdl2r_joystick_dispose);
     SDL2R_CLEAR_HASH(sdl2r_chunk_hash, Chunk, chunk, sdl2r_chunk_dispose);
     SDL2R_CLEAR_HASH(sdl2r_music_hash, Music, music, sdl2r_music_dispose);
+    SDL2R_CLEAR_HASH(sdl2r_font_hash, Font, font, sdl2r_font_dispose);
     SDL_Quit();
     return Qnil;
 }
@@ -146,6 +147,7 @@ static void sdl2r_shutdown(VALUE obj)
     SDL2R_CLEAR_HASH(sdl2r_joystick_hash, Joystick, joystick, sdl2r_joystick_dispose);
     SDL2R_CLEAR_HASH(sdl2r_chunk_hash, Chunk, chunk, sdl2r_chunk_dispose);
     SDL2R_CLEAR_HASH(sdl2r_music_hash, Music, music, sdl2r_music_dispose);
+    SDL2R_CLEAR_HASH(sdl2r_font_hash, Font, font, sdl2r_font_dispose);
 }
 
 

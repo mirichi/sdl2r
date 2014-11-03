@@ -5,9 +5,11 @@ struct SDL2RFont {
 };
 
 void Init_sdl2r_ttf(void);
+void sdl2r_font_dispose(struct SDL2RFont *fnt);
 VALUE sdl2r_font_alloc(VALUE klass);
 
 #ifndef SDL2RTTF
+extern struct SDL2RHash *sdl2r_font_hash;
 extern VALUE mTTF;
 extern const rb_data_type_t sdl2r_font_data_type;
 extern VALUE cFont;

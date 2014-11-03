@@ -1,10 +1,12 @@
 #define SDL2RTTF
 #include "sdl2r.h"
+#include "sdl2r_hash.h"
 #include "sdl2r_ttf.h"
 #include "sdl2r_surface.h"
 
 VALUE mTTF;
 VALUE cFont;
+struct SDL2RHash *sdl2r_font_hash;
 
 static void sdl2r_font_free(void *ptr);
 
@@ -18,12 +20,19 @@ const rb_data_type_t sdl2r_font_data_type = {
 };
 
 
+void sdl2r_font_dispose(struct SDL2RFont *fnt)
+{
+    sdl2r_del_hash(sdl2r_font_hash, (HASHKEY)fnt->font);
+    TTF_CloseFont(fnt->font);
+    fnt->font = 0;
+}
+
+
 static void sdl2r_font_free(void *ptr)
 {
     struct SDL2RFont *fnt = ptr;
     if (fnt->font) {
-        TTF_CloseFont(fnt->font);
-        fnt->font = 0;
+        sdl2r_font_dispose(fnt);
     }
     xfree(fnt);
 }
@@ -40,11 +49,7 @@ VALUE sdl2r_font_alloc(VALUE klass)
 
 static VALUE sdl2r_font_im_dispose(VALUE self)
 {
-    struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(self);
-
-    TTF_CloseFont(fnt->font);
-    fnt->font = 0;
-
+    sdl2r_font_dispose(SDL2R_GET_FONT_STRUCT(self));
     return self;
 }
 
@@ -58,11 +63,7 @@ static VALUE sdl2r_font_im_get_disposed(VALUE self)
 
 static VALUE sdl2r_ttf_close_font(VALUE klass, VALUE vfont)
 {
-    struct SDL2RFont *fnt = SDL2R_GET_FONT_STRUCT(vfont);
-
-    TTF_CloseFont(fnt->font);
-    fnt->font = 0;
-
+    sdl2r_font_dispose(SDL2R_GET_FONT_STRUCT(vfont));
     return vfont;
 }
 
@@ -79,6 +80,7 @@ static VALUE sdl2r_ttf_init(VALUE klass)
 
 static VALUE sdl2r_ttf_quit(VALUE klass)
 {
+    SDL2R_CLEAR_HASH(sdl2r_font_hash, Font, font, sdl2r_font_dispose);
     TTF_Quit();
     return Qnil;
 }
@@ -93,6 +95,7 @@ static VALUE sdl2r_ttf_open_font(VALUE klass, VALUE vfilename, VALUE vsize)
     if (!fnt->font) {
         rb_raise(eSDLError, TTF_GetError());
     }
+    sdl2r_put_hash(sdl2r_font_hash, (HASHKEY)fnt->font, vfont);
 
     return vfont;
 }
@@ -107,6 +110,7 @@ static VALUE sdl2r_ttf_open_font_index(VALUE klass, VALUE vfilename, VALUE vsize
     if (!fnt->font) {
         rb_raise(eSDLError, TTF_GetError());
     }
+    sdl2r_put_hash(sdl2r_font_hash, (HASHKEY)fnt->font, vfont);
 
     return vfont;
 }
@@ -423,4 +427,6 @@ void Init_sdl2r_ttf(void)
     SDL2R_DEFINE_CONST_TTF(HINTING_LIGHT);
     SDL2R_DEFINE_CONST_TTF(HINTING_MONO);
     SDL2R_DEFINE_CONST_TTF(HINTING_NONE);
+
+    sdl2r_font_hash = sdl2r_hash_alloc(4);
 }
