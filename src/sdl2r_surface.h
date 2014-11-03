@@ -20,7 +20,7 @@ extern VALUE cPixels;
 #define SDL2R_GET_SURFACE_STRUCT(obj) (\
         (RB_TYPE_P(obj, T_DATA) && RTYPEDDATA_TYPE(obj) == &sdl2r_surface_data_type) ?\
             ((SDL2R_GET_STRUCT(Surface, obj)->surface == NULL && SDL2R_GET_STRUCT(Surface, obj)->vwindow == Qnil) ?\
-                rb_raise(eSDL2RError, "destroyed Surface object"), SDL2R_GET_STRUCT(Surface, obj)\
+                rb_raise(eSDL2RError, "disposed Surface object"), SDL2R_GET_STRUCT(Surface, obj)\
               : SDL2R_GET_STRUCT(Surface, obj)\
             )\
           : rb_raise(rb_eArgError, "wrong argument type %s (expected SDL::Surface)", rb_obj_classname(obj)), SDL2R_GET_STRUCT(Surface, obj)\

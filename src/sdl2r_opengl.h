@@ -16,7 +16,7 @@ extern VALUE cGLContext;
 #define SDL2R_GET_GLCONTEXT_STRUCT(obj) (\
         (RB_TYPE_P(obj, T_DATA) && RTYPEDDATA_TYPE(obj) == &sdl2r_glcontext_data_type) ?\
             ((SDL2R_GET_STRUCT(GLContext, obj)->glcontext == NULL) ?\
-                rb_raise(eSDL2RError, "destroyed GLContext object"), SDL2R_GET_STRUCT(GLContext, obj)\
+                rb_raise(eSDL2RError, "disposed GLContext object"), SDL2R_GET_STRUCT(GLContext, obj)\
               : SDL2R_GET_STRUCT(GLContext, obj)\
             )\
           : rb_raise(rb_eArgError, "wrong argument type %s (expected SDL::GLContext)", rb_obj_classname(obj)), SDL2R_GET_STRUCT(GLContext, obj)\

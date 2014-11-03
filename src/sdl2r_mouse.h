@@ -13,7 +13,7 @@ extern VALUE cCursor;
 #define SDL2R_GET_CURSOR_STRUCT(obj) (\
         (RB_TYPE_P(obj, T_DATA) && RTYPEDDATA_TYPE(obj) == &sdl2r_cursor_data_type) ?\
             ((SDL2R_GET_STRUCT(Cursor, obj)->cursor == NULL) ?\
-                rb_raise(eSDL2RError, "destroyed Cursor object"), SDL2R_GET_STRUCT(Cursor, obj)\
+                rb_raise(eSDL2RError, "disposed Cursor object"), SDL2R_GET_STRUCT(Cursor, obj)\
               : SDL2R_GET_STRUCT(Cursor, obj)\
             )\
           : rb_raise(rb_eArgError, "wrong argument type %s (expected SDL::Cursor)", rb_obj_classname(obj)), SDL2R_GET_STRUCT(Cursor, obj)\

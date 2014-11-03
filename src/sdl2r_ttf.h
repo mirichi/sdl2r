@@ -16,7 +16,7 @@ extern VALUE cFont;
 #define SDL2R_GET_FONT_STRUCT(obj) (\
         (RB_TYPE_P(obj, T_DATA) && RTYPEDDATA_TYPE(obj) == &sdl2r_font_data_type) ?\
             ((SDL2R_GET_STRUCT(Font, obj)->font == NULL) ?\
-                rb_raise(eSDL2RError, "destroyed Font object"), SDL2R_GET_STRUCT(Font, obj)\
+                rb_raise(eSDL2RError, "disposed Font object"), SDL2R_GET_STRUCT(Font, obj)\
               : SDL2R_GET_STRUCT(Font, obj)\
             )\
           : rb_raise(rb_eArgError, "wrong argument type %s (expected SDL::TTF::Font)", rb_obj_classname(obj)), SDL2R_GET_STRUCT(Font, obj)\

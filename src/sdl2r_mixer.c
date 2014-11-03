@@ -1,11 +1,14 @@
 #define SDL2RMIXER
 #include "sdl2r.h"
+#include "sdl2r_hash.h"
 #include "sdl2r_mixer.h"
 #include "sdl2r_rwops.h"
 
 VALUE mMixer;
 VALUE cChunk;
 VALUE cMusic;
+struct SDL2RHash *sdl2r_chunk_hash;
+struct SDL2RHash *sdl2r_music_hash;
 
 static void sdl2r_chunk_free(void *ptr);
 const rb_data_type_t sdl2r_chunk_data_type = {
@@ -28,12 +31,19 @@ const rb_data_type_t sdl2r_music_data_type = {
 };
 
 
+void sdl2r_chunk_dispose(struct SDL2RChunk *cnk)
+{
+    sdl2r_del_hash(sdl2r_chunk_hash, (HASHKEY)cnk->chunk);
+    Mix_FreeChunk(cnk->chunk);
+    cnk->chunk = 0;
+}
+
+
 static void sdl2r_chunk_free(void *ptr)
 {
     struct SDL2RChunk *cnk = ptr;
     if (cnk->chunk) {
-        Mix_FreeChunk(cnk->chunk);
-        cnk->chunk = 0;
+        sdl2r_chunk_dispose(cnk);
     }
     xfree(cnk);
 }
@@ -71,12 +81,19 @@ static VALUE sdl2r_mix_free_chunk(VALUE klass, VALUE vchunk)
 }
 
 
+void sdl2r_music_dispose(struct SDL2RMusic *mus)
+{
+    sdl2r_del_hash(sdl2r_music_hash, (HASHKEY)mus->music);
+    Mix_FreeMusic(mus->music);
+    mus->music = 0;
+}
+
+
 static void sdl2r_music_free(void *ptr)
 {
     struct SDL2RMusic *mus = ptr;
     if (mus->music) {
-        Mix_FreeMusic(mus->music);
-        mus->music = 0;
+        sdl2r_music_dispose(mus);
     }
     xfree(mus);
 }
@@ -114,6 +131,7 @@ static VALUE sdl2r_mix_free_music(VALUE klass, VALUE vmusic)
 }
 
 
+// SDL module method
 static VALUE sdl2r_mix_open_audio(VALUE klass, VALUE vfrequency, VALUE vformat, VALUE vchannels, VALUE vchunksize)
 {
 
@@ -141,6 +159,7 @@ static VALUE sdl2r_mix_load_wav(VALUE klass, VALUE vfilename)
     if (!cnk->chunk) {
         rb_raise(eSDLError, Mix_GetError());
     }
+    sdl2r_put_hash(sdl2r_chunk_hash, (HASHKEY)cnk->chunk, vchunk);
 
     return vchunk;
 }
@@ -156,6 +175,7 @@ static VALUE sdl2r_mix_load_wav_rw(VALUE klass, VALUE vrwops, VALUE vfreesrc)
     if (!cnk->chunk) {
         rb_raise(eSDLError, Mix_GetError());
     }
+    sdl2r_put_hash(sdl2r_chunk_hash, (HASHKEY)cnk->chunk, vchunk);
 
     if (NUM2INT(vfreesrc) != 0) {
         rw->rwops = 0;
@@ -176,6 +196,7 @@ static VALUE sdl2r_mix_load_mus(VALUE klass, VALUE vfilename)
     if (!mus->music) {
         rb_raise(eSDLError, Mix_GetError());
     }
+    sdl2r_put_hash(sdl2r_music_hash, (HASHKEY)mus->music, vmusic);
 
     return vmusic;
 }
@@ -250,6 +271,7 @@ void Init_sdl2r_mixer(void)
     rb_define_const(mSDL, "AUDIO_S16", INT2FIX(AUDIO_S16));
     rb_define_const(mSDL, "AUDIO_U16SYS", INT2FIX(AUDIO_U16SYS));
     rb_define_const(mSDL, "AUDIO_S16SYS", INT2FIX(AUDIO_S16SYS));
+
+    sdl2r_chunk_hash = sdl2r_hash_alloc(8);
+    sdl2r_music_hash = sdl2r_hash_alloc(8);
 }
-
-

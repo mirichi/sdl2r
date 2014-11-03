@@ -28,6 +28,9 @@ VALUE cColor;
 rb_encoding *g_enc_utf8;
 rb_encoding *g_enc_utf16;
 
+// global array
+VALUE g_global_array;
+
 // init and quit
 static VALUE sdl2r_init(VALUE klass, VALUE flags)
 {
@@ -45,6 +48,8 @@ static VALUE sdl2r_quit(VALUE klass)
 {
     SDL2R_CLEAR_HASH(sdl2r_window_hash, Window, window, sdl2r_window_dispose);
     SDL2R_CLEAR_HASH(sdl2r_joystick_hash, Joystick, joystick, sdl2r_joystick_dispose);
+    SDL2R_CLEAR_HASH(sdl2r_chunk_hash, Chunk, chunk, sdl2r_chunk_dispose);
+    SDL2R_CLEAR_HASH(sdl2r_music_hash, Music, music, sdl2r_music_dispose);
     SDL_Quit();
     return Qnil;
 }
@@ -129,6 +134,8 @@ static void sdl2r_shutdown(VALUE obj)
 {
     SDL2R_CLEAR_HASH(sdl2r_window_hash, Window, window, sdl2r_window_dispose);
     SDL2R_CLEAR_HASH(sdl2r_joystick_hash, Joystick, joystick, sdl2r_joystick_dispose);
+    SDL2R_CLEAR_HASH(sdl2r_chunk_hash, Chunk, chunk, sdl2r_chunk_dispose);
+    SDL2R_CLEAR_HASH(sdl2r_music_hash, Music, music, sdl2r_music_dispose);
 }
 
 
@@ -280,6 +287,10 @@ void Init_sdl2r(void)
     // SDL::Color class
     cColor = rb_define_class_under(mSDL, "Color", rb_cArray);
 
+    // global array
+    g_global_array = rb_ary_new();
+    rb_global_variable(&g_global_array);
+
     // initialize
     Init_sdl2r_window();
     Init_sdl2r_surface();
@@ -300,5 +311,3 @@ void Init_sdl2r(void)
     Init_sdl2r_rect();
     Init_sdl2r_version();
 }
-
-
