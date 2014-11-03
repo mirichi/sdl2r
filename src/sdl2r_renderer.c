@@ -7,7 +7,7 @@
 
 VALUE cRenderer;
 
-VALUE sdl2r_enum_RendererFlagsEnum;
+VALUE sdl2r_EnumRendererFlags;
 
 static void sdl2r_renderer_free(void *ptr);
 static void sdl2r_renderer_mark(void *ptr);
@@ -337,16 +337,16 @@ void Init_sdl2r_renderer(void)
     rb_define_method(cRenderer, "disposed?", sdl2r_renderer_im_get_disposed, 0);
 
     // enum
-    SDL2R_DEFINE_ENUM(RendererFlagsEnum);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, RENDERER_SOFTWARE);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, RENDERER_ACCELERATED);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, RENDERER_PRESENTVSYNC);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, RENDERER_TARGETTEXTURE);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, TEXTUREACCESS_STATIC);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, TEXTUREACCESS_STREAMING);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, TEXTUREACCESS_TARGET);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, FLIP_NONE);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, FLIP_HORIZONTAL);
-    SDL2R_DEFINE_ENUM_VALUE(RendererFlagsEnum, FLIP_VERTICAL);
+    SDL2R_DEFINE_ENUM(EnumRendererFlags);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, RENDERER_SOFTWARE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, RENDERER_ACCELERATED);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, RENDERER_PRESENTVSYNC);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, RENDERER_TARGETTEXTURE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, TEXTUREACCESS_STATIC);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, TEXTUREACCESS_STREAMING);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, TEXTUREACCESS_TARGET);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, FLIP_NONE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, FLIP_HORIZONTAL);
+    SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, FLIP_VERTICAL);
 }
 

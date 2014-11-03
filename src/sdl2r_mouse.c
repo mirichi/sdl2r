@@ -4,7 +4,7 @@
 
 VALUE cCursor;
 
-VALUE sdl2r_enum_SystemCursorEnum;
+VALUE sdl2r_EnumSystemCursor;
 
 static void sdl2r_cursor_free(void *ptr);
 
@@ -119,19 +119,19 @@ void Init_sdl2r_mouse(void)
     rb_define_method(cCursor, "dispose", sdl2r_cursor_im_dispose, 0);
     rb_define_method(cCursor, "disposed?", sdl2r_cursor_im_get_disposed, 0);
 
-    // Enum
-    SDL2R_DEFINE_ENUM(SystemCursorEnum);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_ARROW);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_IBEAM);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_WAIT);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_CROSSHAIR);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_WAITARROW);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_SIZENWSE);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_SIZENESW);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_SIZEWE);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_SIZENS);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_SIZEALL);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_NO);
-    SDL2R_DEFINE_ENUM_VALUE(SystemCursorEnum, SYSTEM_CURSOR_HAND);
+    // enum
+    SDL2R_DEFINE_ENUM(EnumSystemCursor);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_ARROW);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_IBEAM);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_WAIT);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_CROSSHAIR);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_WAITARROW);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_SIZENWSE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_SIZENESW);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_SIZEWE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_SIZENS);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_SIZEALL);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_NO);
+    SDL2R_DEFINE_ENUM_VALUE(EnumSystemCursor, SYSTEM_CURSOR_HAND);
 
 }
