@@ -144,6 +144,8 @@ static VALUE sdl2r_mix_open_audio(VALUE klass, VALUE vfrequency, VALUE vformat, 
 
 static VALUE sdl2r_mix_close_audio(VALUE klass)
 {
+    SDL2R_CLEAR_HASH(sdl2r_chunk_hash, Chunk, chunk, sdl2r_chunk_dispose);
+    SDL2R_CLEAR_HASH(sdl2r_music_hash, Music, music, sdl2r_music_dispose);
     Mix_CloseAudio();
     return Qnil;
 }
