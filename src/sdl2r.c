@@ -28,8 +28,9 @@ VALUE cColor;
 rb_encoding *g_enc_utf8;
 rb_encoding *g_enc_utf16;
 
-// global array
-VALUE g_global_array;
+// global object
+VALUE g_enum_array;
+
 
 // enum
 static VALUE sdl2r_EnumPixelFormat;
@@ -61,6 +62,7 @@ static VALUE sdl2r_quit(VALUE klass)
     SDL2R_CLEAR_HASH(sdl2r_chunk_hash, Chunk, chunk, sdl2r_chunk_dispose);
     SDL2R_CLEAR_HASH(sdl2r_music_hash, Music, music, sdl2r_music_dispose);
     SDL2R_CLEAR_HASH(sdl2r_font_hash, Font, font, sdl2r_font_dispose);
+    rb_hash_clear(g_user_event_data);
     SDL_Quit();
     return Qnil;
 }
@@ -175,9 +177,9 @@ void Init_sdl2r(void)
     SDL2R_DEFINE_SINGLETON_METHOD(get_error, 0);
     SDL2R_DEFINE_SINGLETON_METHOD(set_error, 1);
 
-    // global array
-    g_global_array = rb_ary_new();
-    rb_global_variable(&g_global_array);
+    // enum array
+    g_enum_array = rb_ary_new();
+    rb_global_variable(&g_enum_array);
 
     // Constants
     SDL2R_DEFINE_CONST(INIT_TIMER);

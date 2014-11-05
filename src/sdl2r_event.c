@@ -34,7 +34,7 @@ static VALUE cTouchFingerEvent;
 static VALUE cClipboardUpdateEvent;
 
 static Sint32 g_user_event_id = 0;
-static VALUE g_user_event_data = Qnil;
+VALUE g_user_event_data = Qnil;
 
 // enum
 VALUE sdl2r_EnumHatPositions;
@@ -630,7 +630,7 @@ void Init_sdl2r_event(void)
 
     // User Event hash
     g_user_event_data = rb_hash_new();
-    rb_ary_push(g_global_array, g_user_event_data);
+    rb_global_variable(&g_user_event_data);
 
     // define enum
     SDL2R_DEFINE_ENUM(EnumHatPositions);

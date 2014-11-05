@@ -9,7 +9,7 @@ extern VALUE eSDL2RError;
 extern rb_encoding *g_enc_utf8;
 extern rb_encoding *g_enc_utf16;
 extern VALUE cColor;
-extern VALUE g_global_array;
+extern VALUE g_enum_array;
 #endif
 
 #define SDL2R_GET_STRUCT(name, obj) ((struct SDL2R##name *)DATA_PTR(obj))
@@ -44,6 +44,6 @@ extern VALUE g_global_array;
 #define SDL2R_TO_UTF8_STRING(str) rb_enc_str_new(str, strlen(str), g_enc_utf8)
 #define SDL2R_TO_BOOL(b) ((b) ? Qtrue : Qfalse)
 
-#define SDL2R_DEFINE_ENUM(t) {sdl2r_##t = rb_hash_new();rb_ary_push(g_global_array, sdl2r_##t);rb_define_const(mSDL, #t, sdl2r_##t);}
+#define SDL2R_DEFINE_ENUM(t) {sdl2r_##t = rb_hash_new();rb_ary_push(g_enum_array, sdl2r_##t);rb_define_const(mSDL, #t, sdl2r_##t);}
 #define SDL2R_DEFINE_ENUM_VALUE(t, v) {rb_hash_aset(sdl2r_##t, INT2NUM(SDL_##v), rb_str_new(#v, strlen(#v)));rb_define_const(mSDL, #v, INT2NUM(SDL_##v));}
 #define SDL2R_DEFINE_ENUM_VALUE_N(t, v) {rb_hash_aset(sdl2r_##t, INT2NUM(v), rb_str_new(#v, strlen(#v)));rb_define_const(mSDL, #v, INT2NUM(v));}
