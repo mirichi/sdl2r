@@ -177,6 +177,26 @@ static VALUE sdl2r_create_window(VALUE klass, VALUE vstr, VALUE vx, VALUE vy, VA
 }
 
 
+static VALUE sdl2r_create_window_and_renderer(VALUE klass, VALUE vw, VALUE vh, VALUE vflags)
+{
+    VALUE vwindow = sdl2r_window_alloc(cWindow);
+    struct SDL2RWindow *win = SDL2R_GET_STRUCT(Window, vwindow);
+    VALUE vrenderer = sdl2r_renderer_alloc(cRenderer);
+    struct SDL2RRenderer *ren = SDL2R_GET_STRUCT(Renderer, vrenderer);
+    int result;
+
+    SDL2R_RETRY((result = SDL_CreateWindowAndRenderer(NUM2INT(vw), NUM2INT(vh), NUM2INT(vflags), &(win->window), &(ren->renderer))) == 0 ? 1 : 0);
+    if (result) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+    sdl2r_put_hash(sdl2r_window_hash, (HASHKEY)win->window, vwindow);
+    ren->vwindow = vwindow;
+    win->vrenderer = vrenderer;
+
+    return rb_ary_new3(2, vwindow, vrenderer);
+}
+
+
 static VALUE sdl2r_get_window_pixel_format(VALUE klass, VALUE vwindow)
 {
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
@@ -261,6 +281,7 @@ void Init_sdl2r_window(void)
 {
     // SDL module methods
     SDL2R_DEFINE_SINGLETON_METHOD(create_window, 6);
+    SDL2R_DEFINE_SINGLETON_METHOD(create_window_and_renderer, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(destroy_window, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(create_renderer, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(get_renderer, 1);
