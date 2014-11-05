@@ -268,6 +268,26 @@ static VALUE sdl2r_gl_create_context(VALUE klass, VALUE vwindow)
 }
 
 
+static VALUE sdl2r_get_window_position(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+    int x, y;
+
+    SDL_GetWindowPosition(win->window, &x, &y);
+    return rb_ary_new3(2, INT2NUM(x), INT2NUM(y));
+}
+
+
+static VALUE sdl2r_set_window_position(VALUE klass, VALUE vwindow, VALUE vx, VALUE vy)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    SDL_SetWindowPosition(win->window, NUM2INT(vx), NUM2INT(vy));
+    return Qnil;
+}
+
+
+
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
 //    printf("n_buckets = %d\n", sdl2r_window_hash->n_buckets);
@@ -295,6 +315,8 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(gl_create_context, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_id, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_from_id, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_position, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_position, 3);
 
 //    rb_define_singleton_method(window_test, 0);
 
