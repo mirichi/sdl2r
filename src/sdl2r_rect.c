@@ -47,7 +47,7 @@ VALUE sdl2r_has_intersection(VALUE klass, VALUE vrecta, VALUE vrectb)
     SDL2R_SET_RECT(a, vrecta);
     SDL2R_SET_RECT(b, vrectb);
 
-    return SDL_HasIntersection(&a, &b) ? Qtrue : Qfalse;
+    return SDL2R_TO_BOOL(SDL_HasIntersection(&a, &b));
 }
 
 
@@ -98,6 +98,30 @@ VALUE sdl2r_intersect_rect_and_line(VALUE klass, VALUE vrect, VALUE vpointa, VAL
 }
 
 
+//VALUE sdl2r_point_in_rect(VALUE klass, VALUE vpoint, VALUE vrect)
+//{
+//    SDL_Point point;
+//    SDL_Rect rect;
+//    SDL_bool bol;
+//
+//    SDL2R_SET_POINT(point, vpoint);
+//    SDL2R_SET_RECT(rect, vrect);
+//
+//    bol = SDL_PointInRect(&point, &rect);
+//    return SDL2R_TO_BOOL(bol);
+//}
+
+
+VALUE sdl2r_rect_empty(VALUE klass, VALUE vrect)
+{
+    SDL_Rect rect;
+
+    SDL2R_SET_RECT(rect, vrect);
+
+    return SDL2R_TO_BOOL(SDL_RectEmpty(&rect));
+}
+
+
 void Init_sdl2r_rect(void)
 {
     // SDL::Point class
@@ -112,8 +136,8 @@ void Init_sdl2r_rect(void)
     SDL2R_DEFINE_SINGLETON_METHOD(intersect_rect, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(intersect_rect_and_line, 3);
 //    SDL2R_DEFINE_SINGLETON_METHOD(point_in_rect, 2);
-//    SDL2R_DEFINE_SINGLETON_METHOD(rect_rmpty, 1);
-//    SDL2R_DEFINE_SINGLETON_METHOD(rect_rquals, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(rect_empty, 1);
+//    SDL2R_DEFINE_SINGLETON_METHOD(rect_equals, 2);
 //    SDL2R_DEFINE_SINGLETON_METHOD(union_rect, 2);
 }
 
