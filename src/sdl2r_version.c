@@ -21,7 +21,7 @@ VALUE sdl2r_get_revisionNumber(VALUE klass)
 VALUE sdl2r_get_version(VALUE klass)
 {
     SDL_version v;
-    VALUE ary[5];
+    VALUE ary[3];
 
     SDL_GetVersion(&v);
     ary[0] = INT2NUM(v.major);
@@ -35,7 +35,7 @@ VALUE sdl2r_get_version(VALUE klass)
 VALUE sdl2r_macro_VERSION(VALUE klass)
 {
     SDL_version v;
-    VALUE ary[5];
+    VALUE ary[3];
 
     SDL_VERSION(&v);
     ary[0] = INT2NUM(v.major);
