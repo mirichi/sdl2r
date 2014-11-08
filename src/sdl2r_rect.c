@@ -151,6 +151,10 @@ VALUE sdl2r_union_rect(VALUE klass, VALUE vrecta, VALUE vrectb)
     SDL2R_SET_RECT_OR_NULL(precta, recta, vrecta);
     SDL2R_SET_RECT_OR_NULL(prectb, rectb, vrectb);
 
+    if (precta == NULL || prectb == NULL) {
+        rb_raise(rb_eArgError, "wrong argument type NilClass (expected SDL::Rect)");
+    }
+
     SDL_UnionRect(precta, prectb, &result);
 
     return sdl2r_rect2vrect(&result);
