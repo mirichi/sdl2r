@@ -10,6 +10,8 @@ VALUE cMusic;
 struct SDL2RHash *sdl2r_chunk_hash;
 struct SDL2RHash *sdl2r_music_hash;
 
+VALUE sdl2r_EnumAudioFormat;
+
 static void sdl2r_chunk_free(void *ptr);
 const rb_data_type_t sdl2r_chunk_data_type = {
     "Chunk",
@@ -151,6 +153,22 @@ static VALUE sdl2r_mix_close_audio(VALUE klass)
 }
 
 
+static VALUE sdl2r_mix_query_spec(VALUE klass)
+{
+    int frequency, channels;
+    Uint16 format;
+    int result;
+
+    result = Mix_QuerySpec(&frequency, &format, &channels);
+    if (result == 0) {
+        return Qnil;
+    }
+
+    return rb_ary_new3(3, INT2NUM(frequency), INT2NUM(format), INT2NUM(channels));
+}
+
+
+// Chunk
 static VALUE sdl2r_mix_load_wav(VALUE klass, VALUE vfilename)
 {
     VALUE vchunk = sdl2r_chunk_alloc(cChunk);
@@ -188,6 +206,21 @@ static VALUE sdl2r_mix_load_wav_rw(VALUE klass, VALUE vrwops, VALUE vfreesrc)
 }
 
 
+static VALUE sdl2r_mix_play_channel(VALUE klass, VALUE vchannel, VALUE vchunk, VALUE vloops)
+{
+    struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
+    int result;
+
+    result = Mix_PlayChannel(NUM2INT(vchannel), cnk->chunk, NUM2INT(vloops));
+    if (result == -1) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+
+    return INT2NUM(result);
+}
+
+
+// Music
 static VALUE sdl2r_mix_load_mus(VALUE klass, VALUE vfilename)
 {
     VALUE vmusic = sdl2r_music_alloc(cMusic);
@@ -201,20 +234,6 @@ static VALUE sdl2r_mix_load_mus(VALUE klass, VALUE vfilename)
     sdl2r_put_hash(sdl2r_music_hash, (HASHKEY)mus->music, vmusic);
 
     return vmusic;
-}
-
-
-static VALUE sdl2r_mix_play_channel(VALUE klass, VALUE vchannel, VALUE vchunk, VALUE vloops)
-{
-    struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
-    int result;
-
-    result = Mix_PlayChannel(NUM2INT(vchannel), cnk->chunk, NUM2INT(vloops));
-    if (result == -1) {
-        rb_raise(eSDLError, Mix_GetError());
-    }
-
-    return INT2NUM(result);
 }
 
 
@@ -239,14 +258,15 @@ void Init_sdl2r_mixer(void)
 
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(open_audio, 4);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(close_audio, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(query_spec, 0);
 
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav_rw, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_channel, 3);
-    SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_music, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_chunk, 1);
 
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_mus, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_chunk, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_music, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_music, 1);
 
     // SDL::Mix::Chunk class
@@ -272,16 +292,17 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_CONST_MIX(DEFAULT_CHANNELS);
     SDL2R_DEFINE_CONST_MIX(MAX_VOLUME);
 
-    SDL2R_DEFINE_CONST_N(AUDIO_U8);
-    SDL2R_DEFINE_CONST_N(AUDIO_S8);
-    SDL2R_DEFINE_CONST_N(AUDIO_U16LSB);
-    SDL2R_DEFINE_CONST_N(AUDIO_S16LSB);
-    SDL2R_DEFINE_CONST_N(AUDIO_U16MSB);
-    SDL2R_DEFINE_CONST_N(AUDIO_S16MSB);
-    SDL2R_DEFINE_CONST_N(AUDIO_U16);
-    SDL2R_DEFINE_CONST_N(AUDIO_S16);
-    SDL2R_DEFINE_CONST_N(AUDIO_U16SYS);
-    SDL2R_DEFINE_CONST_N(AUDIO_S16SYS);
+    SDL2R_DEFINE_ENUM(EnumAudioFormat);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_U8);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_S8);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_U16LSB);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_S16LSB);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_U16MSB);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_S16MSB);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_U16);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_S16);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_U16SYS);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_S16SYS);
 
     sdl2r_chunk_hash = sdl2r_hash_alloc(8);
     sdl2r_music_hash = sdl2r_hash_alloc(8);
