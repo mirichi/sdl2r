@@ -315,6 +315,7 @@ void Init_sdl2r(void)
     cColor = rb_define_class_under(mSDL, "Color", rb_cArray);
 
     // initialize
+    Init_sdl2r_version();
     Init_sdl2r_window();
     Init_sdl2r_surface();
     Init_sdl2r_renderer();
@@ -332,5 +333,4 @@ void Init_sdl2r(void)
     Init_sdl2r_opengl();
     Init_sdl2r_mouse();
     Init_sdl2r_rect();
-    Init_sdl2r_version();
 }

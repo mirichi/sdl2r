@@ -3,6 +3,7 @@
 #include "sdl2r_hash.h"
 #include "sdl2r_mixer.h"
 #include "sdl2r_rwops.h"
+#include "sdl2r_version.h"
 
 VALUE mMixer;
 VALUE cChunk;
@@ -168,6 +169,33 @@ static VALUE sdl2r_mix_query_spec(VALUE klass)
 }
 
 
+VALUE sdl2r_mix_linked_version(VALUE klass)
+{
+    const SDL_version *v = Mix_Linked_Version();
+    VALUE ary[3];
+
+    ary[0] = INT2NUM(v->major);
+    ary[1] = INT2NUM(v->minor);
+    ary[2] = INT2NUM(v->patch);
+
+    return rb_class_new_instance(3, ary, cVersion);
+}
+
+
+VALUE sdl2r_macro_MIXER_VERSION(VALUE klass)
+{
+    SDL_version v;
+    VALUE ary[3];
+
+    SDL_MIXER_VERSION(&v);
+    ary[0] = INT2NUM(v.major);
+    ary[1] = INT2NUM(v.minor);
+    ary[2] = INT2NUM(v.patch);
+
+    return rb_class_new_instance(3, ary, cVersion);
+}
+
+
 // Chunk
 static VALUE sdl2r_mix_load_wav(VALUE klass, VALUE vfilename)
 {
@@ -259,6 +287,7 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(open_audio, 4);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(close_audio, 0);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(query_spec, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(linked_version, 0);
 
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav_rw, 2);
@@ -284,7 +313,9 @@ void Init_sdl2r_mixer(void)
     rb_define_method(cMusic, "disposed?", sdl2r_music_im_get_disposed, 0);
 
     // Constants
-#define SDL2R_DEFINE_CONST_MIX(t) rb_define_const(mMixer, #t, INT2NUM(MIX_##t))
+    rb_define_const(mMixer, "MIXER_VERSION", sdl2r_macro_MIXER_VERSION(mMixer));
+
+    #define SDL2R_DEFINE_CONST_MIX(t) rb_define_const(mMixer, #t, INT2NUM(MIX_##t))
 
     SDL2R_DEFINE_CONST_MIX(DEFAULT_FREQUENCY);
     SDL2R_DEFINE_CONST_MIX(CHANNELS);
