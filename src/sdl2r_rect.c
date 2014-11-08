@@ -5,13 +5,32 @@
 VALUE cRect;
 VALUE cPoint;
 
+static VALUE sdl2r_rect2vrect(SDL_Rect *r)
+{
+    VALUE ary[4];
+    ary[0] = INT2NUM(r->x);
+    ary[1] = INT2NUM(r->y);
+    ary[2] = INT2NUM(r->w);
+    ary[3] = INT2NUM(r->h);
+    return rb_class_new_instance(4, ary, cRect);
+}
+
+
+static VALUE sdl2r_point2vpoint(SDL_Point *p)
+{
+    VALUE ary[2];
+    ary[0] = INT2NUM(p->x);
+    ary[1] = INT2NUM(p->y);
+    return rb_class_new_instance(2, ary, cPoint);
+}
+
+
 VALUE sdl2r_enclose_points(VALUE klass, VALUE vpoints, VALUE vclip)
 {
     SDL_Rect clip, result;
     SDL_Rect *pclip=0;
     int i;
     SDL_bool bol = SDL_FALSE;
-    VALUE ary[4];
 
     SDL2R_SET_RECT_OR_NULL(pclip, clip, vclip);
 
@@ -29,11 +48,7 @@ VALUE sdl2r_enclose_points(VALUE klass, VALUE vpoints, VALUE vclip)
         return Qnil;
     }
 
-    ary[0] = INT2NUM(result.x);
-    ary[1] = INT2NUM(result.y);
-    ary[2] = INT2NUM(result.w);
-    ary[3] = INT2NUM(result.h);
-    return rb_class_new_instance(4, ary, cRect);
+    return sdl2r_rect2vrect(&result);
 }
 
 
@@ -51,7 +66,6 @@ VALUE sdl2r_has_intersection(VALUE klass, VALUE vrecta, VALUE vrectb)
 VALUE sdl2r_intersect_rect(VALUE klass, VALUE vrecta, VALUE vrectb)
 {
     SDL_Rect a, b, result;
-    VALUE ary[4];
     SDL_bool bol;
 
     SDL2R_SET_RECT(a, vrecta);
@@ -62,11 +76,7 @@ VALUE sdl2r_intersect_rect(VALUE klass, VALUE vrecta, VALUE vrectb)
         return Qnil;
     }
 
-    ary[0] = INT2NUM(result.x);
-    ary[1] = INT2NUM(result.y);
-    ary[2] = INT2NUM(result.w);
-    ary[3] = INT2NUM(result.h);
-    return rb_class_new_instance(4, ary, cRect);
+    return sdl2r_rect2vrect(&result);
 }
 
 
@@ -74,8 +84,6 @@ VALUE sdl2r_intersect_rect_and_line(VALUE klass, VALUE vrect, VALUE vpointa, VAL
 {
     SDL_Rect rect;
     SDL_Point a, b;
-    VALUE ary_a[2];
-    VALUE ary_b[2];
     SDL_bool bol;
 
     SDL2R_SET_RECT(rect, vrect);
@@ -87,11 +95,7 @@ VALUE sdl2r_intersect_rect_and_line(VALUE klass, VALUE vrect, VALUE vpointa, VAL
         return Qnil;
     }
 
-    ary_a[0] = INT2NUM(a.x);
-    ary_a[1] = INT2NUM(a.y);
-    ary_b[0] = INT2NUM(b.x);
-    ary_b[1] = INT2NUM(b.y);
-    return rb_ary_new3(2, rb_class_new_instance(2, ary_a, cPoint), rb_class_new_instance(2, ary_b, cPoint));
+    return rb_ary_new3(2, sdl2r_point2vpoint(&a), sdl2r_point2vpoint(&b));
 }
 
 
