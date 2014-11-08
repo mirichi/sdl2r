@@ -20,18 +20,6 @@ extern VALUE g_enum_array;
 #define SDL2R_DEFINE_CONST_N(t) rb_define_const(mSDL, #t, INT2NUM(t))
 #define SDL2R_DEFINE_SINGLETON_METHOD(name, arity) rb_define_singleton_method(mSDL, #name, sdl2r_##name, arity)
 #define SDL2R_DEFINE_SINGLETON_METHOD_MACRO(name, arity) rb_define_singleton_method(mSDL, #name, sdl2r_macro_##name, arity)
-#define SDL2R_SET_POINT(point, vpoint) {\
-            Check_Type(vpoint, T_ARRAY);\
-            point.x = NUM2INT(rb_ary_entry(vpoint, 0));\
-            point.y = NUM2INT(rb_ary_entry(vpoint, 1));\
-        }
-#define SDL2R_SET_RECT(rect, vrect) {\
-            Check_Type(vrect, T_ARRAY);\
-            rect.x = NUM2INT(rb_ary_entry(vrect, 0));\
-            rect.y = NUM2INT(rb_ary_entry(vrect, 1));\
-            rect.w = NUM2INT(rb_ary_entry(vrect, 2));\
-            rect.h = NUM2INT(rb_ary_entry(vrect, 3));\
-        }
 #define SDL2R_SET_COLOR(color, vcolor) {\
             Check_Type(vcolor, T_ARRAY);\
             color.r = NUM2INT(rb_ary_entry(vcolor, 0));\

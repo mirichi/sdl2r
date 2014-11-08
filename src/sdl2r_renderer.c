@@ -4,6 +4,7 @@
 #include "sdl2r_window.h"
 #include "sdl2r_renderer.h"
 #include "sdl2r_texture.h"
+#include "sdl2r_rect.h"
 
 VALUE cRenderer;
 
@@ -94,14 +95,8 @@ static VALUE sdl2r_render_copy(VALUE klass, VALUE vrenderer, VALUE vtexture, VAL
     SDL_Rect srcrect, dstrect;
     SDL_Rect *psr=0, *pdr=0;
 
-    if (vsrcrect != Qnil) {
-        SDL2R_SET_RECT(srcrect, vsrcrect);
-        psr = &srcrect;
-    }
-    if (vdstrect != Qnil) {
-        SDL2R_SET_RECT(dstrect, vdstrect);
-        pdr = &dstrect;
-    }
+    SDL2R_SET_RECT_OR_NULL(psr, srcrect, vsrcrect);
+    SDL2R_SET_RECT_OR_NULL(pdr, dstrect, vdstrect);
 
     if (SDL_RenderCopy(ren->renderer, tex->texture, psr, pdr)) {
         rb_raise(eSDLError, SDL_GetError());

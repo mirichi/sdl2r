@@ -13,10 +13,7 @@ VALUE sdl2r_enclose_points(VALUE klass, VALUE vpoints, VALUE vclip)
     SDL_bool bol = SDL_FALSE;
     VALUE ary[4];
 
-    if (vclip != Qnil) {
-        SDL2R_SET_RECT(clip, vclip);
-        pclip = &clip;
-    }
+    SDL2R_SET_RECT_OR_NULL(pclip, clip, vclip);
 
     Check_Type(vpoints, T_ARRAY);
     {

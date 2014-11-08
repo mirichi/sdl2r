@@ -2,6 +2,7 @@
 #include "sdl2r.h"
 #include "sdl2r_window.h"
 #include "sdl2r_keyboard.h"
+#include "sdl2r_rect.h"
 
 VALUE sdl2r_EnumScancode;
 VALUE sdl2r_EnumKeycode;
@@ -89,10 +90,7 @@ static VALUE sdl2r_set_text_input_rect(VALUE klass, VALUE vrect)
     SDL_Rect rect;
     SDL_Rect *pr=0;
 
-    if (vrect != Qnil) {
-        SDL2R_SET_RECT(rect, vrect);
-        pr = &rect;
-    }
+    SDL2R_SET_RECT_OR_NULL(pr, rect, vrect);
 
     SDL_SetTextInputRect(pr);
     return Qnil;
