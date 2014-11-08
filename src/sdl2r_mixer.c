@@ -313,10 +313,13 @@ void Init_sdl2r_mixer(void)
     rb_define_method(cMusic, "disposed?", sdl2r_music_im_get_disposed, 0);
 
     // Constants
-    rb_define_const(mMixer, "MIXER_VERSION", sdl2r_macro_MIXER_VERSION(mMixer));
+    rb_define_const(mSDL, "MIXER_VERSION", sdl2r_macro_MIXER_VERSION(mSDL));
 
     #define SDL2R_DEFINE_CONST_MIX(t) rb_define_const(mMixer, #t, INT2NUM(MIX_##t))
 
+    SDL2R_DEFINE_CONST(MIXER_MAJOR_VERSION);
+    SDL2R_DEFINE_CONST(MIXER_MINOR_VERSION);
+    SDL2R_DEFINE_CONST(MIXER_PATCHLEVEL);
     SDL2R_DEFINE_CONST_MIX(DEFAULT_FREQUENCY);
     SDL2R_DEFINE_CONST_MIX(CHANNELS);
     SDL2R_DEFINE_CONST_MIX(DEFAULT_FORMAT);
