@@ -8,6 +8,9 @@ VALUE cPoint;
 static VALUE sdl2r_rect2vrect(SDL_Rect *r)
 {
     VALUE ary[4];
+    if (!r) {
+        return Qnil;
+    }
     ary[0] = INT2NUM(r->x);
     ary[1] = INT2NUM(r->y);
     ary[2] = INT2NUM(r->w);
@@ -19,6 +22,9 @@ static VALUE sdl2r_rect2vrect(SDL_Rect *r)
 static VALUE sdl2r_point2vpoint(SDL_Point *p)
 {
     VALUE ary[2];
+    if (!p) {
+        return Qnil;
+    }
     ary[0] = INT2NUM(p->x);
     ary[1] = INT2NUM(p->y);
     return rb_class_new_instance(2, ary, cPoint);
@@ -99,6 +105,7 @@ VALUE sdl2r_intersect_rect_and_line(VALUE klass, VALUE vrect, VALUE vpointa, VAL
 }
 
 
+// This function is available since SDL 2.0.4.
 //VALUE sdl2r_point_in_rect(VALUE klass, VALUE vpoint, VALUE vrect)
 //{
 //    SDL_Point point;
@@ -123,6 +130,33 @@ VALUE sdl2r_rect_empty(VALUE klass, VALUE vrect)
 }
 
 
+VALUE sdl2r_rect_equals(VALUE klass, VALUE vrecta, VALUE vrectb)
+{
+    SDL_Rect recta, rectb;
+    SDL_Rect *precta, *prectb;
+
+    SDL2R_SET_RECT_OR_NULL(precta, recta, vrecta);
+    SDL2R_SET_RECT_OR_NULL(prectb, rectb, vrectb);
+
+    return SDL2R_TO_BOOL(SDL_RectEquals(precta, prectb));
+}
+
+
+VALUE sdl2r_union_rect(VALUE klass, VALUE vrecta, VALUE vrectb)
+{
+    SDL_Rect recta, rectb;
+    SDL_Rect *precta, *prectb;
+    SDL_Rect result;
+
+    SDL2R_SET_RECT_OR_NULL(precta, recta, vrecta);
+    SDL2R_SET_RECT_OR_NULL(prectb, rectb, vrectb);
+
+    SDL_UnionRect(precta, prectb, &result);
+
+    return sdl2r_rect2vrect(&result);
+}
+
+
 void Init_sdl2r_rect(void)
 {
     // SDL::Point class
@@ -138,8 +172,8 @@ void Init_sdl2r_rect(void)
     SDL2R_DEFINE_SINGLETON_METHOD(intersect_rect_and_line, 3);
 //    SDL2R_DEFINE_SINGLETON_METHOD(point_in_rect, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(rect_empty, 1);
-//    SDL2R_DEFINE_SINGLETON_METHOD(rect_equals, 2);
-//    SDL2R_DEFINE_SINGLETON_METHOD(union_rect, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(rect_equals, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(union_rect, 2);
 }
 
 
