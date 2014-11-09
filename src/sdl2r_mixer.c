@@ -13,6 +13,7 @@ struct SDL2RHash *sdl2r_music_hash;
 
 static VALUE sdl2r_EnumAudioFormat;
 static VALUE sdl2r_EnumMusicType;
+static VALUE sdl2r_EnumFading;
 
 static Uint32 ChannelFinishedEventID;
 
@@ -339,11 +340,11 @@ void Init_sdl2r_mixer(void)
     rb_define_const(mSDL, "MIXER_CHANNELFINISHED", UINT2NUM(ChannelFinishedEventID));
     rb_define_const(mSDL, "MIXER_VERSION", sdl2r_macro_MIXER_VERSION(mSDL));
 
-    #define SDL2R_DEFINE_CONST_MIX(t) rb_define_const(mMixer, #t, INT2NUM(MIX_##t))
-
     SDL2R_DEFINE_CONST(MIXER_MAJOR_VERSION);
     SDL2R_DEFINE_CONST(MIXER_MINOR_VERSION);
     SDL2R_DEFINE_CONST(MIXER_PATCHLEVEL);
+
+#define SDL2R_DEFINE_CONST_MIX(t) rb_define_const(mMixer, #t, INT2NUM(MIX_##t))
     SDL2R_DEFINE_CONST_MIX(DEFAULT_FREQUENCY);
     SDL2R_DEFINE_CONST_MIX(CHANNELS);
     SDL2R_DEFINE_CONST_MIX(DEFAULT_FORMAT);
@@ -362,16 +363,23 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_U16SYS);
     SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_S16SYS);
 
+#define SDL2R_DEFINE_ENUM_VALUE_MUS(t, v) {rb_hash_aset(sdl2r_##t, INT2NUM(v), rb_str_new(#v, strlen(#v)));rb_define_const(mMixer, #v, INT2NUM(v));}
     SDL2R_DEFINE_ENUM(EnumMusicType);
-    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_NONE);
-    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_CMD);
-    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_WAV);
-    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_MOD);
-    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_MID);
-    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_OGG);
-    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_MP3);
-    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_MP3_MAD);
-    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_FLAC);
+    SDL2R_DEFINE_ENUM_VALUE_MUS(EnumMusicType, MUS_NONE);
+    SDL2R_DEFINE_ENUM_VALUE_MUS(EnumMusicType, MUS_CMD);
+    SDL2R_DEFINE_ENUM_VALUE_MUS(EnumMusicType, MUS_WAV);
+    SDL2R_DEFINE_ENUM_VALUE_MUS(EnumMusicType, MUS_MOD);
+    SDL2R_DEFINE_ENUM_VALUE_MUS(EnumMusicType, MUS_MID);
+    SDL2R_DEFINE_ENUM_VALUE_MUS(EnumMusicType, MUS_OGG);
+    SDL2R_DEFINE_ENUM_VALUE_MUS(EnumMusicType, MUS_MP3);
+    SDL2R_DEFINE_ENUM_VALUE_MUS(EnumMusicType, MUS_MP3_MAD);
+    SDL2R_DEFINE_ENUM_VALUE_MUS(EnumMusicType, MUS_FLAC);
+
+#define SDL2R_DEFINE_ENUM_VALUE_MIX(t, v) {rb_hash_aset(sdl2r_##t, INT2NUM(MIX_##v), rb_str_new(#v, strlen(#v)));rb_define_const(mMixer, #v, INT2NUM(MIX_##v));}
+    SDL2R_DEFINE_ENUM(EnumFading);
+    SDL2R_DEFINE_ENUM_VALUE_MIX(EnumFading, NO_FADING);
+    SDL2R_DEFINE_ENUM_VALUE_MIX(EnumFading, FADING_OUT);
+    SDL2R_DEFINE_ENUM_VALUE_MIX(EnumFading, FADING_IN);
 
     sdl2r_chunk_hash = sdl2r_hash_alloc(8);
     sdl2r_music_hash = sdl2r_hash_alloc(8);
