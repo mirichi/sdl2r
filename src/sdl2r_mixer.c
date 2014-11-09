@@ -12,6 +12,7 @@ struct SDL2RHash *sdl2r_chunk_hash;
 struct SDL2RHash *sdl2r_music_hash;
 
 static VALUE sdl2r_EnumAudioFormat;
+static VALUE sdl2r_EnumMusicType;
 
 static Uint32 ChannelFinishedEventID;
 
@@ -360,6 +361,17 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_S16);
     SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_U16SYS);
     SDL2R_DEFINE_ENUM_VALUE_N(EnumAudioFormat, AUDIO_S16SYS);
+
+    SDL2R_DEFINE_ENUM(EnumMusicType);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_NONE);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_CMD);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_WAV);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_MOD);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_MID);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_OGG);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_MP3);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_MP3_MAD);
+    SDL2R_DEFINE_ENUM_VALUE_N(EnumMusicType, MUS_FLAC);
 
     sdl2r_chunk_hash = sdl2r_hash_alloc(8);
     sdl2r_music_hash = sdl2r_hash_alloc(8);
