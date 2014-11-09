@@ -258,10 +258,34 @@ static VALUE sdl2r_mix_play_channel(VALUE klass, VALUE vchannel, VALUE vchunk, V
     int result;
 
     result = Mix_PlayChannel(NUM2INT(vchannel), cnk->chunk, NUM2INT(vloops));
-    if (result == -1) {
-        rb_raise(eSDLError, Mix_GetError());
-    }
+    return INT2NUM(result);
+}
 
+
+static VALUE sdl2r_mix_volume_chunk(VALUE klass, VALUE vchunk, VALUE vvolume)
+{
+    struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
+    int result;
+
+    result = Mix_VolumeChunk(cnk->chunk, NUM2INT(vvolume));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_allocate_channels(VALUE klass, VALUE vnumchans)
+{
+    int result;
+
+    result = Mix_AllocateChannels(NUM2INT(vnumchans));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_volume(VALUE klass, VALUE vchannel, VALUE volume)
+{
+    int result;
+
+    result = Mix_Volume(NUM2INT(vchannel), NUM2INT(volume));
     return INT2NUM(result);
 }
 
@@ -312,6 +336,9 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav_rw, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_channel, 3);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_chunk, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(volume_chunk, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(allocate_channels, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(volume, 2);
 
     // Music
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_mus, 1);
