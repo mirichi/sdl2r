@@ -11,7 +11,9 @@ VALUE cMusic;
 struct SDL2RHash *sdl2r_chunk_hash;
 struct SDL2RHash *sdl2r_music_hash;
 
-VALUE sdl2r_EnumAudioFormat;
+static VALUE sdl2r_EnumAudioFormat;
+
+static Uint32 ChannelFinishedEventID;
 
 static void sdl2r_chunk_free(void *ptr);
 const rb_data_type_t sdl2r_chunk_data_type = {
@@ -234,6 +236,20 @@ static VALUE sdl2r_mix_load_wav_rw(VALUE klass, VALUE vrwops, VALUE vfreesrc)
 }
 
 
+static void sdl2r_mix_ChannelFinishedCallBack(int channel)
+{
+    SDL_Event ev;
+    int result;
+
+    ev.user.type = ChannelFinishedEventID;
+    ev.user.code = channel;
+    result = SDL_PushEvent(&ev);
+    if (result < 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+}
+
+
 static VALUE sdl2r_mix_play_channel(VALUE klass, VALUE vchannel, VALUE vchunk, VALUE vloops)
 {
     struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
@@ -289,11 +305,13 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(query_spec, 0);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(linked_version, 0);
 
+    // Chunk
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav_rw, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_channel, 3);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_chunk, 1);
 
+    // Music
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_mus, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_music, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_music, 1);
@@ -312,7 +330,12 @@ void Init_sdl2r_mixer(void)
     rb_define_method(cMusic, "dispose", sdl2r_music_im_dispose, 0);
     rb_define_method(cMusic, "disposed?", sdl2r_music_im_get_disposed, 0);
 
+    // ChannelFinishedEvent
+    ChannelFinishedEventID = SDL_RegisterEvents(1);
+    Mix_ChannelFinished(sdl2r_mix_ChannelFinishedCallBack);
+
     // Constants
+    rb_define_const(mSDL, "MIXER_CHANNELFINISHED", UINT2NUM(ChannelFinishedEventID));
     rb_define_const(mSDL, "MIXER_VERSION", sdl2r_macro_MIXER_VERSION(mSDL));
 
     #define SDL2R_DEFINE_CONST_MIX(t) rb_define_const(mMixer, #t, INT2NUM(MIX_##t))
