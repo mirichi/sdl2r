@@ -311,13 +311,98 @@ static VALUE sdl2r_mix_allocate_channels(VALUE klass, VALUE vnumchans)
 }
 
 
-static VALUE sdl2r_mix_volume(VALUE klass, VALUE vchannel, VALUE volume)
+static VALUE sdl2r_mix_volume(VALUE klass, VALUE vchannel, VALUE vvolume)
 {
     int result;
 
-    result = Mix_Volume(NUM2INT(vchannel), NUM2INT(volume));
+    result = Mix_Volume(NUM2INT(vchannel), NUM2INT(vvolume));
     return INT2NUM(result);
 }
+
+
+static VALUE sdl2r_mix_pause(VALUE klass, VALUE vchannel)
+{
+    Mix_Pause(NUM2INT(vchannel));
+    return Qnil;
+}
+
+
+static VALUE sdl2r_mix_resume(VALUE klass, VALUE vchannel)
+{
+    Mix_Resume(NUM2INT(vchannel));
+    return Qnil;
+}
+
+
+static VALUE sdl2r_mix_halt_channel(VALUE klass, VALUE vchannel)
+{
+    int result;
+
+    result = Mix_HaltChannel(NUM2INT(vchannel));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_expire_channel(VALUE klass, VALUE vchannel, VALUE vticks)
+{
+    int result;
+
+    result = Mix_ExpireChannel(NUM2INT(vchannel), NUM2INT(vticks));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_fade_out_channel(VALUE klass, VALUE vchannel, VALUE vms)
+{
+    int result;
+
+    result = Mix_FadeOutChannel(NUM2INT(vchannel), NUM2INT(vms));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_playing(VALUE klass, VALUE vchannel)
+{
+    int result;
+
+    result = Mix_Playing(NUM2INT(vchannel));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_paused(VALUE klass, VALUE vchannel)
+{
+    int result;
+
+    result = Mix_Paused(NUM2INT(vchannel));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_fading_channel(VALUE klass, VALUE vchannel)
+{
+    Mix_Fading result;
+
+    result = Mix_FadingChannel(NUM2INT(vchannel));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_get_chunk(VALUE klass, VALUE vchannel)
+{
+    Mix_Chunk *chunk;
+    VALUE vchunk;
+
+    chunk = Mix_GetChunk(NUM2INT(vchannel));
+    if (!chunk) {
+        return Qnil;
+    }
+    vchunk = sdl2r_get_hash(sdl2r_chunk_hash, (HASHKEY)chunk);
+
+    return vchunk;
+}
+
+
 
 
 // Music
@@ -368,10 +453,19 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_channel_timed, 4);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_in_channel, 4);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_in_channel_timed, 5);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(pause, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(resume, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(halt_channel, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(expire_channel, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_out_channel, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_chunk, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(volume_chunk, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(allocate_channels, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(volume, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(playing, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(paused, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(fading_channel, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(get_chunk, 1);
 
     // Music
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_mus, 1);
