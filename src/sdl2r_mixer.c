@@ -262,6 +262,36 @@ static VALUE sdl2r_mix_play_channel(VALUE klass, VALUE vchannel, VALUE vchunk, V
 }
 
 
+static VALUE sdl2r_mix_play_channel_timed(VALUE klass, VALUE vchannel, VALUE vchunk, VALUE vloops, VALUE ticks)
+{
+    struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
+    int result;
+
+    result = Mix_PlayChannelTimed(NUM2INT(vchannel), cnk->chunk, NUM2INT(vloops), NUM2INT(ticks));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_fade_in_channel(VALUE klass, VALUE vchannel, VALUE vchunk, VALUE vloops, VALUE ms)
+{
+    struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
+    int result;
+
+    result = Mix_FadeInChannel(NUM2INT(vchannel), cnk->chunk, NUM2INT(vloops), NUM2INT(ms));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_fade_in_channel_timed(VALUE klass, VALUE vchannel, VALUE vchunk, VALUE vloops, VALUE ms, VALUE ticks)
+{
+    struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
+    int result;
+
+    result = Mix_FadeInChannelTimed(NUM2INT(vchannel), cnk->chunk, NUM2INT(vloops), NUM2INT(ms), NUM2INT(ticks));
+    return INT2NUM(result);
+}
+
+
 static VALUE sdl2r_mix_volume_chunk(VALUE klass, VALUE vchunk, VALUE vvolume)
 {
     struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
@@ -335,6 +365,9 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav_rw, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_channel, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_channel_timed, 4);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_in_channel, 4);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_in_channel_timed, 5);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_chunk, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(volume_chunk, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(allocate_channels, 1);
