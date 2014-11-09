@@ -403,6 +403,92 @@ static VALUE sdl2r_mix_get_chunk(VALUE klass, VALUE vchannel)
 }
 
 
+// Group
+static VALUE sdl2r_mix_reserve_channels(VALUE klass, VALUE vnum)
+{
+    int result;
+
+    result = Mix_ReserveChannels(NUM2INT(vnum));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_group_channel(VALUE klass, VALUE vwhich, VALUE vtag)
+{
+    int result;
+
+    result = Mix_GroupChannel(NUM2INT(vwhich), NUM2INT(vtag));
+    if (!result) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_group_channels(VALUE klass, VALUE vfrom, VALUE vto, VALUE vtag)
+{
+    int result;
+
+    result = Mix_GroupChannels(NUM2INT(vfrom), NUM2INT(vto), NUM2INT(vtag));
+    if (result < NUM2INT(vto) - NUM2INT(vfrom) + 1) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_group_count(VALUE klass, VALUE vtag)
+{
+    int result;
+
+    result = Mix_GroupCount(NUM2INT(vtag));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_group_available(VALUE klass, VALUE vtag)
+{
+    int result;
+
+    result = Mix_GroupAvailable(NUM2INT(vtag));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_group_oldest(VALUE klass, VALUE vtag)
+{
+    int result;
+
+    result = Mix_GroupOldest(NUM2INT(vtag));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_group_newer(VALUE klass, VALUE vtag)
+{
+    int result;
+
+    result = Mix_GroupNewer(NUM2INT(vtag));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_fade_out_group(VALUE klass, VALUE vtag, VALUE vms)
+{
+    int result;
+
+    result = Mix_FadeOutGroup(NUM2INT(vtag), NUM2INT(vms));
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_halt_group(VALUE klass, VALUE vtag)
+{
+    int result;
+
+    result = Mix_HaltGroup(NUM2INT(vtag));
+    return INT2NUM(result);
+}
 
 
 // Music
@@ -466,6 +552,17 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(paused, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fading_channel, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(get_chunk, 1);
+
+    // Group
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(reserve_channels, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(group_channel, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(group_channels, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(group_count, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(group_available, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(group_oldest, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(group_newer, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_out_group, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(halt_group, 1);
 
     // Music
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_mus, 1);
