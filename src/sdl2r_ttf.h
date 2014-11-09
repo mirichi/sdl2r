@@ -1,4 +1,4 @@
-#include <SDL_ttf.h>
+#include "SDL_ttf.h"
 
 struct SDL2RFont {
     TTF_Font *font;

@@ -1,4 +1,4 @@
-#include <SDL_image.h>
+#include "SDL_image.h"
 
 void Init_sdl2r_image(void);
 

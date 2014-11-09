@@ -1,4 +1,4 @@
-#include <SDL_mixer.h>
+#include "SDL_mixer.h"
 
 struct SDL2RChunk {
     Mix_Chunk *chunk;
