@@ -3,6 +3,7 @@
 #include "sdl2r_hash.h"
 #include "sdl2r_ttf.h"
 #include "sdl2r_surface.h"
+#include "sdl2r_version.h"
 
 VALUE mTTF;
 VALUE cFont;
@@ -367,6 +368,33 @@ static VALUE sdl2r_ttf_size(VALUE klass, VALUE vfont, VALUE vstr)
 }
 
 
+VALUE sdl2r_ttf_linked_version(VALUE klass)
+{
+    const SDL_version *v = TTF_Linked_Version();
+    VALUE ary[3];
+
+    ary[0] = INT2NUM(v->major);
+    ary[1] = INT2NUM(v->minor);
+    ary[2] = INT2NUM(v->patch);
+
+    return rb_class_new_instance(3, ary, cVersion);
+}
+
+
+VALUE sdl2r_macro_TTF_VERSION(VALUE klass)
+{
+    SDL_version v;
+    VALUE ary[3];
+
+    SDL_TTF_VERSION(&v);
+    ary[0] = INT2NUM(v.major);
+    ary[1] = INT2NUM(v.minor);
+    ary[2] = INT2NUM(v.patch);
+
+    return rb_class_new_instance(3, ary, cVersion);
+}
+
+
 void Init_sdl2r_ttf(void)
 {
     mTTF = rb_define_module_under(mSDL, "TTF");
@@ -409,6 +437,7 @@ void Init_sdl2r_ttf(void)
     SDL2R_DEFINE_SINGLETON_METHOD_TTF(size, 2);
 //    SDL2R_DEFINE_SINGLETON_METHOD_TTF(size_utf8, 2);
     rb_define_singleton_method(mTTF, "size_utf8", sdl2r_ttf_size, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD_TTF(linked_version, 0);
 
     // SDL::TTF::Font class
     cFont = rb_define_class_under(mTTF, "Font", rb_cObject);
@@ -416,6 +445,12 @@ void Init_sdl2r_ttf(void)
 
     rb_define_method(cFont, "dispose", sdl2r_font_im_dispose, 0);
     rb_define_method(cFont, "disposed?", sdl2r_font_im_get_disposed, 0);
+
+    // Constants
+    rb_define_const(mSDL, "TTF_VERSION", sdl2r_macro_TTF_VERSION(mSDL));
+    SDL2R_DEFINE_CONST(TTF_MAJOR_VERSION);
+    SDL2R_DEFINE_CONST(TTF_MINOR_VERSION);
+    SDL2R_DEFINE_CONST(TTF_PATCHLEVEL);
 
 #define SDL2R_DEFINE_CONST_TTF(t) rb_define_const(mTTF, #t, INT2NUM(TTF_##t))
     SDL2R_DEFINE_CONST_TTF(STYLE_BOLD);
