@@ -544,6 +544,67 @@ static VALUE sdl2r_mix_fade_in_music_pos(VALUE klass, VALUE vmusic, VALUE vloops
 }
 
 
+static VALUE sdl2r_mix_volume_music(VALUE klass, VALUE vvolume)
+{
+    int result;
+
+    result = Mix_VolumeMusic(NUM2INT(vvolume));
+
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_pause_music(VALUE klass)
+{
+    Mix_PauseMusic();
+
+    return Qnil;;
+}
+
+
+static VALUE sdl2r_mix_resume_music(VALUE klass)
+{
+    Mix_ResumeMusic();
+
+    return Qnil;;
+}
+
+
+static VALUE sdl2r_mix_rewind_music(VALUE klass)
+{
+    Mix_RewindMusic();
+
+    return Qnil;;
+}
+
+
+static VALUE sdl2r_mix_set_music_position(VALUE klass, VALUE vposition)
+{
+    int result;
+
+    result = Mix_SetMusicPosition(NUM2DBL(vposition));
+    if (result) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+
+    return Qnil;
+}
+
+
+static VALUE sdl2r_mix_set_music_cmd(VALUE klass, VALUE vcommand)
+{
+    int result;
+
+    Check_Type(vcommand, T_STRING);
+    result = Mix_SetMusicCMD(RSTRING_PTR(vcommand));
+    if (result) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+
+    return Qnil;
+}
+
+
 void Init_sdl2r_mixer(void)
 {
     mMixer = rb_define_module_under(mSDL, "Mix");
@@ -593,6 +654,13 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_music, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_in_music, 3);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_in_music_pos, 4);
+//    SDL2R_DEFINE_SINGLETON_METHOD_MIX(hook_music, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(volume_music, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(pause_music, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(resume_music, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(rewind_music, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_music_position, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_music_cmd, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_music, 1);
 
     // SDL::Mix::Chunk class
