@@ -649,7 +649,7 @@ static VALUE sdl2r_mix_get_music_type(VALUE klass, VALUE vmusic)
     struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(vmusic);
     Mix_MusicType mustype = Mix_GetMusicType(mus->music);
 
-    return NUM2INT(mustype);
+    return INT2NUM(mustype);
 }
 
 
@@ -659,7 +659,7 @@ static VALUE sdl2r_mix_playing_music(VALUE klass)
 
     result = Mix_PlayingMusic();
 
-    return NUM2INT(result);
+    return INT2NUM(result);
 }
 
 
@@ -669,7 +669,7 @@ static VALUE sdl2r_mix_paused_music(VALUE klass)
 
     result = Mix_PausedMusic();
 
-    return NUM2INT(result);
+    return INT2NUM(result);
 }
 
 
@@ -679,7 +679,63 @@ static VALUE sdl2r_mix_fading_music(VALUE klass)
 
     result = Mix_FadingMusic();
 
-    return NUM2INT(result);
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_set_panning(VALUE klass, VALUE vchannel, VALUE vleft, VALUE vright)
+{
+    int result;
+
+    result = Mix_SetPanning(NUM2INT(vchannel), NUM2INT(vleft), NUM2INT(vright));
+    if (!result) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+    
+
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_set_distance(VALUE klass, VALUE vchannel, VALUE vdistance)
+{
+    int result;
+
+    result = Mix_SetDistance(NUM2INT(vchannel), NUM2INT(vdistance));
+    if (!result) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+    
+
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_set_position(VALUE klass, VALUE vchannel, VALUE vangle, VALUE vdistance)
+{
+    int result;
+
+    result = Mix_SetPosition(NUM2INT(vchannel), NUM2INT(vangle), NUM2INT(vdistance));
+    if (!result) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+    
+
+    return INT2NUM(result);
+}
+
+
+static VALUE sdl2r_mix_set_reverse_stereo(VALUE klass, VALUE vchannel, VALUE vflip)
+{
+    int result;
+
+    result = Mix_SetReverseStereo(NUM2INT(vchannel), NUM2INT(vflip));
+    if (!result) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+    
+
+    return INT2NUM(result);
 }
 
 
@@ -747,6 +803,11 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(paused_music, 0);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fading_music, 0);
 //    SDL2R_DEFINE_SINGLETON_METHOD_MIX(get_music_hook_data, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_panning, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_distance, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_position, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_reverse_stereo, 2);
+
     // SDL::Mix::Chunk class
     cChunk = rb_define_class_under(mMixer, "Chunk", rb_cObject);
     rb_define_alloc_func(cChunk, sdl2r_chunk_alloc);
