@@ -16,6 +16,7 @@ static VALUE sdl2r_EnumMusicType;
 static VALUE sdl2r_EnumFading;
 
 static Uint32 ChannelFinishedEventID;
+static Uint32 MusicFinishedEventID;
 
 static void sdl2r_chunk_free(void *ptr);
 const rb_data_type_t sdl2r_chunk_data_type = {
@@ -508,6 +509,20 @@ static VALUE sdl2r_mix_load_mus(VALUE klass, VALUE vfilename)
 }
 
 
+static void sdl2r_mix_MusicFinishedCallBack(void)
+{
+    SDL_Event ev;
+    int result;
+
+    ev.user.type = MusicFinishedEventID;
+    ev.user.code = 0;
+    result = SDL_PushEvent(&ev);
+    if (result < 0) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+}
+
+
 static VALUE sdl2r_mix_play_music(VALUE klass, VALUE vmusic, VALUE vloops)
 {
     struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(vmusic);
@@ -605,6 +620,19 @@ static VALUE sdl2r_mix_set_music_cmd(VALUE klass, VALUE vcommand)
 }
 
 
+static VALUE sdl2r_mix_halt_music(VALUE klass)
+{
+    int result;
+
+    result = Mix_HaltMusic();
+    if (result) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+
+    return Qnil;
+}
+
+
 void Init_sdl2r_mixer(void)
 {
     mMixer = rb_define_module_under(mSDL, "Mix");
@@ -661,6 +689,8 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(rewind_music, 0);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_music_position, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_music_cmd, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(halt_music, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_out_music, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_music, 1);
 
     // SDL::Mix::Chunk class
@@ -681,8 +711,13 @@ void Init_sdl2r_mixer(void)
     ChannelFinishedEventID = SDL_RegisterEvents(1);
     Mix_ChannelFinished(sdl2r_mix_ChannelFinishedCallBack);
 
+    // MusicFinishedEvent
+    MusicFinishedEventID = SDL_RegisterEvents(1);
+    Mix_HookMusicFinished(sdl2r_mix_MusicFinishedCallBack);
+
     // Constants
     rb_define_const(mSDL, "MIXER_CHANNELFINISHED", UINT2NUM(ChannelFinishedEventID));
+    rb_define_const(mSDL, "MIXER_MUSICFINISHED", UINT2NUM(MusicFinishedEventID));
     rb_define_const(mSDL, "MIXER_VERSION", sdl2r_macro_MIXER_VERSION(mSDL));
 
     SDL2R_DEFINE_CONST(MIXER_MAJOR_VERSION);
