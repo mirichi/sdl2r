@@ -633,6 +633,17 @@ static VALUE sdl2r_mix_halt_music(VALUE klass)
 }
 
 
+static VALUE sdl2r_mix_fade_out_music(VALUE klass, VALUE vms)
+{
+
+    if (!Mix_FadeOutMusic(NUM2INT(vms))) {
+        rb_raise(eSDLError, Mix_GetError());
+    }
+
+    return Qnil;
+}
+
+
 void Init_sdl2r_mixer(void)
 {
     mMixer = rb_define_module_under(mSDL, "Mix");
@@ -690,7 +701,7 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_music_position, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_music_cmd, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(halt_music, 0);
-//    SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_out_music, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_out_music, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_music, 1);
 
     // SDL::Mix::Chunk class
