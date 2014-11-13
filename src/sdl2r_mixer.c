@@ -644,6 +644,45 @@ static VALUE sdl2r_mix_fade_out_music(VALUE klass, VALUE vms)
 }
 
 
+static VALUE sdl2r_mix_get_music_type(VALUE klass, VALUE vmusic)
+{
+    struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(vmusic);
+    Mix_MusicType mustype = Mix_GetMusicType(mus->music);
+
+    return NUM2INT(mustype);
+}
+
+
+static VALUE sdl2r_mix_playing_music(VALUE klass)
+{
+    int result;
+
+    result = Mix_PlayingMusic();
+
+    return NUM2INT(result);
+}
+
+
+static VALUE sdl2r_mix_paused_music(VALUE klass)
+{
+    int result;
+
+    result = Mix_PausedMusic();
+
+    return NUM2INT(result);
+}
+
+
+static VALUE sdl2r_mix_fading_music(VALUE klass)
+{
+    int result;
+
+    result = Mix_FadingMusic();
+
+    return NUM2INT(result);
+}
+
+
 void Init_sdl2r_mixer(void)
 {
     mMixer = rb_define_module_under(mSDL, "Mix");
@@ -659,6 +698,7 @@ void Init_sdl2r_mixer(void)
     // Chunk
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_wav_rw, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_chunk, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_channel, 3);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_channel_timed, 4);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_in_channel, 4);
@@ -668,7 +708,6 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(halt_channel, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(expire_channel, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_out_channel, 2);
-    SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_chunk, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(volume_chunk, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(allocate_channels, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(volume, 2);
@@ -690,6 +729,7 @@ void Init_sdl2r_mixer(void)
 
     // Music
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(load_mus, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_music, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(play_music, 2);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_in_music, 3);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_in_music_pos, 4);
@@ -702,8 +742,11 @@ void Init_sdl2r_mixer(void)
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(set_music_cmd, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(halt_music, 0);
     SDL2R_DEFINE_SINGLETON_METHOD_MIX(fade_out_music, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD_MIX(free_music, 1);
-
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(get_music_type, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(playing_music, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(paused_music, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD_MIX(fading_music, 0);
+//    SDL2R_DEFINE_SINGLETON_METHOD_MIX(get_music_hook_data, 0);
     // SDL::Mix::Chunk class
     cChunk = rb_define_class_under(mMixer, "Chunk", rb_cObject);
     rb_define_alloc_func(cChunk, sdl2r_chunk_alloc);
