@@ -21,7 +21,7 @@ const rb_data_type_t sdl2r_surface_data_type = {
 static void sdl2r_surface_free(void *ptr)
 {
     struct SDL2RSurface *sur = ptr;
-    if (sur->surface && sur->vwindow == Qnil) {
+    if (sur->surface) {
         SDL_FreeSurface(sur->surface);
     }
     xfree(sur);
@@ -35,16 +35,17 @@ static void sdl2r_surface_mark(void *ptr)
 }
 
 
-struct SDL2RSurface *sdl2r_get_surface(VALUE vsur)
+SDL_Surface *sdl2r_get_sdl_surface(struct SDL2RSurface *sur)
 {
-    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsur);
-
     if (sur->vwindow != Qnil) {
         struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(sur->vwindow);
-        sur->surface = SDL_GetWindowSurface(win->window);
+        return SDL_GetWindowSurface(win->window);
+    } else if (sur->surface) {
+        return sur->surface;
+    } else {
+        rb_raise(eSDL2RError, "disposed Surface object");
+        return 0;
     }
-
-    return sur;
 }
 
 
@@ -75,7 +76,7 @@ static VALUE sdl2r_surface_im_dispose(VALUE self)
 static VALUE sdl2r_surface_im_get_disposed(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_STRUCT(Surface, self);
-    return sur->surface ? Qfalse : Qtrue;
+    return SDL2R_TO_BOOL(sur->surface == NULL && sur->vwindow == Qnil);
 }
 
 
@@ -96,14 +97,14 @@ static VALUE sdl2r_free_surface(VALUE klass, VALUE vsurface)
 static VALUE sdl2r_w(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
-    return INT2NUM(sur->surface->w);
+    return INT2NUM(sdl2r_get_sdl_surface(sur)->w);
 }
 
 
 static VALUE sdl2r_h(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
-    return INT2NUM(sur->surface->h);
+    return INT2NUM(sdl2r_get_sdl_surface(sur)->h);
 }
 
 
@@ -121,8 +122,8 @@ static VALUE sdl2r_get_pixels(VALUE self)
 
 static VALUE sdl2r_blit_surface(VALUE klass, VALUE vsrc, VALUE vsrcrect, VALUE vdst, VALUE vdstrect)
 {
-    struct SDL2RSurface *src = sdl2r_get_surface(vsrc);
-    struct SDL2RSurface *dst = sdl2r_get_surface(vdst);
+    struct SDL2RSurface *src = SDL2R_GET_SURFACE_STRUCT(vsrc);
+    struct SDL2RSurface *dst = SDL2R_GET_SURFACE_STRUCT(vdst);
     SDL_Rect srcrect, dstrect;
     SDL_Rect *psr=0, *pdr=0;
 
@@ -142,7 +143,7 @@ static VALUE sdl2r_blit_surface(VALUE klass, VALUE vsrc, VALUE vsrcrect, VALUE v
         pdr = &dstrect;
     }
 
-    if (SDL_BlitSurface(src->surface, psr, dst->surface, pdr)) {
+    if (SDL_BlitSurface(sdl2r_get_sdl_surface(src), psr, sdl2r_get_sdl_surface(dst), pdr)) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -176,7 +177,7 @@ static VALUE sdl2r_create_rgb_surface(int argc, VALUE *argv, VALUE klass)
 static VALUE sdl2r_macro_MUSTLOCK(VALUE klass, VALUE vsurface)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
-    return SDL_MUSTLOCK(sur->surface) ? Qtrue : Qfalse;
+    return SDL2R_TO_BOOL(SDL_MUSTLOCK(sdl2r_get_sdl_surface(sur)));
 }
 
 
@@ -184,7 +185,7 @@ static VALUE sdl2r_lock_surface(VALUE klass, VALUE vsurface)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
 
-    if (SDL_LockSurface(sur->surface)) {
+    if (SDL_LockSurface(sdl2r_get_sdl_surface(sur))) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -196,7 +197,7 @@ static VALUE sdl2r_unlock_surface(VALUE klass, VALUE vsurface)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
 
-    SDL_UnlockSurface(sur->surface);
+    SDL_UnlockSurface(sdl2r_get_sdl_surface(sur));
 
     return vsurface;
 }
@@ -208,6 +209,7 @@ void Init_sdl2r_surface(void)
     SDL2R_DEFINE_SINGLETON_METHOD(create_rgb_surface, -1);
     SDL2R_DEFINE_SINGLETON_METHOD(free_surface, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(blit_surface, 4);
+//    SDL2R_DEFINE_SINGLETON_METHOD(fill_rect, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(lock_surface, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(unlock_surface, 1);
 

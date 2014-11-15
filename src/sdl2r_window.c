@@ -120,6 +120,7 @@ static VALUE sdl2r_get_window_surface(VALUE klass, VALUE vwindow)
     if (!sur->surface) {
         rb_raise(eSDLError, SDL_GetError());
     }
+    sur->surface = 0;
     sur->vwindow = vwindow;
 
     return vsurface;
