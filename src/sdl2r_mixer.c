@@ -69,7 +69,7 @@ VALUE sdl2r_chunk_alloc(VALUE klass)
 static VALUE sdl2r_chunk_im_dispose(VALUE self)
 {
     struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(self);
-    Mix_FreeChunk(cnk->chunk);
+    sdl2r_chunk_dispose(cnk);
     return Qnil;
 }
 
@@ -84,7 +84,7 @@ static VALUE sdl2r_chunk_im_get_disposed(VALUE self)
 static VALUE sdl2r_mix_free_chunk(VALUE klass, VALUE vchunk)
 {
     struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
-    Mix_FreeChunk(cnk->chunk);
+    sdl2r_chunk_dispose(cnk);
     return Qnil;
 }
 
@@ -119,7 +119,7 @@ VALUE sdl2r_music_alloc(VALUE klass)
 static VALUE sdl2r_music_im_dispose(VALUE self)
 {
     struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(self);
-    Mix_FreeMusic(mus->music);
+    sdl2r_music_dispose(mus);
     return Qnil;
 }
 
@@ -134,7 +134,7 @@ static VALUE sdl2r_music_im_get_disposed(VALUE self)
 static VALUE sdl2r_mix_free_music(VALUE klass, VALUE vmusic)
 {
     struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(vmusic);
-    Mix_FreeMusic(mus->music);
+    sdl2r_music_dispose(mus);
     return Qnil;
 }
 
