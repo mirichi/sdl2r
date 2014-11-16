@@ -41,6 +41,12 @@ const rb_data_type_t sdl2r_music_data_type = {
 
 void sdl2r_chunk_dispose(struct SDL2RChunk *cnk)
 {
+    int i;
+    for (i = 0; i < Mix_AllocateChannels(-1); i++) {
+        if (Mix_Playing(i) == 1 && Mix_GetChunk(i) == cnk->chunk) {
+            Mix_HaltChannel(i);
+        }
+    }
     sdl2r_del_hash(sdl2r_chunk_hash, (HASHKEY)cnk->chunk);
     Mix_FreeChunk(cnk->chunk);
     cnk->chunk = 0;
