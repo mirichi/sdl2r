@@ -18,6 +18,13 @@ const rb_data_type_t sdl2r_surface_data_type = {
 };
 
 
+static void sdl2r_surface_mark(void *ptr)
+{
+    struct SDL2RSurface *sur = ptr;
+    rb_gc_mark(sur->vwindow);
+}
+
+
 static void sdl2r_surface_free(void *ptr)
 {
     struct SDL2RSurface *sur = ptr;
@@ -25,13 +32,6 @@ static void sdl2r_surface_free(void *ptr)
         SDL_FreeSurface(sur->surface);
     }
     xfree(sur);
-}
-
-
-static void sdl2r_surface_mark(void *ptr)
-{
-    struct SDL2RSurface *sur = ptr;
-    rb_gc_mark(sur->vwindow);
 }
 
 
