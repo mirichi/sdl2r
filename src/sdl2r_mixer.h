@@ -2,9 +2,11 @@
 
 struct SDL2RChunk {
     Mix_Chunk *chunk;
+    VALUE vfilename;
 };
 struct SDL2RMusic {
     Mix_Music *music;
+    VALUE vfilename;
 };
 
 void Init_sdl2r_mixer(void);

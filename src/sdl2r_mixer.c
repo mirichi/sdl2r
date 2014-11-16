@@ -18,21 +18,23 @@ static VALUE sdl2r_EnumFading;
 static Uint32 ChannelFinishedEventID;
 static Uint32 MusicFinishedEventID;
 
+static void sdl2r_chunk_mark(void *ptr);
 static void sdl2r_chunk_free(void *ptr);
 const rb_data_type_t sdl2r_chunk_data_type = {
     "Chunk",
     {
-    0,
+    sdl2r_chunk_mark,
     sdl2r_chunk_free,
     0,
     },
 };
 
+static void sdl2r_music_mark(void *ptr);
 static void sdl2r_music_free(void *ptr);
 const rb_data_type_t sdl2r_music_data_type = {
     "Music",
     {
-    0,
+    sdl2r_music_mark,
     sdl2r_music_free,
     0,
     },
@@ -50,6 +52,14 @@ void sdl2r_chunk_dispose(struct SDL2RChunk *cnk)
     sdl2r_del_hash(sdl2r_chunk_hash, (HASHKEY)cnk->chunk);
     Mix_FreeChunk(cnk->chunk);
     cnk->chunk = 0;
+    cnk->vfilename = Qnil;
+}
+
+
+static void sdl2r_chunk_mark(void *ptr)
+{
+    struct SDL2RChunk *cnk = ptr;
+    rb_gc_mark(cnk->vfilename);
 }
 
 
@@ -68,6 +78,7 @@ VALUE sdl2r_chunk_alloc(VALUE klass)
     struct SDL2RChunk *cnk;
     VALUE vchunk = TypedData_Make_Struct(klass, struct SDL2RChunk, &sdl2r_chunk_data_type, cnk);
     cnk->chunk = 0;
+    cnk->vfilename = Qnil;
     return vchunk;
 }
 
@@ -87,6 +98,17 @@ static VALUE sdl2r_chunk_im_get_disposed(VALUE self)
 }
 
 
+static VALUE sdl2r_chunk_im_inspect(VALUE self)
+{
+    struct SDL2RChunk *cnk = SDL2R_GET_STRUCT(Chunk, self);
+    if (cnk->chunk) {
+        return rb_sprintf("<%s: filename=\"%s\" volume=%d>", rb_obj_classname(self), RSTRING_PTR(cnk->vfilename), Mix_VolumeChunk(cnk->chunk, -1));
+    } else {
+        return rb_sprintf("<%s: disposed>", rb_obj_classname(self));
+    }
+}
+
+
 static VALUE sdl2r_mix_free_chunk(VALUE klass, VALUE vchunk)
 {
     struct SDL2RChunk *cnk = SDL2R_GET_CHUNK_STRUCT(vchunk);
@@ -100,6 +122,13 @@ void sdl2r_music_dispose(struct SDL2RMusic *mus)
     sdl2r_del_hash(sdl2r_music_hash, (HASHKEY)mus->music);
     Mix_FreeMusic(mus->music);
     mus->music = 0;
+}
+
+
+static void sdl2r_music_mark(void *ptr)
+{
+    struct SDL2RMusic *mus = ptr;
+    rb_gc_mark(mus->vfilename);
 }
 
 
@@ -118,6 +147,7 @@ VALUE sdl2r_music_alloc(VALUE klass)
     struct SDL2RMusic *mus;
     VALUE vmusic = TypedData_Make_Struct(klass, struct SDL2RMusic, &sdl2r_music_data_type, mus);
     mus->music = 0;
+    mus->vfilename = Qnil;
     return vmusic;
 }
 
@@ -134,6 +164,17 @@ static VALUE sdl2r_music_im_get_disposed(VALUE self)
 {
     struct SDL2RMusic *mus = SDL2R_GET_STRUCT(Music, self);
     return mus->music ? Qfalse : Qtrue;
+}
+
+
+static VALUE sdl2r_music_im_inspect(VALUE self)
+{
+    struct SDL2RMusic *mus = SDL2R_GET_STRUCT(Music, self);
+    if (mus->music) {
+        return rb_sprintf("<%s: filename=\"%s\" type=%s>", rb_obj_classname(self), RSTRING_PTR(mus->vfilename), RSTRING_PTR(rb_hash_aref(sdl2r_EnumMusicType, INT2NUM(Mix_GetMusicType(mus->music)))));
+    } else {
+        return rb_sprintf("<%s: disposed>", rb_obj_classname(self));
+    }
 }
 
 
@@ -218,6 +259,7 @@ static VALUE sdl2r_mix_load_wav(VALUE klass, VALUE vfilename)
     if (!cnk->chunk) {
         rb_raise(eSDLError, Mix_GetError());
     }
+    cnk->vfilename = rb_str_dup(vfilename);
     sdl2r_put_hash(sdl2r_chunk_hash, (HASHKEY)cnk->chunk, vchunk);
 
     return vchunk;
@@ -234,6 +276,7 @@ static VALUE sdl2r_mix_load_wav_rw(VALUE klass, VALUE vrwops, VALUE vfreesrc)
     if (!cnk->chunk) {
         rb_raise(eSDLError, Mix_GetError());
     }
+    cnk->vfilename = SDL2R_TO_UTF8_STRING("RWops");
     sdl2r_put_hash(sdl2r_chunk_hash, (HASHKEY)cnk->chunk, vchunk);
 
     if (NUM2INT(vfreesrc) != 0) {
@@ -509,6 +552,7 @@ static VALUE sdl2r_mix_load_mus(VALUE klass, VALUE vfilename)
     if (!mus->music) {
         rb_raise(eSDLError, Mix_GetError());
     }
+    mus->vfilename = rb_str_dup(vfilename);
     sdl2r_put_hash(sdl2r_music_hash, (HASHKEY)mus->music, vmusic);
 
     return vmusic;
@@ -820,6 +864,7 @@ void Init_sdl2r_mixer(void)
 
     rb_define_method(cChunk, "dispose", sdl2r_chunk_im_dispose, 0);
     rb_define_method(cChunk, "disposed?", sdl2r_chunk_im_get_disposed, 0);
+    rb_define_method(cChunk, "inspect", sdl2r_chunk_im_inspect, 0);
 
     // SDL::Mix::Music class
     cMusic = rb_define_class_under(mMixer, "Music", rb_cObject);
@@ -827,6 +872,7 @@ void Init_sdl2r_mixer(void)
 
     rb_define_method(cMusic, "dispose", sdl2r_music_im_dispose, 0);
     rb_define_method(cMusic, "disposed?", sdl2r_music_im_get_disposed, 0);
+    rb_define_method(cMusic, "inspect", sdl2r_music_im_inspect, 0);
 
     // ChannelFinishedEvent
     ChannelFinishedEventID = SDL_RegisterEvents(1);
