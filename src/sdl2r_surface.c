@@ -3,6 +3,7 @@
 #include "sdl2r_surface.h"
 #include "sdl2r_window.h"
 #include "sdl2r_pixels.h"
+#include "sdl2r_rect.h"
 
 VALUE cSurface;
 
@@ -203,15 +204,34 @@ static VALUE sdl2r_unlock_surface(VALUE klass, VALUE vsurface)
 }
 
 
+static VALUE sdl2r_fill_rect(VALUE klass, VALUE vsurface, VALUE vrect, VALUE vcolor)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sur->surface;
+    SDL_PixelFormat *format = surface->format;
+    SDL_Rect rect, *prect;
+    SDL_Color col;
+
+    SDL2R_SET_RECT_OR_NULL(prect, rect, vrect);
+    SDL2R_SET_COLOR(col, vcolor);
+
+    if (SDL_FillRect(surface, prect, SDL_MapRGBA(format, col.r, col.g, col.b, col.a))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vsurface;
+}
+
+
 void Init_sdl2r_surface(void)
 {
     // SDL module methods
     SDL2R_DEFINE_SINGLETON_METHOD(create_rgb_surface, -1);
     SDL2R_DEFINE_SINGLETON_METHOD(free_surface, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(blit_surface, 4);
-//    SDL2R_DEFINE_SINGLETON_METHOD(fill_rect, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(lock_surface, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(unlock_surface, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(fill_rect, 3);
 
     // SDL macro
     SDL2R_DEFINE_SINGLETON_METHOD_MACRO(MUSTLOCK, 1);

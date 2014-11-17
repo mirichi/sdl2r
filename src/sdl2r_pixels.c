@@ -2,6 +2,7 @@
 #include "sdl2r.h"
 #include "sdl2r_surface.h"
 #include "sdl2r_pixels.h"
+#include "sdl2r_rect.h"
 
 VALUE cPixels;
 
@@ -44,7 +45,7 @@ static VALUE sdl2r_get_pixel(VALUE self, VALUE vx, VALUE vy)
 {
     struct SDL2RPixels *pix = SDL2R_GET_PIXELS_STRUCT(self);
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pix->vsurface);
-    SDL_Surface *surface = sur->surface;
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
     SDL_PixelFormat *format = surface->format;
     Uint32 pixel;
     Uint8 r, g, b, a;
@@ -87,9 +88,10 @@ static VALUE sdl2r_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
 {
     struct SDL2RPixels *pix = SDL2R_GET_PIXELS_STRUCT(self);
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pix->vsurface);
-    SDL_Surface *surface = sur->surface;
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
     SDL_PixelFormat *format = surface->format;
     Uint32 pixel;
+    SDL_Color col;
     int x = NUM2INT(vx);
     int y = NUM2INT(vy);
 
@@ -97,11 +99,9 @@ static VALUE sdl2r_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
         rb_raise(eSDL2RError, "out of range");
     }
 
-    Check_Type(vcolor, T_ARRAY);
-    pixel = SDL_MapRGBA(format, (Uint8)NUM2INT(rb_ary_entry(vcolor, 0))
-                              , (Uint8)NUM2INT(rb_ary_entry(vcolor, 1))
-                              , (Uint8)NUM2INT(rb_ary_entry(vcolor, 2))
-                              , (Uint8)NUM2INT(rb_ary_entry(vcolor, 3)));
+    SDL2R_SET_COLOR(col, vcolor);
+    pixel = SDL_MapRGBA(format, col.r, col.g, col.b, col.a);
+
     switch(format->BytesPerPixel) {
     case 1:
         *((Uint8 *)surface->pixels + x +  y * surface->w) = (Uint8)pixel;

@@ -5,6 +5,7 @@ struct SDL2RSurface {
 
 void Init_sdl2r_surface(void);
 VALUE sdl2r_surface_alloc(VALUE klass);
+SDL_Surface *sdl2r_get_sdl_surface(struct SDL2RSurface *sur);
 
 #ifndef SDL2RSURFACE
 extern const rb_data_type_t sdl2r_surface_data_type;
