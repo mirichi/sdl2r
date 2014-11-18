@@ -128,23 +128,28 @@ static VALUE sdl2r_blit_surface(VALUE klass, VALUE vsrc, VALUE vsrcrect, VALUE v
     SDL_Rect srcrect, dstrect;
     SDL_Rect *psr=0, *pdr=0;
 
-    if (vsrcrect != Qnil) {
-        Check_Type(vsrcrect, T_ARRAY);
-        srcrect.x = NUM2INT(rb_ary_entry(vsrcrect, 0));
-        srcrect.y = NUM2INT(rb_ary_entry(vsrcrect, 1));
-        srcrect.w = NUM2INT(rb_ary_entry(vsrcrect, 2));
-        srcrect.h = NUM2INT(rb_ary_entry(vsrcrect, 3));
-        psr = &srcrect;
-    }
-    if (vdstrect != Qnil) {
-        Check_Type(vdstrect, T_ARRAY);
-        dstrect.x = NUM2INT(rb_ary_entry(vdstrect, 0));
-        dstrect.y = NUM2INT(rb_ary_entry(vdstrect, 1));
-        dstrect.w = dstrect.h = 0;
-        pdr = &dstrect;
-    }
+    SDL2R_SET_RECT_OR_NULL(psr, srcrect, vsrcrect);
+    SDL2R_SET_RECT_OR_NULL(pdr, dstrect, vdstrect);
 
     if (SDL_BlitSurface(sdl2r_get_sdl_surface(src), psr, sdl2r_get_sdl_surface(dst), pdr)) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return klass;
+}
+
+
+static VALUE sdl2r_blit_scaled(VALUE klass, VALUE vsrc, VALUE vsrcrect, VALUE vdst, VALUE vdstrect)
+{
+    struct SDL2RSurface *src = SDL2R_GET_SURFACE_STRUCT(vsrc);
+    struct SDL2RSurface *dst = SDL2R_GET_SURFACE_STRUCT(vdst);
+    SDL_Rect srcrect, dstrect;
+    SDL_Rect *psr=0, *pdr=0;
+
+    SDL2R_SET_RECT_OR_NULL(psr, srcrect, vsrcrect);
+    SDL2R_SET_RECT_OR_NULL(pdr, dstrect, vdstrect);
+
+    if (SDL_BlitScaled(sdl2r_get_sdl_surface(src), psr, sdl2r_get_sdl_surface(dst), pdr)) {
         rb_raise(eSDLError, SDL_GetError());
     }
 
@@ -228,6 +233,7 @@ void Init_sdl2r_surface(void)
     // SDL module methods
     SDL2R_DEFINE_SINGLETON_METHOD(create_rgb_surface, -1);
     SDL2R_DEFINE_SINGLETON_METHOD(free_surface, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(blit_scaled, 4);
     SDL2R_DEFINE_SINGLETON_METHOD(blit_surface, 4);
     SDL2R_DEFINE_SINGLETON_METHOD(lock_surface, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(unlock_surface, 1);
