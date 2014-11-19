@@ -212,7 +212,7 @@ static VALUE sdl2r_unlock_surface(VALUE klass, VALUE vsurface)
 static VALUE sdl2r_fill_rect(VALUE klass, VALUE vsurface, VALUE vrect, VALUE vcolor)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
-    SDL_Surface *surface = sur->surface;
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
     SDL_PixelFormat *format = surface->format;
     SDL_Rect rect, *prect;
     SDL_Color col;
@@ -222,6 +222,32 @@ static VALUE sdl2r_fill_rect(VALUE klass, VALUE vsurface, VALUE vrect, VALUE vco
 
     if (SDL_FillRect(surface, prect, SDL_MapRGBA(format, col.r, col.g, col.b, col.a))) {
         rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vsurface;
+}
+
+
+static VALUE sdl2r_fill_rects(VALUE klass, VALUE vsurface, VALUE vrects, VALUE vcolor)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+    SDL_PixelFormat *format = surface->format;
+    SDL_Color col;
+
+    Check_Type(vrects, T_ARRAY);
+    SDL2R_SET_COLOR(col, vcolor);
+    {
+        SDL_Rect rects[RARRAY_LEN(vrects)];
+        int i;
+
+        for (i = 0; i < RARRAY_LEN(vrects); i++) {
+            SDL2R_SET_RECT(&rects[i], rb_ary_entry(vrects, i));
+        }
+
+        if (SDL_FillRects(surface, rects, RARRAY_LEN(vrects), SDL_MapRGBA(format, col.r, col.g, col.b, col.a))) {
+            rb_raise(eSDLError, SDL_GetError());
+        }
     }
 
     return vsurface;
@@ -238,6 +264,7 @@ void Init_sdl2r_surface(void)
     SDL2R_DEFINE_SINGLETON_METHOD(lock_surface, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(unlock_surface, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(fill_rect, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(fill_rects, 3);
 
     // SDL macro
     SDL2R_DEFINE_SINGLETON_METHOD_MACRO(MUSTLOCK, 1);
