@@ -7,6 +7,8 @@
 
 VALUE cSurface;
 
+VALUE sdl2r_EnumBlendMode;
+
 static void sdl2r_surface_free(void *ptr);
 static void sdl2r_surface_mark(void *ptr);
 const rb_data_type_t sdl2r_surface_data_type = {
@@ -242,7 +244,7 @@ static VALUE sdl2r_fill_rects(VALUE klass, VALUE vsurface, VALUE vrects, VALUE v
         int i;
 
         for (i = 0; i < RARRAY_LEN(vrects); i++) {
-            SDL2R_SET_RECT(&rects[i], rb_ary_entry(vrects, i));
+            SDL2R_SET_RECT(rects[i], rb_ary_entry(vrects, i));
         }
 
         if (SDL_FillRects(surface, rects, RARRAY_LEN(vrects), SDL_MapRGBA(format, col.r, col.g, col.b, col.a))) {
@@ -251,6 +253,48 @@ static VALUE sdl2r_fill_rects(VALUE klass, VALUE vsurface, VALUE vrects, VALUE v
     }
 
     return vsurface;
+}
+
+
+static VALUE sdl2r_get_surface_alpha_mod(VALUE klass, VALUE vsurface)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+    Uint8 alpha;
+
+    if (SDL_GetSurfaceAlphaMod(surface, &alpha)) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return INT2NUM(alpha);
+}
+
+
+static VALUE sdl2r_get_surface_blend_mode(VALUE klass, VALUE vsurface)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+    SDL_BlendMode blendmode;
+
+    if (SDL_GetSurfaceBlendMode(surface, &blendmode)) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return INT2NUM(blendmode);
+}
+
+
+static VALUE sdl2r_get_surface_color_mod(VALUE klass, VALUE vsurface)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+    Uint8 r, g, b;
+
+    if (SDL_GetSurfaceColorMod(surface, &r, &g, &b)) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return rb_ary_new3(3, INT2NUM(r), INT2NUM(g), INT2NUM(b));
 }
 
 
@@ -265,6 +309,9 @@ void Init_sdl2r_surface(void)
     SDL2R_DEFINE_SINGLETON_METHOD(unlock_surface, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(fill_rect, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(fill_rects, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_surface_alpha_mod, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_surface_blend_mode, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_surface_color_mod, 1);
 
     // SDL macro
     SDL2R_DEFINE_SINGLETON_METHOD_MACRO(MUSTLOCK, 1);
@@ -278,6 +325,8 @@ void Init_sdl2r_surface(void)
     rb_define_method(cSurface, "w", sdl2r_w, 0);
     rb_define_method(cSurface, "h", sdl2r_h, 0);
     rb_define_method(cSurface, "pixels", sdl2r_get_pixels, 0);
+
+    // define enum
 
     // Constants
 }
