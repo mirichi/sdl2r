@@ -7,7 +7,13 @@
 
 VALUE cSurface;
 
-VALUE sdl2r_EnumBlendMode;
+static VALUE sdl2r_EnumPixelFormat;
+static VALUE sdl2r_EnumPixelType;
+static VALUE sdl2r_EnumBitmapOrder;
+static VALUE sdl2r_EnumBlendMode;
+static VALUE sdl2r_EnumPackOrder;
+static VALUE sdl2r_EnumArrayOrder;
+static VALUE sdl2r_EnumPackedLayout;
 
 static void sdl2r_surface_free(void *ptr);
 static void sdl2r_surface_mark(void *ptr);
@@ -298,6 +304,45 @@ static VALUE sdl2r_get_surface_color_mod(VALUE klass, VALUE vsurface)
 }
 
 
+static VALUE sdl2r_set_surface_alpha_mod(VALUE klass, VALUE vsurface, VALUE valpha)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+
+    if (SDL_SetSurfaceAlphaMod(surface, NUM2INT(valpha))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return Qnil;
+}
+
+
+static VALUE sdl2r_set_surface_blend_mode(VALUE klass, VALUE vsurface, VALUE vblendmode)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+
+    if (SDL_SetSurfaceBlendMode(surface, NUM2INT(vblendmode))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return Qnil;
+}
+
+
+static VALUE sdl2r_set_surface_color_mod(VALUE klass, VALUE vsurface, VALUE vr, VALUE vg, VALUE vb)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+
+    if (SDL_SetSurfaceColorMod(surface, NUM2INT(vr), NUM2INT(vg), NUM2INT(vb))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return Qnil;
+}
+
+
 void Init_sdl2r_surface(void)
 {
     // SDL module methods
@@ -312,6 +357,9 @@ void Init_sdl2r_surface(void)
     SDL2R_DEFINE_SINGLETON_METHOD(get_surface_alpha_mod, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_surface_blend_mode, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_surface_color_mod, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_surface_alpha_mod, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_surface_blend_mode, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_surface_color_mod, 4);
 
     // SDL macro
     SDL2R_DEFINE_SINGLETON_METHOD_MACRO(MUSTLOCK, 1);
@@ -327,6 +375,99 @@ void Init_sdl2r_surface(void)
     rb_define_method(cSurface, "pixels", sdl2r_get_pixels, 0);
 
     // define enum
+    SDL2R_DEFINE_ENUM(EnumPixelFormat);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_UNKNOWN);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_INDEX1LSB);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_INDEX1MSB);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_INDEX4LSB);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_INDEX4MSB);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_INDEX8);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGB332);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGB444);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGB555);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_BGR555);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_ARGB4444);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGBA4444);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_ABGR4444);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_BGRA4444);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_ARGB1555);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGBA5551);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_ABGR1555);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_BGRA5551);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGB565);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_BGR565);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGB24);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_BGR24);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGB888);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGBX8888);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_BGR888);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_BGRX8888);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_ARGB8888);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_RGBA8888);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_ABGR8888);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_BGRA8888);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_ARGB2101010);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_YV12);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_IYUV);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_YUY2);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_UYVY);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelFormat, PIXELFORMAT_YVYU);
+
+    SDL2R_DEFINE_ENUM(EnumPixelType);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_UNKNOWN);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_INDEX1);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_INDEX4);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_INDEX8);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_PACKED8);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_PACKED16);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_PACKED32);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_ARRAYU8);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_ARRAYU16);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_ARRAYU32);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_ARRAYF16);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPixelType, PIXELTYPE_ARRAYF32);
+
+    SDL2R_DEFINE_ENUM(EnumBitmapOrder);
+    SDL2R_DEFINE_ENUM_VALUE(EnumBitmapOrder, BITMAPORDER_NONE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumBitmapOrder, BITMAPORDER_4321);
+    SDL2R_DEFINE_ENUM_VALUE(EnumBitmapOrder, BITMAPORDER_1234);
+
+    SDL2R_DEFINE_ENUM(EnumPackOrder);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackOrder, PACKEDORDER_NONE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackOrder, PACKEDORDER_XRGB);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackOrder, PACKEDORDER_RGBX);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackOrder, PACKEDORDER_ARGB);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackOrder, PACKEDORDER_RGBA);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackOrder, PACKEDORDER_XBGR);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackOrder, PACKEDORDER_BGRX);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackOrder, PACKEDORDER_ABGR);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackOrder, PACKEDORDER_BGRA);
+
+    SDL2R_DEFINE_ENUM(EnumArrayOrder);
+    SDL2R_DEFINE_ENUM_VALUE(EnumArrayOrder, ARRAYORDER_NONE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumArrayOrder, ARRAYORDER_RGB);
+    SDL2R_DEFINE_ENUM_VALUE(EnumArrayOrder, ARRAYORDER_RGBA);
+    SDL2R_DEFINE_ENUM_VALUE(EnumArrayOrder, ARRAYORDER_ARGB);
+    SDL2R_DEFINE_ENUM_VALUE(EnumArrayOrder, ARRAYORDER_BGR);
+    SDL2R_DEFINE_ENUM_VALUE(EnumArrayOrder, ARRAYORDER_BGRA);
+    SDL2R_DEFINE_ENUM_VALUE(EnumArrayOrder, ARRAYORDER_ABGR);
+
+    SDL2R_DEFINE_ENUM(EnumPackedLayout);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackedLayout, PACKEDLAYOUT_NONE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackedLayout, PACKEDLAYOUT_332);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackedLayout, PACKEDLAYOUT_4444);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackedLayout, PACKEDLAYOUT_1555);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackedLayout, PACKEDLAYOUT_5551);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackedLayout, PACKEDLAYOUT_565);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackedLayout, PACKEDLAYOUT_8888);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackedLayout, PACKEDLAYOUT_2101010);
+    SDL2R_DEFINE_ENUM_VALUE(EnumPackedLayout, PACKEDLAYOUT_1010102);
+
+    SDL2R_DEFINE_ENUM(EnumBlendMode);
+    SDL2R_DEFINE_ENUM_VALUE(EnumBlendMode, BLENDMODE_NONE);
+    SDL2R_DEFINE_ENUM_VALUE(EnumBlendMode, BLENDMODE_BLEND);
+    SDL2R_DEFINE_ENUM_VALUE(EnumBlendMode, BLENDMODE_ADD);
+    SDL2R_DEFINE_ENUM_VALUE(EnumBlendMode, BLENDMODE_MOD);
 
     // Constants
 }
