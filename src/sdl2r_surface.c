@@ -343,6 +343,33 @@ static VALUE sdl2r_set_surface_color_mod(VALUE klass, VALUE vsurface, VALUE vr, 
 }
 
 
+static VALUE sdl2r_get_clip_rect(VALUE klass, VALUE vsurface)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+    SDL_Rect rect;
+
+    SDL_GetClipRect(surface, &rect);
+
+    return sdl2r_rect2vrect(&rect);
+}
+
+
+static VALUE sdl2r_set_clip_rect(VALUE klass, VALUE vsurface, VALUE vrect)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
+    SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+    SDL_Rect rect, *prect;
+    SDL_bool result;
+
+    SDL2R_SET_RECT_OR_NULL(prect, rect, vrect);
+
+    result = SDL_SetClipRect(surface, prect);
+
+    return SDL2R_TO_BOOL(result);
+}
+
+
 void Init_sdl2r_surface(void)
 {
     // SDL module methods
@@ -360,6 +387,8 @@ void Init_sdl2r_surface(void)
     SDL2R_DEFINE_SINGLETON_METHOD(set_surface_alpha_mod, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(set_surface_blend_mode, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(set_surface_color_mod, 4);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_clip_rect, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_clip_rect, 2);
 
     // SDL macro
     SDL2R_DEFINE_SINGLETON_METHOD_MACRO(MUSTLOCK, 1);

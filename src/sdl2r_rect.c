@@ -5,7 +5,7 @@
 VALUE cRect;
 VALUE cPoint;
 
-static VALUE sdl2r_rect2vrect(SDL_Rect *r)
+VALUE sdl2r_rect2vrect(SDL_Rect *r)
 {
     VALUE ary[4];
     if (!r) {
@@ -19,7 +19,7 @@ static VALUE sdl2r_rect2vrect(SDL_Rect *r)
 }
 
 
-static VALUE sdl2r_point2vpoint(SDL_Point *p)
+VALUE sdl2r_point2vpoint(SDL_Point *p)
 {
     VALUE ary[2];
     if (!p) {

@@ -5,6 +5,9 @@ extern VALUE cPoint;
 extern VALUE cRect;
 #endif
 
+VALUE sdl2r_rect2vrect(SDL_Rect *r);
+VALUE sdl2r_point2vpoint(SDL_Point *p);
+
 #define SDL2R_SET_POINT(point, vpoint) {\
             Check_Type(vpoint, T_ARRAY);\
             point.x = NUM2INT(rb_ary_entry(vpoint, 0));\
