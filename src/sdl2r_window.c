@@ -31,6 +31,11 @@ void sdl2r_window_dispose(struct SDL2RWindow *win)
         sdl2r_glcontext_dispose(SDL2R_GET_STRUCT(GLContext, win->vglcontext));
     }
 
+    if (win->vwindowsurface != Qnil) {
+        SDL2R_GET_STRUCT(Surface, win->vwindowsurface)->vwindow = Qnil;
+        win->vwindowsurface = Qnil;
+    }
+
     sdl2r_del_hash(sdl2r_window_hash, (HASHKEY)win->window);
     SDL_DestroyWindow(win->window);
     win->window = 0;
@@ -55,6 +60,7 @@ VALUE sdl2r_window_alloc(VALUE klass)
 
     VALUE vwindow = TypedData_Make_Struct(klass, struct SDL2RWindow, &sdl2r_window_data_type, win);
     win->window = 0;
+    win->vwindowsurface = Qnil;
     win->vrenderer = Qnil;
     win->vglcontext = Qnil;
 
@@ -113,8 +119,15 @@ static VALUE sdl2r_set_window_title(VALUE klass, VALUE vwindow, VALUE vstr)
 static VALUE sdl2r_get_window_surface(VALUE klass, VALUE vwindow)
 {
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
-    VALUE vsurface = sdl2r_surface_alloc(cSurface);
-    struct SDL2RSurface *sur = SDL2R_GET_STRUCT(Surface, vsurface);
+    VALUE vsurface;
+    struct SDL2RSurface *sur;
+
+    if (win->vwindowsurface != Qnil) {
+        return win->vwindowsurface;
+    }
+
+    vsurface = sdl2r_surface_alloc(cSurface);
+    sur = SDL2R_GET_STRUCT(Surface, vsurface);
 
     sur->surface = SDL_GetWindowSurface(win->window);
     if (!sur->surface) {
@@ -122,6 +135,7 @@ static VALUE sdl2r_get_window_surface(VALUE klass, VALUE vwindow)
     }
     sur->surface = 0;
     sur->vwindow = vwindow;
+    win->vwindowsurface = vsurface;
 
     return vsurface;
 }
