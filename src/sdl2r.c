@@ -19,6 +19,7 @@
 #include "sdl2r_rect.h"
 #include "sdl2r_version.h"
 #include "sdl2r_pixels.h"
+#include "sdl2r_pixelformat.h"
 
 VALUE mSDL;
 VALUE eSDLError;
@@ -234,4 +235,5 @@ void Init_sdl2r(void)
     Init_sdl2r_mouse();
     Init_sdl2r_rect();
     Init_sdl2r_pixels();
+    Init_sdl2r_pixelformat();
 }
