@@ -91,6 +91,60 @@ static VALUE sdl2r_pixelformat_im_get_format(VALUE self)
 }
 
 
+static VALUE sdl2r_pixelformat_im_get_bits_per_pixel(VALUE self)
+{
+    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+
+    return UINT2NUM(format->BitsPerPixel);
+}
+
+
+static VALUE sdl2r_pixelformat_im_get_bytes_per_pixel(VALUE self)
+{
+    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+
+    return UINT2NUM(format->BytesPerPixel);
+}
+
+
+static VALUE sdl2r_pixelformat_im_get_rmask(VALUE self)
+{
+    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+
+    return UINT2NUM(format->Rmask);
+}
+
+
+static VALUE sdl2r_pixelformat_im_get_gmask(VALUE self)
+{
+    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+
+    return UINT2NUM(format->Gmask);
+}
+
+
+static VALUE sdl2r_pixelformat_im_get_bmask(VALUE self)
+{
+    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+
+    return UINT2NUM(format->Bmask);
+}
+
+
+static VALUE sdl2r_pixelformat_im_get_amask(VALUE self)
+{
+    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+
+    return UINT2NUM(format->Amask);
+}
+
+
 static VALUE sdl2r_alloc_format(VALUE klass, VALUE vpixelformatenum)
 {
     VALUE vpixelformat = sdl2r_pixelformat_alloc(cPixelFormat);
@@ -134,6 +188,13 @@ void Init_sdl2r_pixelformat(void)
     rb_define_method(cPixelFormat, "dispose", sdl2r_pixelformat_im_dispose, 0);
     rb_define_method(cPixelFormat, "disposed?", sdl2r_pixelformat_im_get_disposed, 0);
     rb_define_method(cPixelFormat, "format", sdl2r_pixelformat_im_get_format, 0);
+//    rb_define_method(cPixelFormat, "palette", sdl2r_pixelformat_im_get_palette, 0);
+    rb_define_method(cPixelFormat, "bits_per_pixel", sdl2r_pixelformat_im_get_bits_per_pixel, 0);
+    rb_define_method(cPixelFormat, "bytes_per_pixel", sdl2r_pixelformat_im_get_bytes_per_pixel, 0);
+    rb_define_method(cPixelFormat, "rmask", sdl2r_pixelformat_im_get_rmask, 0);
+    rb_define_method(cPixelFormat, "gmask", sdl2r_pixelformat_im_get_gmask, 0);
+    rb_define_method(cPixelFormat, "bmask", sdl2r_pixelformat_im_get_bmask, 0);
+    rb_define_method(cPixelFormat, "amask", sdl2r_pixelformat_im_get_amask, 0);
 
     // Constants
 
