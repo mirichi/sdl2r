@@ -1,6 +1,8 @@
 struct SDL2RSurface {
     SDL_Surface *surface;
     VALUE vwindow;
+    VALUE vpixels;
+    VALUE vpixelformat;
 };
 
 void Init_sdl2r_surface(void);

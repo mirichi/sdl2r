@@ -6,8 +6,8 @@
 
 VALUE cPixels;
 
-static void sdl2r_pixels_free(void *ptr);
 static void sdl2r_pixels_mark(void *ptr);
+static void sdl2r_pixels_free(void *ptr);
 const rb_data_type_t sdl2r_pixels_data_type = {
     "Pixels",
     {
@@ -17,18 +17,17 @@ const rb_data_type_t sdl2r_pixels_data_type = {
     },
 };
 
+static void sdl2r_pixels_mark(void *ptr)
+{
+    struct SDL2RPixels *pix = ptr;
+    rb_gc_mark(pix->vsurface);
+}
+
 
 static void sdl2r_pixels_free(void *ptr)
 {
     struct SDL2RPixels *pix = ptr;
     xfree(pix);
-}
-
-
-static void sdl2r_pixels_mark(void *ptr)
-{
-    struct SDL2RPixels *pix = ptr;
-    rb_gc_mark(pix->vsurface);
 }
 
 
@@ -127,13 +126,16 @@ static VALUE sdl2r_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
 
 void Init_sdl2r_pixels(void)
 {
+    // SDL module methods
+
     // SDL::Surface::Pixels class
     cPixels = rb_define_class_under(cSurface, "Pixels", rb_cObject);
     rb_define_alloc_func(cPixels, sdl2r_pixels_alloc);
     rb_define_method(cPixels, "[]", sdl2r_get_pixel, 2);
     rb_define_method(cPixels, "[]=", sdl2r_set_pixel, 3);
 
-
     // Constants
+
+    // weak ref hash
 }
 

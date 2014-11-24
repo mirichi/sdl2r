@@ -3,6 +3,7 @@
 #include "sdl2r_surface.h"
 #include "sdl2r_window.h"
 #include "sdl2r_pixels.h"
+#include "sdl2r_pixelformat.h"
 #include "sdl2r_rect.h"
 
 VALUE cSurface;
@@ -31,6 +32,8 @@ static void sdl2r_surface_mark(void *ptr)
 {
     struct SDL2RSurface *sur = ptr;
     rb_gc_mark(sur->vwindow);
+    rb_gc_mark(sur->vpixels);
+    rb_gc_mark(sur->vpixelformat);
 }
 
 
@@ -64,6 +67,8 @@ VALUE sdl2r_surface_alloc(VALUE klass)
     VALUE vsurface = TypedData_Make_Struct(klass, struct SDL2RSurface, &sdl2r_surface_data_type, sur);
     sur->surface = 0;
     sur->vwindow = Qnil;
+    sur->vpixels = Qnil;
+    sur->vpixelformat = Qnil;
     return vsurface;
 }
 
@@ -77,6 +82,8 @@ static VALUE sdl2r_surface_im_dispose(VALUE self)
     }
     SDL_FreeSurface(sur->surface);
     sur->surface = 0;
+    sur->vpixels = Qnil;
+    sur->vpixelformat = Qnil;
 
     return self;
 }
@@ -98,34 +105,56 @@ static VALUE sdl2r_free_surface(VALUE klass, VALUE vsurface)
     }
     SDL_FreeSurface(sur->surface);
     sur->surface = 0;
+    sur->vpixels = Qnil;
+    sur->vpixelformat = Qnil;
 
     return vsurface;
 }
 
 
-static VALUE sdl2r_w(VALUE self)
+static VALUE sdl2r_im_get_w(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
     return INT2NUM(sdl2r_get_sdl_surface(sur)->w);
 }
 
 
-static VALUE sdl2r_h(VALUE self)
+static VALUE sdl2r_im_get_h(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
     return INT2NUM(sdl2r_get_sdl_surface(sur)->h);
 }
 
 
-static VALUE sdl2r_get_pixels(VALUE self)
+static VALUE sdl2r_im_get_pixels(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
-    VALUE vpixels = sdl2r_pixels_alloc(cPixels);
-    struct SDL2RPixels *pix = SDL2R_GET_STRUCT(Pixels, vpixels);
-    (void)sur;
-    pix->vsurface = self;
 
-    return vpixels;
+    if (sur->vpixels != Qnil) {
+        return sur->vpixels;
+    } else {
+        VALUE vpixels = sdl2r_pixels_alloc(cPixels);
+        struct SDL2RPixels *pix = SDL2R_GET_STRUCT(Pixels, vpixels);
+        pix->vsurface = self;
+        sur->vpixels = vpixels;
+        return vpixels;
+    }
+}
+
+
+static VALUE sdl2r_im_get_format(VALUE self)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
+
+    if (sur->vpixelformat != Qnil) {
+        return sur->vpixelformat;
+    } else {
+        VALUE vpixelformat = sdl2r_pixelformat_alloc(cPixelFormat);
+        struct SDL2RPixelFormat *pif = SDL2R_GET_STRUCT(PixelFormat, vpixelformat);
+        pif->vsurface = self;
+        sur->vpixelformat = vpixelformat;
+        return vpixelformat;
+    }
 }
 
 
@@ -399,9 +428,10 @@ void Init_sdl2r_surface(void)
 
     rb_define_method(cSurface, "dispose", sdl2r_surface_im_dispose, 0);
     rb_define_method(cSurface, "disposed?", sdl2r_surface_im_get_disposed, 0);
-    rb_define_method(cSurface, "w", sdl2r_w, 0);
-    rb_define_method(cSurface, "h", sdl2r_h, 0);
-    rb_define_method(cSurface, "pixels", sdl2r_get_pixels, 0);
+    rb_define_method(cSurface, "w", sdl2r_im_get_w, 0);
+    rb_define_method(cSurface, "h", sdl2r_im_get_h, 0);
+    rb_define_method(cSurface, "pixels", sdl2r_im_get_pixels, 0);
+    rb_define_method(cSurface, "format", sdl2r_im_get_format, 0);
 
     // define enum
     SDL2R_DEFINE_ENUM(EnumPixelFormat);

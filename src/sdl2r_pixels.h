@@ -15,7 +15,3 @@ extern VALUE cPixels;
             SDL2R_GET_STRUCT(Pixels, obj)\
           : rb_raise(rb_eArgError, "wrong argument type %s (expected SDL::Surface::Pixels)", rb_obj_classname(obj)), SDL2R_GET_STRUCT(Pixels, obj)\
     )
-
-
-
-
