@@ -235,16 +235,6 @@ static VALUE sdl2r_show_window(VALUE klass, VALUE vwindow)
 }
 
 
-static VALUE sdl2r_set_window_size(VALUE klass, VALUE vwindow, VALUE vw, VALUE vh)
-{
-    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
-
-    SDL_SetWindowSize(win->window, NUM2INT(vw), NUM2INT(vh));
-
-    return vwindow;
-}
-
-
 static VALUE sdl2r_get_window_id(VALUE klass, VALUE vwindow)
 {
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
@@ -298,7 +288,28 @@ static VALUE sdl2r_set_window_position(VALUE klass, VALUE vwindow, VALUE vx, VAL
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
 
     SDL_SetWindowPosition(win->window, NUM2INT(vx), NUM2INT(vy));
-    return Qnil;
+
+    return vwindow;
+}
+
+
+static VALUE sdl2r_get_window_size(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+    int w, h;
+
+    SDL_GetWindowSize(win->window, &w, &h);
+    return rb_ary_new3(2, INT2NUM(w), INT2NUM(h));
+}
+
+
+static VALUE sdl2r_set_window_size(VALUE klass, VALUE vwindow, VALUE vw, VALUE vh)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    SDL_SetWindowSize(win->window, NUM2INT(vw), NUM2INT(vh));
+
+    return vwindow;
 }
 
 
@@ -326,12 +337,13 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_title, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_pixel_format, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(show_window, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(set_window_size, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(gl_create_context, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_id, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_from_id, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_position, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_position, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_size, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_size, 3);
 
 //    rb_define_singleton_method(window_test, 0);
 
