@@ -225,6 +225,16 @@ static VALUE sdl2r_get_window_pixel_format(VALUE klass, VALUE vwindow)
 }
 
 
+static VALUE sdl2r_hide_window(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    SDL_HideWindow(win->window);
+
+    return vwindow;
+}
+
+
 static VALUE sdl2r_show_window(VALUE klass, VALUE vwindow)
 {
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
@@ -333,13 +343,14 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(get_renderer, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_surface, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(update_window_surface, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(get_window_title, 1);
-    SDL2R_DEFINE_SINGLETON_METHOD(set_window_title, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_pixel_format, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(hide_window, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(show_window, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(gl_create_context, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_id, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_from_id, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_title, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_title, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_position, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_position, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_size, 1);
