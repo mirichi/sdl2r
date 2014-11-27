@@ -323,6 +323,33 @@ static VALUE sdl2r_set_window_size(VALUE klass, VALUE vwindow, VALUE vw, VALUE v
 }
 
 
+static VALUE sdl2r_maximize_window(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    SDL_MaximizeWindow(win->window);
+    return vwindow;
+}
+
+
+static VALUE sdl2r_minimize_window(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    SDL_MinimizeWindow(win->window);
+    return vwindow;
+}
+
+
+static VALUE sdl2r_restore_window(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    SDL_RestoreWindow(win->window);
+    return vwindow;
+}
+
+
 
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
@@ -355,6 +382,9 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_position, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_size, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_size, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(maximize_window, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(minimize_window, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(restore_window, 1);
 
 //    rb_define_singleton_method(window_test, 0);
 
