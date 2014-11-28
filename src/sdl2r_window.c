@@ -350,6 +350,18 @@ static VALUE sdl2r_restore_window(VALUE klass, VALUE vwindow)
 }
 
 
+static VALUE sdl2r_set_window_fullscreen(VALUE klass, VALUE vwindow, VALUE vflags)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    if (SDL_SetWindowFullscreen(win->window, NUM2UINT(vflags))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vwindow;
+}
+
+
 
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
@@ -385,6 +397,7 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(maximize_window, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(minimize_window, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(restore_window, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_fullscreen, 2);
 
 //    rb_define_singleton_method(window_test, 0);
 
