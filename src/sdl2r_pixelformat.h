@@ -1,5 +1,4 @@
 struct SDL2RPixelFormat {
-    VALUE vsurface;
     SDL_PixelFormat *format;
 };
 
@@ -13,7 +12,7 @@ extern VALUE cPixelFormat;
 
 #define SDL2R_GET_PIXELFORMAT_STRUCT(obj) (\
         (RB_TYPE_P(obj, T_DATA) && RTYPEDDATA_TYPE(obj) == &sdl2r_pixelformat_data_type) ?\
-            (SDL2R_GET_STRUCT(PixelFormat, obj)->vsurface == Qnil && SDL2R_GET_STRUCT(PixelFormat, obj)->format == NULL ?\
+            (SDL2R_GET_STRUCT(PixelFormat, obj)->format == NULL ?\
                 rb_raise(eSDL2RError, "disposed PixelFormat object"), SDL2R_GET_STRUCT(PixelFormat, obj)\
               : SDL2R_GET_STRUCT(PixelFormat, obj)\
             )\

@@ -146,12 +146,13 @@ static VALUE sdl2r_im_get_format(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
 
-    if (sur->vpixelformat != Qnil) {
+    if (sur->vpixelformat != Qnil && SDL2R_GET_STRUCT(PixelFormat, sur->vpixelformat)->format != NULL) {
         return sur->vpixelformat;
     } else {
         VALUE vpixelformat = sdl2r_pixelformat_alloc(cPixelFormat);
-        struct SDL2RPixelFormat *pif = SDL2R_GET_STRUCT(PixelFormat, vpixelformat);
-        pif->vsurface = self;
+        struct SDL2RPixelFormat *pxf = SDL2R_GET_STRUCT(PixelFormat, vpixelformat);
+        pxf->format = sur->surface->format;
+        pxf->format->refcount++;
         sur->vpixelformat = vpixelformat;
         return vpixelformat;
     }
