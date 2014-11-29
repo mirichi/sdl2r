@@ -22,28 +22,28 @@ const rb_data_type_t sdl2r_pixelformat_data_type = {
 
 static void sdl2r_pixelformat_mark(void *ptr)
 {
-    struct SDL2RPixelFormat *pif = ptr;
-    rb_gc_mark(pif->vsurface);
+    struct SDL2RPixelFormat *pxf = ptr;
+    rb_gc_mark(pxf->vsurface);
 }
 
 
 static void sdl2r_pixelformat_free(void *ptr)
 {
-    struct SDL2RPixelFormat *pif = ptr;
-    if (pif->format) {
-        SDL_FreeFormat(pif->format);
+    struct SDL2RPixelFormat *pxf = ptr;
+    if (pxf->format) {
+        SDL_FreeFormat(pxf->format);
     }
-    xfree(pif);
+    xfree(pxf);
 }
 
 
-SDL_PixelFormat *sdl2r_get_sdl_pixelformat(struct SDL2RPixelFormat *pif)
+SDL_PixelFormat *sdl2r_get_sdl_pixelformat(struct SDL2RPixelFormat *pxf)
 {
-    if (pif->vsurface != Qnil) {
-        struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pif->vsurface);
+    if (pxf->vsurface != Qnil) {
+        struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pxf->vsurface);
         return sur->surface->format;
-    } else if (pif->format) {
-        return pif->format;
+    } else if (pxf->format) {
+        return pxf->format;
     } else {
         rb_raise(eSDL2RError, "disposed PixelFormat object");
         return 0;
@@ -53,23 +53,23 @@ SDL_PixelFormat *sdl2r_get_sdl_pixelformat(struct SDL2RPixelFormat *pif)
 
 VALUE sdl2r_pixelformat_alloc(VALUE klass)
 {
-    struct SDL2RPixelFormat *pif;
-    VALUE vpixelformat = TypedData_Make_Struct(klass, struct SDL2RPixelFormat, &sdl2r_pixelformat_data_type, pif);
-    pif->format = 0;
-    pif->vsurface = Qnil;
+    struct SDL2RPixelFormat *pxf;
+    VALUE vpixelformat = TypedData_Make_Struct(klass, struct SDL2RPixelFormat, &sdl2r_pixelformat_data_type, pxf);
+    pxf->format = 0;
+    pxf->vsurface = Qnil;
     return vpixelformat;
 }
 
 
 static VALUE sdl2r_pixelformat_im_dispose(VALUE self)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_PIXELFORMAT_STRUCT(self);
 
-    if (pif->vsurface != Qnil) {
+    if (pxf->vsurface != Qnil) {
         rb_raise(eSDL2RError, "Surface's PixelFormat don't free");
     }
-    SDL_FreeFormat(pif->format);
-    pif->format = 0;
+    SDL_FreeFormat(pxf->format);
+    pxf->format = 0;
 
     return self;
 }
@@ -77,15 +77,15 @@ static VALUE sdl2r_pixelformat_im_dispose(VALUE self)
 
 static VALUE sdl2r_pixelformat_im_get_disposed(VALUE self)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_STRUCT(PixelFormat, self);
-    return SDL2R_TO_BOOL(pif->vsurface == Qnil && pif->format== NULL);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_STRUCT(PixelFormat, self);
+    return SDL2R_TO_BOOL(pxf->vsurface == Qnil && pxf->format== NULL);
 }
 
 
 static VALUE sdl2r_pixelformat_im_get_format(VALUE self)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
-    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pxf);
 
     return INT2NUM(format->format);
 }
@@ -93,8 +93,8 @@ static VALUE sdl2r_pixelformat_im_get_format(VALUE self)
 
 static VALUE sdl2r_pixelformat_im_get_bits_per_pixel(VALUE self)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
-    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pxf);
 
     return UINT2NUM(format->BitsPerPixel);
 }
@@ -102,8 +102,8 @@ static VALUE sdl2r_pixelformat_im_get_bits_per_pixel(VALUE self)
 
 static VALUE sdl2r_pixelformat_im_get_bytes_per_pixel(VALUE self)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
-    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pxf);
 
     return UINT2NUM(format->BytesPerPixel);
 }
@@ -111,8 +111,8 @@ static VALUE sdl2r_pixelformat_im_get_bytes_per_pixel(VALUE self)
 
 static VALUE sdl2r_pixelformat_im_get_rmask(VALUE self)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
-    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pxf);
 
     return UINT2NUM(format->Rmask);
 }
@@ -120,8 +120,8 @@ static VALUE sdl2r_pixelformat_im_get_rmask(VALUE self)
 
 static VALUE sdl2r_pixelformat_im_get_gmask(VALUE self)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
-    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pxf);
 
     return UINT2NUM(format->Gmask);
 }
@@ -129,8 +129,8 @@ static VALUE sdl2r_pixelformat_im_get_gmask(VALUE self)
 
 static VALUE sdl2r_pixelformat_im_get_bmask(VALUE self)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
-    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pxf);
 
     return UINT2NUM(format->Bmask);
 }
@@ -138,8 +138,8 @@ static VALUE sdl2r_pixelformat_im_get_bmask(VALUE self)
 
 static VALUE sdl2r_pixelformat_im_get_amask(VALUE self)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(self);
-    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pif);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_PIXELFORMAT_STRUCT(self);
+    SDL_PixelFormat *format = sdl2r_get_sdl_pixelformat(pxf);
 
     return UINT2NUM(format->Amask);
 }
@@ -148,14 +148,14 @@ static VALUE sdl2r_pixelformat_im_get_amask(VALUE self)
 static VALUE sdl2r_alloc_format(VALUE klass, VALUE vpixelformatenum)
 {
     VALUE vpixelformat = sdl2r_pixelformat_alloc(cPixelFormat);
-    struct SDL2RPixelFormat *pif = SDL2R_GET_STRUCT(PixelFormat, vpixelformat);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_STRUCT(PixelFormat, vpixelformat);
     SDL_PixelFormat *format;
 
     format = SDL_AllocFormat(NUM2UINT(vpixelformatenum));
     if (!format) {
         rb_raise(eSDLError, SDL_GetError());
     }
-    pif->format = format;
+    pxf->format = format;
 
     return vpixelformat;
 }
@@ -163,14 +163,14 @@ static VALUE sdl2r_alloc_format(VALUE klass, VALUE vpixelformatenum)
 
 static VALUE sdl2r_free_format(VALUE klass, VALUE vpixelformat)
 {
-    struct SDL2RPixelFormat *pif = SDL2R_GET_PIXELFORMAT_STRUCT(vpixelformat);
+    struct SDL2RPixelFormat *pxf = SDL2R_GET_PIXELFORMAT_STRUCT(vpixelformat);
 
-    if (pif->vsurface != Qnil) {
+    if (pxf->vsurface != Qnil) {
         rb_raise(eSDL2RError, "Surface's PixelFormat don't free");
     }
 
-    SDL_FreeFormat(pif->format);
-    pif->format = 0;
+    SDL_FreeFormat(pxf->format);
+    pxf->format = 0;
 
     return vpixelformat;
 }
