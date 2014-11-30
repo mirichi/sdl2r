@@ -362,6 +362,16 @@ static VALUE sdl2r_set_window_fullscreen(VALUE klass, VALUE vwindow, VALUE vflag
 }
 
 
+static VALUE sdl2r_set_window_bordered(VALUE klass, VALUE vwindow, VALUE vbordered)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    SDL_SetWindowBordered(win->window, RTEST(vbordered));
+
+    return vwindow;
+}
+
+
 
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
@@ -398,6 +408,7 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(minimize_window, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(restore_window, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_fullscreen, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_bordered, 2);
 
 //    rb_define_singleton_method(window_test, 0);
 
