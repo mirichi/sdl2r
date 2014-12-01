@@ -372,6 +372,22 @@ static VALUE sdl2r_set_window_bordered(VALUE klass, VALUE vwindow, VALUE vborder
 }
 
 
+static VALUE sdl2r_show_simple_message_box(VALUE klass, VALUE vflags, VALUE vtitle, VALUE vmessage, VALUE vwindow)
+{
+    SDL_Window *window = 0;
+
+    if (vwindow != Qnil) {
+        window = SDL2R_GET_WINDOW_STRUCT(vwindow)->window;
+    }
+
+    if (SDL_ShowSimpleMessageBox(NUM2UINT(vflags), SDL2R_TO_UTF8_PTR(vtitle), SDL2R_TO_UTF8_PTR(vmessage), window)) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vwindow;
+}
+
+
 
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
@@ -409,6 +425,7 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(restore_window, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_fullscreen, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_bordered, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(show_simple_message_box, 4);
 
 //    rb_define_singleton_method(window_test, 0);
 
@@ -437,6 +454,10 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_CONST(WINDOW_MOUSE_FOCUS);
     SDL2R_DEFINE_CONST(WINDOW_FOREIGN);
     SDL2R_DEFINE_CONST(WINDOW_ALLOW_HIGHDPI);
+
+    SDL2R_DEFINE_CONST(MESSAGEBOX_ERROR);
+    SDL2R_DEFINE_CONST(MESSAGEBOX_WARNING);
+    SDL2R_DEFINE_CONST(MESSAGEBOX_INFORMATION);
 
     sdl2r_window_hash = sdl2r_hash_alloc(8);
 }
