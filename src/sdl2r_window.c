@@ -388,6 +388,48 @@ static VALUE sdl2r_show_simple_message_box(VALUE klass, VALUE vflags, VALUE vtit
 }
 
 
+static VALUE sdl2r_get_window_minimum_size(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+    int w, h;
+
+    SDL_GetWindowMinimumSize(win->window, &w, &h);
+
+    return rb_ary_new3(2, INT2NUM(w), INT2NUM(h));
+}
+
+
+static VALUE sdl2r_get_window_maximum_size(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+    int w, h;
+
+    SDL_GetWindowMaximumSize(win->window, &w, &h);
+
+    return rb_ary_new3(2, INT2NUM(w), INT2NUM(h));
+}
+
+
+static VALUE sdl2r_set_window_minimum_size(VALUE klass, VALUE vwindow, VALUE vmin_w, VALUE vmin_h)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    SDL_SetWindowMinimumSize(win->window, NUM2INT(vmin_w), NUM2INT(vmin_h));
+
+    return vwindow;
+}
+
+
+static VALUE sdl2r_set_window_maximum_size(VALUE klass, VALUE vwindow, VALUE vmax_w, VALUE vmax_h)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    SDL_SetWindowMaximumSize(win->window, NUM2INT(vmax_w), NUM2INT(vmax_h));
+
+    return vwindow;
+}
+
+
 
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
@@ -426,6 +468,10 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_fullscreen, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_bordered, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(show_simple_message_box, 4);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_minimum_size, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_maximum_size, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_minimum_size, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_maximum_size, 3);
 
 //    rb_define_singleton_method(window_test, 0);
 
