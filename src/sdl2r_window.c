@@ -430,6 +430,29 @@ static VALUE sdl2r_set_window_maximum_size(VALUE klass, VALUE vwindow, VALUE vma
 }
 
 
+static VALUE sdl2r_get_window_brightness(VALUE klass, VALUE vwindow)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+    float b;
+
+    b = SDL_GetWindowBrightness(win->window);
+
+    return rb_float_new((double)b);
+}
+
+
+static VALUE sdl2r_set_window_brightness(VALUE klass, VALUE vwindow, VALUE vbrightness)
+{
+    struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
+
+    if (SDL_SetWindowBrightness(win->window, (float)NUM2DBL(vbrightness))) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vwindow;
+}
+
+
 
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
@@ -472,6 +495,8 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_maximum_size, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_minimum_size, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_maximum_size, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_window_brightness, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(set_window_brightness, 2);
 
 //    rb_define_singleton_method(window_test, 0);
 
