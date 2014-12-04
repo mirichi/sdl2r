@@ -453,6 +453,16 @@ static VALUE sdl2r_set_window_brightness(VALUE klass, VALUE vwindow, VALUE vbrig
 }
 
 
+static VALUE sdl2r_get_num_video_displays(VALUE klass)
+{
+    int result;
+
+    result = SDL_GetNumVideoDisplays();
+
+    return INT2NUM(result);
+}
+
+
 
 //static VALUE sdl2r_window_test(VALUE klass)
 //{
@@ -497,6 +507,7 @@ void Init_sdl2r_window(void)
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_maximum_size, 3);
     SDL2R_DEFINE_SINGLETON_METHOD(get_window_brightness, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(set_window_brightness, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_num_video_displays, 0);
 
 //    rb_define_singleton_method(window_test, 0);
 
