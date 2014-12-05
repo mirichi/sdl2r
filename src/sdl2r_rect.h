@@ -20,6 +20,16 @@ VALUE sdl2r_point2vpoint(SDL_Point *p);
             rect.w = NUM2INT(rb_ary_entry(vrect, 2));\
             rect.h = NUM2INT(rb_ary_entry(vrect, 3));\
         }
+#define SDL2R_SET_POINT_OR_NULL(ppoint, point, vpoint) {\
+            if (vpoint == Qnil) {\
+                ppoint = NULL;\
+            } else {\
+                Check_Type(vpoint, T_ARRAY);\
+                point.x = NUM2INT(rb_ary_entry(vpoint, 0));\
+                point.y = NUM2INT(rb_ary_entry(vpoint, 1));\
+                ppoint = &point;\
+            }\
+        }
 #define SDL2R_SET_RECT_OR_NULL(prect, rect, vrect) {\
             if (vrect == Qnil) {\
                 prect = NULL;\
