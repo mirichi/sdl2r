@@ -278,12 +278,58 @@ static VALUE sdl2r_render_draw_point(VALUE klass, VALUE vrenderer, VALUE vx, VAL
 }
 
 
+static VALUE sdl2r_render_draw_points(VALUE klass, VALUE vrenderer, VALUE vpoints)
+{
+    struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
+    int i;
+
+    Check_Type(vpoints, T_ARRAY);
+    {
+        int count = RARRAY_LEN(vpoints);
+        SDL_Point points[count];
+        for (i = 0; i < RARRAY_LEN(vpoints); i++) {
+            VALUE vpoint = rb_ary_entry(vpoints, i);
+            SDL2R_SET_POINT(points[i], vpoint);
+        }
+
+        if (SDL_RenderDrawPoints(ren->renderer, points, count)) {
+            rb_raise(eSDLError, SDL_GetError());
+        }
+    }
+
+    return vrenderer;
+}
+
+
 static VALUE sdl2r_render_draw_line(VALUE klass, VALUE vrenderer, VALUE vx1, VALUE vy1, VALUE vx2, VALUE vy2)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
 
     if (SDL_RenderDrawLine(ren->renderer, NUM2INT(vx1), NUM2INT(vy1), NUM2INT(vx2), NUM2INT(vy2))) {
         rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vrenderer;
+}
+
+
+static VALUE sdl2r_render_draw_lines(VALUE klass, VALUE vrenderer, VALUE vpoints)
+{
+    struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
+    int i;
+
+    Check_Type(vpoints, T_ARRAY);
+    {
+        int count = RARRAY_LEN(vpoints);
+        SDL_Point points[count];
+        for (i = 0; i < RARRAY_LEN(vpoints); i++) {
+            VALUE vpoint = rb_ary_entry(vpoints, i);
+            SDL2R_SET_POINT(points[i], vpoint);
+        }
+
+        if (SDL_RenderDrawLines(ren->renderer, points, count)) {
+            rb_raise(eSDLError, SDL_GetError());
+        }
     }
 
     return vrenderer;
@@ -306,6 +352,29 @@ static VALUE sdl2r_render_draw_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
 }
 
 
+static VALUE sdl2r_render_draw_rects(VALUE klass, VALUE vrenderer, VALUE vrects)
+{
+    struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
+    int i;
+
+    Check_Type(vrects, T_ARRAY);
+    {
+        int count = RARRAY_LEN(vrects);
+        SDL_Rect rects[count];
+        for (i = 0; i < RARRAY_LEN(vrects); i++) {
+            VALUE vrect = rb_ary_entry(vrects, i);
+            SDL2R_SET_RECT(rects[i], vrect);
+        }
+
+        if (SDL_RenderDrawRects(ren->renderer, rects, count)) {
+            rb_raise(eSDLError, SDL_GetError());
+        }
+    }
+
+    return vrenderer;
+}
+
+
 static VALUE sdl2r_render_fill_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
 {
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
@@ -316,6 +385,29 @@ static VALUE sdl2r_render_fill_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
 
     if (SDL_RenderFillRect(ren->renderer, pr)) {
         rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return vrenderer;
+}
+
+
+static VALUE sdl2r_render_fill_rects(VALUE klass, VALUE vrenderer, VALUE vrects)
+{
+    struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
+    int i;
+
+    Check_Type(vrects, T_ARRAY);
+    {
+        int count = RARRAY_LEN(vrects);
+        SDL_Rect rects[count];
+        for (i = 0; i < RARRAY_LEN(vrects); i++) {
+            VALUE vrect = rb_ary_entry(vrects, i);
+            SDL2R_SET_RECT(rects[i], vrect);
+        }
+
+        if (SDL_RenderFillRects(ren->renderer, rects, count)) {
+            rb_raise(eSDLError, SDL_GetError());
+        }
     }
 
     return vrenderer;
@@ -341,9 +433,13 @@ void Init_sdl2r_renderer(void)
     SDL2R_DEFINE_SINGLETON_METHOD(render_copy_ex, 7);
     SDL2R_DEFINE_SINGLETON_METHOD(render_present, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(render_draw_point, 3);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_draw_points, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(render_draw_line, 5);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_draw_lines, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(render_draw_rect, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_draw_rects, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(render_fill_rect, 2);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_fill_rects, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(destroy_renderer, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(render_clear, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(set_render_draw_color, 5);
