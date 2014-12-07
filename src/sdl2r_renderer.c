@@ -414,6 +414,20 @@ static VALUE sdl2r_render_fill_rects(VALUE klass, VALUE vrenderer, VALUE vrects)
 }
 
 
+static VALUE sdl2r_get_renderer_output_size(VALUE klass, VALUE vrenderer)
+{
+    struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
+    int w, h;
+
+    if (SDL_GetRendererOutputSize(ren->renderer, &w, &h)) {
+        rb_raise(eSDLError, SDL_GetError());
+    }
+
+    return rb_ary_new3(2, INT2NUM(w), INT2NUM(h));
+}
+
+
+
 //static VALUE sdl2r_renderer_test(VALUE klass, VALUE vrenderer)
 //{
 //    struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
@@ -448,6 +462,7 @@ void Init_sdl2r_renderer(void)
     SDL2R_DEFINE_SINGLETON_METHOD(get_render_target, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(set_render_draw_blend_mode, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(get_render_draw_blend_mode, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_renderer_output_size, 1);
 
 //    rb_define_singleton_method(renderer_test", sdl2r_renderer_test, 1);
 
