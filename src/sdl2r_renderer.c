@@ -464,6 +464,38 @@ void Init_sdl2r_renderer(void)
     SDL2R_DEFINE_SINGLETON_METHOD(get_render_draw_blend_mode, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_renderer_output_size, 1);
 
+    //SDL2R_DEFINE_SINGLETON_METHOD(create_software_renderer, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(create_texture, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(g_l__bind_texture, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(g_l__unbind_texture, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(get_num_render_drivers, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(get_render_draw_color, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(get_render_driver_info, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(get_renderer, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(get_renderer_info, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(get_texture_alpha_mod, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(get_texture_blend_mode, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(get_texture_color_mod, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(lock_texturel, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(query_texture, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_get_clip_rect, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_get_logical_size, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_get_scale, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_get_viewport, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_is_clip_enabled, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_read_pixels, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_set_clip_rect, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_set_logical_size, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_set_scale, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_set_viewport, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(render_target_supported, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(set_texture_alpha_mod, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(set_texture_blend_mode, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(set_texture_color_mod, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(unlock_texture, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(update_texture, 2);
+    //SDL2R_DEFINE_SINGLETON_METHOD(update_y_u_v_texture, 2);
+
 //    rb_define_singleton_method(renderer_test", sdl2r_renderer_test, 1);
 
     // SDL::Renderer class
@@ -486,4 +518,3 @@ void Init_sdl2r_renderer(void)
     SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, FLIP_HORIZONTAL);
     SDL2R_DEFINE_ENUM_VALUE(EnumRendererFlags, FLIP_VERTICAL);
 }
-
