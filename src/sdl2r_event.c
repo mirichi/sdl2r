@@ -481,7 +481,7 @@ static VALUE sdl2r_add_timer_event(VALUE klass, VALUE vinterval, VALUE vevent_ty
 {
     SDL_TimerID timer_id;
 
-    timer_id = SDL_AddTimer(NUM2UINT(vinterval), sdl2r_timer_callback, (VOID *)(VALUE)NUM2UINT(vevent_type));
+    timer_id = SDL_AddTimer(NUM2UINT(vinterval), sdl2r_timer_callback, (void *)(VALUE)NUM2UINT(vevent_type));
     if (!timer_id) {
         rb_raise(eSDLError, SDL_GetError());
     }
