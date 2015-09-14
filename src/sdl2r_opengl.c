@@ -85,7 +85,7 @@ static VALUE sdl2r_gl_make_current(VALUE klass, VALUE vwindow, VALUE vglcontext)
     struct SDL2RGLContext *glc = SDL2R_GET_GLCONTEXT_STRUCT(vglcontext);
 
     if (SDL_GL_MakeCurrent(win->window, glc->glcontext)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vglcontext;
@@ -128,5 +128,3 @@ void Init_sdl2r_opengl(void)
     rb_define_method(cGLContext, "dispose", sdl2r_glcontext_im_dispose, 0);
     rb_define_method(cGLContext, "disposed?", sdl2r_glcontext_im_get_disposed, 0);
 }
-
-

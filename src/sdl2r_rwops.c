@@ -51,7 +51,7 @@ static VALUE sdl2r_rwops_im_dispose(VALUE self)
     struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(self);
 
     if (SDL_RWclose(rw->rwops)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     rw->rwops = 0;
@@ -73,7 +73,7 @@ static VALUE sdl2r_rw_close(VALUE klass, VALUE vrwops)
     struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
 
     if (SDL_RWclose(rw->rwops)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     rw->rwops = 0;
@@ -90,7 +90,7 @@ static VALUE sdl2r_rw_from_file(VALUE klass, VALUE vfilename, VALUE vmode)
 
     rw->rwops = SDL_RWFromFile(SDL2R_TO_UTF8_PTR(vfilename), SDL2R_TO_UTF8_PTR(vmode));
     if (!rw->rwops) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrwops;
@@ -104,7 +104,7 @@ static VALUE sdl2r_rw_from_mem(VALUE klass, VALUE vstr, VALUE vsize)
 
     rw->rwops = SDL_RWFromMem(RSTRING_PTR(vstr), NUM2INT(vsize));
     if (!rw->rwops) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
     rw->vstr = vstr;
 
@@ -120,7 +120,7 @@ static VALUE sdl2r_rw_read(VALUE klass, VALUE vrwops, VALUE vsize, VALUE vmaxnum
 
     result = SDL_RWread(rw->rwops, buf, NUM2UINT(vsize), NUM2UINT(vmaxnum));
     if (result == 0) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return rb_str_new(buf, result * NUM2UINT(vsize));
@@ -134,7 +134,7 @@ static VALUE sdl2r_rw_seek(VALUE klass, VALUE vrwops, VALUE voffset, VALUE vwhen
 
     result = SDL_RWseek(rw->rwops, NUM2LL(voffset), NUM2INT(vwhence));
     if (result == -1) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return LL2NUM(result);
@@ -148,7 +148,7 @@ static VALUE sdl2r_rw_size(VALUE klass, VALUE vrwops)
 
     result = SDL_RWsize(rw->rwops);
      if (result == -1) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return LL2NUM(result);
@@ -162,7 +162,7 @@ static VALUE sdl2r_rw_tell(VALUE klass, VALUE vrwops)
 
     result = SDL_RWtell(rw->rwops);
      if (result == -1) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return LL2NUM(result);
@@ -176,7 +176,7 @@ static VALUE sdl2r_rw_write(VALUE klass, VALUE vrwops, VALUE vstr, VALUE vsize, 
 
     result = SDL_RWwrite(rw->rwops, RSTRING_PTR(vstr), NUM2UINT(vsize), NUM2UINT(vnum));
     if (result < NUM2UINT(vnum)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrwops;
@@ -230,7 +230,7 @@ static VALUE sdl2r_write_be_16(VALUE klass, VALUE vrwops, VALUE vdata)
     struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
 
     if (!SDL_WriteBE16(rw->rwops, NUM2INT(vdata))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vdata;
@@ -242,7 +242,7 @@ static VALUE sdl2r_write_be_32(VALUE klass, VALUE vrwops, VALUE vdata)
     struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
 
     if (!SDL_WriteBE32(rw->rwops, NUM2INT(vdata))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vdata;
@@ -254,7 +254,7 @@ static VALUE sdl2r_write_be_64(VALUE klass, VALUE vrwops, VALUE vdata)
     struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
 
     if (!SDL_WriteBE64(rw->rwops, NUM2LL(vdata))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vdata;
@@ -266,7 +266,7 @@ static VALUE sdl2r_write_le_16(VALUE klass, VALUE vrwops, VALUE vdata)
     struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
 
     if (!SDL_WriteLE16(rw->rwops, NUM2INT(vdata))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vdata;
@@ -278,7 +278,7 @@ static VALUE sdl2r_write_le_32(VALUE klass, VALUE vrwops, VALUE vdata)
     struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
 
     if (!SDL_WriteLE32(rw->rwops, NUM2INT(vdata))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vdata;
@@ -290,7 +290,7 @@ static VALUE sdl2r_write_le_64(VALUE klass, VALUE vrwops, VALUE vdata)
     struct SDL2RRWops *rw = SDL2R_GET_RWOPS_STRUCT(vrwops);
 
     if (!SDL_WriteLE64(rw->rwops, NUM2LL(vdata))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vdata;
@@ -333,5 +333,3 @@ void Init_sdl2r_rwops(void)
     SDL2R_DEFINE_CONST_N(RW_SEEK_CUR);
     SDL2R_DEFINE_CONST_N(RW_SEEK_END);
 }
-
-

@@ -401,7 +401,7 @@ static VALUE sdl2r_push_event(VALUE klass, VALUE vevent)
 
     result = SDL_PushEvent(&ev);
     if (result < 0) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return INT2NUM(result);
@@ -414,7 +414,7 @@ static VALUE sdl2r_register_events(VALUE klass, VALUE vnum)
 
     result = SDL_RegisterEvents(NUM2UINT(vnum));
     if (result == (Uint32)-1) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return UINT2NUM(result);
@@ -448,7 +448,7 @@ static VALUE sdl2r_wait_event(VALUE klass, VALUE vflag)
     }
 
     if (!result) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     if (RTEST(vflag)) {
@@ -483,7 +483,7 @@ static VALUE sdl2r_add_timer_event(VALUE klass, VALUE vinterval, VALUE vevent_ty
 
     timer_id = SDL_AddTimer(NUM2UINT(vinterval), sdl2r_timer_callback, (void *)(VALUE)NUM2UINT(vevent_type));
     if (!timer_id) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return INT2NUM(timer_id);

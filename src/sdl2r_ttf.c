@@ -72,7 +72,7 @@ static VALUE sdl2r_ttf_close_font(VALUE klass, VALUE vfont)
 static VALUE sdl2r_ttf_init(VALUE klass)
 {
     if (TTF_Init()) {
-        rb_raise(eSDLError, TTF_GetError());
+        rb_raise(eSDLError, "%s", TTF_GetError());
     }
 
     return Qnil;
@@ -94,7 +94,7 @@ static VALUE sdl2r_ttf_open_font(VALUE klass, VALUE vfilename, VALUE vsize)
 
     SDL2R_RETRY(fnt->font = TTF_OpenFont(SDL2R_TO_UTF8_PTR(vfilename), NUM2INT(vsize)));
     if (!fnt->font) {
-        rb_raise(eSDLError, TTF_GetError());
+        rb_raise(eSDLError, "%s", TTF_GetError());
     }
     sdl2r_put_hash(sdl2r_font_hash, (HASHKEY)fnt->font, vfont);
 
@@ -109,7 +109,7 @@ static VALUE sdl2r_ttf_open_font_index(VALUE klass, VALUE vfilename, VALUE vsize
 
     SDL2R_RETRY(fnt->font = TTF_OpenFontIndex(SDL2R_TO_UTF8_PTR(vfilename), NUM2INT(vsize), NUM2INT(vindex)));
     if (!fnt->font) {
-        rb_raise(eSDLError, TTF_GetError());
+        rb_raise(eSDLError, "%s", TTF_GetError());
     }
     sdl2r_put_hash(sdl2r_font_hash, (HASHKEY)fnt->font, vfont);
 
@@ -127,7 +127,7 @@ static VALUE sdl2r_ttf_render_solid(VALUE klass, VALUE vfont, VALUE vtext, VALUE
     SDL2R_SET_COLOR(col, vcolor);
     SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Solid(fnt->font, SDL2R_TO_UTF8_PTR(vtext), col));
     if (!sur->surface) {
-        rb_raise(eSDLError, TTF_GetError());
+        rb_raise(eSDLError, "%s", TTF_GetError());
     }
 
     return vsurface;
@@ -145,7 +145,7 @@ static VALUE sdl2r_ttf_render_shaded(VALUE klass, VALUE vfont, VALUE vtext, VALU
     SDL2R_SET_COLOR(bgcol, vbgcolor);
     SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Shaded(fnt->font, SDL2R_TO_UTF8_PTR(vtext), fgcol, bgcol));
     if (!sur->surface) {
-        rb_raise(eSDLError, TTF_GetError());
+        rb_raise(eSDLError, "%s", TTF_GetError());
     }
 
     return vsurface;
@@ -162,7 +162,7 @@ static VALUE sdl2r_ttf_render_blended(VALUE klass, VALUE vfont, VALUE vtext, VAL
     SDL2R_SET_COLOR(col, vcolor);
     SDL2R_RETRY(sur->surface = TTF_RenderUTF8_Blended(fnt->font, SDL2R_TO_UTF8_PTR(vtext), col));
     if (!sur->surface) {
-        rb_raise(eSDLError, TTF_GetError());
+        rb_raise(eSDLError, "%s", TTF_GetError());
     }
 
     return vsurface;
@@ -346,7 +346,7 @@ static VALUE sdl2r_ttf_glyph_metrics(VALUE klass, VALUE vfont, VALUE vstr)
     result = TTF_GlyphMetrics(fnt->font, *(Uint16*)SDL2R_TO_UTF16_PTR(vstr)
                             , &minx, &maxx, &miny, &maxy, &advance);
     if (result == -1) {
-        rb_raise(eSDLError, TTF_GetError());
+        rb_raise(eSDLError, "%s", TTF_GetError());
     }
 
     return rb_ary_new3(5, INT2NUM(minx), INT2NUM(maxx), INT2NUM(miny), INT2NUM(maxy), INT2NUM(advance));
@@ -361,7 +361,7 @@ static VALUE sdl2r_ttf_size(VALUE klass, VALUE vfont, VALUE vstr)
 
     result = TTF_SizeUTF8(fnt->font, SDL2R_TO_UTF8_PTR(vstr), &w, &h);
     if (result == -1) {
-        rb_raise(eSDLError, TTF_GetError());
+        rb_raise(eSDLError, "%s", TTF_GetError());
     }
 
     return rb_ary_new3(2, INT2NUM(w), INT2NUM(h));

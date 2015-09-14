@@ -191,7 +191,7 @@ static VALUE sdl2r_mix_open_audio(VALUE klass, VALUE vfrequency, VALUE vformat, 
 {
 
     if (Mix_OpenAudio(NUM2INT(vfrequency), NUM2INT(vformat), NUM2INT(vchannels), NUM2INT(vchunksize))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
     return Qnil;
 }
@@ -257,7 +257,7 @@ static VALUE sdl2r_mix_load_wav(VALUE klass, VALUE vfilename)
     Check_Type(vfilename, T_STRING);
     SDL2R_RETRY(cnk->chunk = Mix_LoadWAV(RSTRING_PTR(vfilename)));
     if (!cnk->chunk) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
     cnk->vfilename = rb_str_dup(vfilename);
     sdl2r_put_hash(sdl2r_chunk_hash, (HASHKEY)cnk->chunk, vchunk);
@@ -274,7 +274,7 @@ static VALUE sdl2r_mix_load_wav_rw(VALUE klass, VALUE vrwops, VALUE vfreesrc)
 
     SDL2R_RETRY(cnk->chunk = Mix_LoadWAV_RW(rw->rwops, NUM2INT(vfreesrc)));
     if (!cnk->chunk) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
     cnk->vfilename = SDL2R_TO_UTF8_STRING("RWops");
     sdl2r_put_hash(sdl2r_chunk_hash, (HASHKEY)cnk->chunk, vchunk);
@@ -297,7 +297,7 @@ static void sdl2r_mix_ChannelFinishedCallBack(int channel)
     ev.user.code = channel;
     result = SDL_PushEvent(&ev);
     if (result < 0) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 }
 
@@ -469,7 +469,7 @@ static VALUE sdl2r_mix_group_channel(VALUE klass, VALUE vwhich, VALUE vtag)
 
     result = Mix_GroupChannel(NUM2INT(vwhich), NUM2INT(vtag));
     if (!result) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
     return INT2NUM(result);
 }
@@ -481,7 +481,7 @@ static VALUE sdl2r_mix_group_channels(VALUE klass, VALUE vfrom, VALUE vto, VALUE
 
     result = Mix_GroupChannels(NUM2INT(vfrom), NUM2INT(vto), NUM2INT(vtag));
     if (result < NUM2INT(vto) - NUM2INT(vfrom) + 1) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
     return INT2NUM(result);
 }
@@ -550,7 +550,7 @@ static VALUE sdl2r_mix_load_mus(VALUE klass, VALUE vfilename)
     Check_Type(vfilename, T_STRING);
     SDL2R_RETRY(mus->music = Mix_LoadMUS(RSTRING_PTR(vfilename)));
     if (!mus->music) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
     mus->vfilename = rb_str_dup(vfilename);
     sdl2r_put_hash(sdl2r_music_hash, (HASHKEY)mus->music, vmusic);
@@ -568,7 +568,7 @@ static void sdl2r_mix_MusicFinishedCallBack(void)
     ev.user.code = 0;
     result = SDL_PushEvent(&ev);
     if (result < 0) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 }
 
@@ -578,7 +578,7 @@ static VALUE sdl2r_mix_play_music(VALUE klass, VALUE vmusic, VALUE vloops)
     struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(vmusic);
 
     if (Mix_PlayMusic(mus->music, NUM2INT(vloops))) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
 
     return vmusic;
@@ -590,7 +590,7 @@ static VALUE sdl2r_mix_fade_in_music(VALUE klass, VALUE vmusic, VALUE vloops, VA
     struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(vmusic);
 
     if (Mix_FadeInMusic(mus->music, NUM2INT(vloops), NUM2INT(vms))) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
 
     return vmusic;
@@ -602,7 +602,7 @@ static VALUE sdl2r_mix_fade_in_music_pos(VALUE klass, VALUE vmusic, VALUE vloops
     struct SDL2RMusic *mus = SDL2R_GET_MUSIC_STRUCT(vmusic);
 
     if (Mix_FadeInMusicPos(mus->music, NUM2INT(vloops), NUM2INT(vms), NUM2DBL(vposition))) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
 
     return vmusic;
@@ -649,7 +649,7 @@ static VALUE sdl2r_mix_set_music_position(VALUE klass, VALUE vposition)
 
     result = Mix_SetMusicPosition(NUM2DBL(vposition));
     if (result) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
 
     return Qnil;
@@ -663,7 +663,7 @@ static VALUE sdl2r_mix_set_music_cmd(VALUE klass, VALUE vcommand)
     Check_Type(vcommand, T_STRING);
     result = Mix_SetMusicCMD(RSTRING_PTR(vcommand));
     if (result) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
 
     return Qnil;
@@ -676,7 +676,7 @@ static VALUE sdl2r_mix_halt_music(VALUE klass)
 
     result = Mix_HaltMusic();
     if (result) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
 
     return Qnil;
@@ -687,7 +687,7 @@ static VALUE sdl2r_mix_fade_out_music(VALUE klass, VALUE vms)
 {
 
     if (!Mix_FadeOutMusic(NUM2INT(vms))) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
 
     return Qnil;
@@ -739,9 +739,9 @@ static VALUE sdl2r_mix_set_panning(VALUE klass, VALUE vchannel, VALUE vleft, VAL
 
     result = Mix_SetPanning(NUM2INT(vchannel), NUM2INT(vleft), NUM2INT(vright));
     if (!result) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
-    
+
 
     return INT2NUM(result);
 }
@@ -753,9 +753,9 @@ static VALUE sdl2r_mix_set_distance(VALUE klass, VALUE vchannel, VALUE vdistance
 
     result = Mix_SetDistance(NUM2INT(vchannel), NUM2INT(vdistance));
     if (!result) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
-    
+
 
     return INT2NUM(result);
 }
@@ -767,9 +767,9 @@ static VALUE sdl2r_mix_set_position(VALUE klass, VALUE vchannel, VALUE vangle, V
 
     result = Mix_SetPosition(NUM2INT(vchannel), NUM2INT(vangle), NUM2INT(vdistance));
     if (!result) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
-    
+
 
     return INT2NUM(result);
 }
@@ -781,9 +781,9 @@ static VALUE sdl2r_mix_set_reverse_stereo(VALUE klass, VALUE vchannel, VALUE vfl
 
     result = Mix_SetReverseStereo(NUM2INT(vchannel), NUM2INT(vflip));
     if (!result) {
-        rb_raise(eSDLError, Mix_GetError());
+        rb_raise(eSDLError, "%s", Mix_GetError());
     }
-    
+
 
     return INT2NUM(result);
 }

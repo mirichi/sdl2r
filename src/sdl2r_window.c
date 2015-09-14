@@ -131,7 +131,7 @@ static VALUE sdl2r_get_window_surface(VALUE klass, VALUE vwindow)
 
     sur->surface = SDL_GetWindowSurface(win->window);
     if (!sur->surface) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
     sur->surface = 0;
     sur->vwindow = vwindow;
@@ -146,7 +146,7 @@ static VALUE sdl2r_update_window_surface(VALUE klass, VALUE vwindow)
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
 
     if (SDL_UpdateWindowSurface(win->window)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vwindow;
@@ -161,7 +161,7 @@ static VALUE sdl2r_create_renderer(VALUE klass, VALUE vwindow, VALUE vindex, VAL
 
     SDL2R_RETRY(ren->renderer = SDL_CreateRenderer(win->window, NUM2INT(vindex), (Uint32)NUM2UINT(vflags)));
     if (!ren->renderer) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
     ren->vwindow = vwindow;
     win->vrenderer = vrenderer;
@@ -184,7 +184,7 @@ static VALUE sdl2r_create_window(VALUE klass, VALUE vstr, VALUE vx, VALUE vy, VA
 
     SDL2R_RETRY(win->window = SDL_CreateWindow(RSTRING_PTR(vstr), NUM2INT(vx), NUM2INT(vy), NUM2INT(vw), NUM2INT(vh), NUM2INT(vflags)));
     if (!win->window) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
     sdl2r_put_hash(sdl2r_window_hash, (HASHKEY)win->window, vwindow);
 
@@ -202,7 +202,7 @@ static VALUE sdl2r_create_window_and_renderer(VALUE klass, VALUE vw, VALUE vh, V
 
     SDL2R_RETRY((result = SDL_CreateWindowAndRenderer(NUM2INT(vw), NUM2INT(vh), NUM2INT(vflags), &(win->window), &(ren->renderer))) == 0 ? 1 : 0);
     if (result) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
     sdl2r_put_hash(sdl2r_window_hash, (HASHKEY)win->window, vwindow);
     ren->vwindow = vwindow;
@@ -218,7 +218,7 @@ static VALUE sdl2r_get_window_pixel_format(VALUE klass, VALUE vwindow)
     Uint32 result;
 
     if ((result = SDL_GetWindowPixelFormat(win->window)) == SDL_PIXELFORMAT_UNKNOWN) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return UINT2NUM(result);
@@ -259,7 +259,7 @@ static VALUE sdl2r_get_window_from_id(VALUE klass, VALUE vid)
 
     w = SDL_GetWindowFromID(NUM2UINT(vid));
     if (!w) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return sdl2r_get_hash(sdl2r_window_hash, (HASHKEY)w);
@@ -274,7 +274,7 @@ static VALUE sdl2r_gl_create_context(VALUE klass, VALUE vwindow)
 
     SDL2R_RETRY(glc->glcontext = SDL_GL_CreateContext(win->window));
     if (!glc->glcontext) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
     glc->vwindow = vwindow;
     win->vglcontext = vglcontext;
@@ -355,7 +355,7 @@ static VALUE sdl2r_set_window_fullscreen(VALUE klass, VALUE vwindow, VALUE vflag
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
 
     if (SDL_SetWindowFullscreen(win->window, NUM2UINT(vflags))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vwindow;
@@ -381,7 +381,7 @@ static VALUE sdl2r_show_simple_message_box(VALUE klass, VALUE vflags, VALUE vtit
     }
 
     if (SDL_ShowSimpleMessageBox(NUM2UINT(vflags), SDL2R_TO_UTF8_PTR(vtitle), SDL2R_TO_UTF8_PTR(vmessage), window)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vwindow;
@@ -446,7 +446,7 @@ static VALUE sdl2r_set_window_brightness(VALUE klass, VALUE vwindow, VALUE vbrig
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
 
     if (SDL_SetWindowBrightness(win->window, (float)NUM2DBL(vbrightness))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vwindow;

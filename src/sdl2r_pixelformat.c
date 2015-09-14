@@ -126,7 +126,7 @@ static VALUE sdl2r_alloc_format(VALUE klass, VALUE vpixelformatenum)
 
     format = SDL_AllocFormat(NUM2UINT(vpixelformatenum));
     if (!format) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
     pxf->format = format;
 
@@ -169,4 +169,3 @@ void Init_sdl2r_pixelformat(void)
 
     // weak ref hash
 }
-

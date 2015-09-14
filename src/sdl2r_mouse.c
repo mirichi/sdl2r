@@ -75,7 +75,7 @@ static VALUE sdl2r_create_system_cursor(VALUE klass, VALUE vid)
 
     SDL2R_RETRY(cur->cursor = SDL_CreateSystemCursor(NUM2INT(vid)));
     if (!cur->cursor) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vcursor;

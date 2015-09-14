@@ -86,7 +86,7 @@ static VALUE sdl2r_query_texture(VALUE klass, VALUE vtexture)
     int access, w, h;
 
     if (SDL_QueryTexture(tex->texture, &format, &access, &w, &h)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return rb_ary_new3(4, INT2NUM(format), INT2NUM(access), INT2NUM(w), INT2NUM(h));
@@ -98,7 +98,7 @@ static VALUE sdl2r_set_texture_blend_mode(VALUE klass, VALUE vtexture, VALUE vbl
     struct SDL2RTexture *tex = SDL2R_GET_TEXTURE_STRUCT(vtexture);
 
     if (SDL_SetTextureBlendMode(tex->texture, NUM2INT(vblendmode))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vtexture;
@@ -111,7 +111,7 @@ static VALUE sdl2r_get_texture_blend_mode(VALUE klass, VALUE vtexture)
     SDL_BlendMode bm;
 
     if (SDL_GetTextureBlendMode(tex->texture, &bm)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return INT2NUM(bm);
@@ -135,5 +135,3 @@ void Init_sdl2r_texture(void)
 
     // Constants
 }
-
-

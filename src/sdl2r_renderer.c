@@ -99,7 +99,7 @@ static VALUE sdl2r_render_copy(VALUE klass, VALUE vrenderer, VALUE vtexture, VAL
     SDL2R_SET_RECT_OR_NULL(pdr, dstrect, vdstrect);
 
     if (SDL_RenderCopy(ren->renderer, tex->texture, psr, pdr)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -120,7 +120,7 @@ static VALUE sdl2r_render_copy_ex(VALUE klass, VALUE vrenderer, VALUE vtexture, 
     SDL2R_SET_POINT_OR_NULL(pp, point, vcenter);
 
     if (SDL_RenderCopyEx(ren->renderer, tex->texture, psr, pdr, NUM2DBL(vangle), pp, NUM2INT(vflip))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -146,7 +146,7 @@ static VALUE sdl2r_create_texture_from_surface(VALUE klass, VALUE vrenderer, VAL
 
     SDL2R_RETRY(tex->texture = SDL_CreateTextureFromSurface(ren->renderer, sur->surface));
     if (!tex->texture) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     tex->vrenderer = vrenderer;
@@ -164,7 +164,7 @@ static VALUE sdl2r_create_texture(VALUE klass, VALUE vrenderer, VALUE vformat, V
 
     SDL2R_RETRY(tex->texture = SDL_CreateTexture(ren->renderer, NUM2UINT(vformat), NUM2INT(vaccess), NUM2INT(vw), NUM2INT(vh)));
     if (!tex->texture) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     tex->vrenderer = vrenderer;
@@ -179,7 +179,7 @@ static VALUE sdl2r_render_clear(VALUE klass, VALUE vrenderer)
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
 
     if (SDL_RenderClear(ren->renderer)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -191,7 +191,7 @@ static VALUE sdl2r_set_render_draw_color(VALUE klass, VALUE vrenderer, VALUE vr,
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
 
     if (SDL_SetRenderDrawColor(ren->renderer, NUM2INT(vr), NUM2INT(vg), NUM2INT(vb), NUM2INT(va))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -234,7 +234,7 @@ static VALUE sdl2r_set_render_target(VALUE klass, VALUE vrenderer, VALUE vtextur
     }
 
     if (SDL_SetRenderTarget(ren->renderer, t)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -246,7 +246,7 @@ static VALUE sdl2r_set_render_draw_blend_mode(VALUE klass, VALUE vrenderer, VALU
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
 
     if (SDL_SetRenderDrawBlendMode(ren->renderer, NUM2INT(vblendmode))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -259,7 +259,7 @@ static VALUE sdl2r_get_render_draw_blend_mode(VALUE klass, VALUE vrenderer)
     SDL_BlendMode bm;
 
     if (SDL_GetRenderDrawBlendMode(ren->renderer, &bm)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return INT2NUM(bm);
@@ -271,7 +271,7 @@ static VALUE sdl2r_render_draw_point(VALUE klass, VALUE vrenderer, VALUE vx, VAL
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
 
     if (SDL_RenderDrawPoint(ren->renderer, NUM2INT(vx), NUM2INT(vy))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -293,7 +293,7 @@ static VALUE sdl2r_render_draw_points(VALUE klass, VALUE vrenderer, VALUE vpoint
         }
 
         if (SDL_RenderDrawPoints(ren->renderer, points, count)) {
-            rb_raise(eSDLError, SDL_GetError());
+            rb_raise(eSDLError, "%s", SDL_GetError());
         }
     }
 
@@ -306,7 +306,7 @@ static VALUE sdl2r_render_draw_line(VALUE klass, VALUE vrenderer, VALUE vx1, VAL
     struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
 
     if (SDL_RenderDrawLine(ren->renderer, NUM2INT(vx1), NUM2INT(vy1), NUM2INT(vx2), NUM2INT(vy2))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -328,7 +328,7 @@ static VALUE sdl2r_render_draw_lines(VALUE klass, VALUE vrenderer, VALUE vpoints
         }
 
         if (SDL_RenderDrawLines(ren->renderer, points, count)) {
-            rb_raise(eSDLError, SDL_GetError());
+            rb_raise(eSDLError, "%s", SDL_GetError());
         }
     }
 
@@ -345,7 +345,7 @@ static VALUE sdl2r_render_draw_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
     SDL2R_SET_RECT_OR_NULL(pr, rect, vrect);
 
     if (SDL_RenderDrawRect(ren->renderer, pr)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -367,7 +367,7 @@ static VALUE sdl2r_render_draw_rects(VALUE klass, VALUE vrenderer, VALUE vrects)
         }
 
         if (SDL_RenderDrawRects(ren->renderer, rects, count)) {
-            rb_raise(eSDLError, SDL_GetError());
+            rb_raise(eSDLError, "%s", SDL_GetError());
         }
     }
 
@@ -384,7 +384,7 @@ static VALUE sdl2r_render_fill_rect(VALUE klass, VALUE vrenderer, VALUE vrect)
     SDL2R_SET_RECT_OR_NULL(pr, rect, vrect);
 
     if (SDL_RenderFillRect(ren->renderer, pr)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vrenderer;
@@ -406,7 +406,7 @@ static VALUE sdl2r_render_fill_rects(VALUE klass, VALUE vrenderer, VALUE vrects)
         }
 
         if (SDL_RenderFillRects(ren->renderer, rects, count)) {
-            rb_raise(eSDLError, SDL_GetError());
+            rb_raise(eSDLError, "%s", SDL_GetError());
         }
     }
 
@@ -420,7 +420,7 @@ static VALUE sdl2r_get_renderer_output_size(VALUE klass, VALUE vrenderer)
     int w, h;
 
     if (SDL_GetRendererOutputSize(ren->renderer, &w, &h)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return rb_ary_new3(2, INT2NUM(w), INT2NUM(h));

@@ -170,7 +170,7 @@ static VALUE sdl2r_blit_surface(VALUE klass, VALUE vsrc, VALUE vsrcrect, VALUE v
     SDL2R_SET_RECT_OR_NULL(pdr, dstrect, vdstrect);
 
     if (SDL_BlitSurface(sdl2r_get_sdl_surface(src), psr, sdl2r_get_sdl_surface(dst), pdr)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return klass;
@@ -188,7 +188,7 @@ static VALUE sdl2r_blit_scaled(VALUE klass, VALUE vsrc, VALUE vsrcrect, VALUE vd
     SDL2R_SET_RECT_OR_NULL(pdr, dstrect, vdstrect);
 
     if (SDL_BlitScaled(sdl2r_get_sdl_surface(src), psr, sdl2r_get_sdl_surface(dst), pdr)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return klass;
@@ -212,7 +212,7 @@ static VALUE sdl2r_create_rgb_surface(int argc, VALUE *argv, VALUE klass)
     SDL2R_RETRY(sur->surface = SDL_CreateRGBSurface(NUM2INT(vflags), NUM2INT(vw), NUM2INT(vh), NUM2INT(vdepth), NUM2UINT(vrmask), NUM2UINT(vgmask), NUM2UINT(vbmask), NUM2UINT(vamask)));
 
     if (!sur->surface) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
     return vsurface;
 }
@@ -230,7 +230,7 @@ static VALUE sdl2r_lock_surface(VALUE klass, VALUE vsurface)
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(vsurface);
 
     if (SDL_LockSurface(sdl2r_get_sdl_surface(sur))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vsurface;
@@ -259,7 +259,7 @@ static VALUE sdl2r_fill_rect(VALUE klass, VALUE vsurface, VALUE vrect, VALUE vco
     SDL2R_SET_COLOR(col, vcolor);
 
     if (SDL_FillRect(surface, prect, SDL_MapRGBA(format, col.r, col.g, col.b, col.a))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return vsurface;
@@ -284,7 +284,7 @@ static VALUE sdl2r_fill_rects(VALUE klass, VALUE vsurface, VALUE vrects, VALUE v
         }
 
         if (SDL_FillRects(surface, rects, RARRAY_LEN(vrects), SDL_MapRGBA(format, col.r, col.g, col.b, col.a))) {
-            rb_raise(eSDLError, SDL_GetError());
+            rb_raise(eSDLError, "%s", SDL_GetError());
         }
     }
 
@@ -299,7 +299,7 @@ static VALUE sdl2r_get_surface_alpha_mod(VALUE klass, VALUE vsurface)
     Uint8 alpha;
 
     if (SDL_GetSurfaceAlphaMod(surface, &alpha)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return INT2NUM(alpha);
@@ -313,7 +313,7 @@ static VALUE sdl2r_get_surface_blend_mode(VALUE klass, VALUE vsurface)
     SDL_BlendMode blendmode;
 
     if (SDL_GetSurfaceBlendMode(surface, &blendmode)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return INT2NUM(blendmode);
@@ -327,7 +327,7 @@ static VALUE sdl2r_get_surface_color_mod(VALUE klass, VALUE vsurface)
     Uint8 r, g, b;
 
     if (SDL_GetSurfaceColorMod(surface, &r, &g, &b)) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return rb_ary_new3(3, INT2NUM(r), INT2NUM(g), INT2NUM(b));
@@ -340,7 +340,7 @@ static VALUE sdl2r_set_surface_alpha_mod(VALUE klass, VALUE vsurface, VALUE valp
     SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
 
     if (SDL_SetSurfaceAlphaMod(surface, NUM2INT(valpha))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return Qnil;
@@ -353,7 +353,7 @@ static VALUE sdl2r_set_surface_blend_mode(VALUE klass, VALUE vsurface, VALUE vbl
     SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
 
     if (SDL_SetSurfaceBlendMode(surface, NUM2INT(vblendmode))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return Qnil;
@@ -366,7 +366,7 @@ static VALUE sdl2r_set_surface_color_mod(VALUE klass, VALUE vsurface, VALUE vr, 
     SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
 
     if (SDL_SetSurfaceColorMod(surface, NUM2INT(vr), NUM2INT(vg), NUM2INT(vb))) {
-        rb_raise(eSDLError, SDL_GetError());
+        rb_raise(eSDLError, "%s", SDL_GetError());
     }
 
     return Qnil;
@@ -531,4 +531,3 @@ void Init_sdl2r_surface(void)
 
     // Constants
 }
-

@@ -14,7 +14,7 @@ static VALUE sdl2r_img_load(VALUE klass, VALUE vfilename)
 
     SDL2R_RETRY(sur->surface = IMG_Load(RSTRING_PTR(vfilename)));
     if (!sur->surface) {
-        rb_raise(eSDLError, IMG_GetError());
+        rb_raise(eSDLError, "%s", IMG_GetError());
     }
     return vsurface;
 }
@@ -28,7 +28,7 @@ static VALUE sdl2r_img_load_rw(VALUE klass, VALUE vrwops, VALUE vfreesrc)
 
     SDL2R_RETRY(sur->surface = IMG_Load_RW(rw->rwops, NUM2INT(vfreesrc)));
     if (!sur->surface) {
-        rb_raise(eSDLError, IMG_GetError());
+        rb_raise(eSDLError, "%s", IMG_GetError());
     }
 
     if (NUM2INT(vfreesrc) != 0) {
@@ -84,5 +84,3 @@ void Init_sdl2r_image(void)
     SDL2R_DEFINE_SINGLETON_METHOD_IMAGE(load, 1);
     SDL2R_DEFINE_SINGLETON_METHOD_IMAGE(load_rw, 2);
 }
-
-
