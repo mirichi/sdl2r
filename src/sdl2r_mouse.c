@@ -82,6 +82,22 @@ static VALUE sdl2r_create_system_cursor(VALUE klass, VALUE vid)
 }
 
 
+//static VALUE sdl2r_get_global_mouse_state(VALUE klass)
+//{
+//  int x, y;
+//  Uint32 result = SDL_GetGlobalMouseState(&x, &y);
+//  return rb_ary_new3(3, UINT2NUM(result), INT2NUM(x), INT2NUM(y));
+//}
+
+
+static VALUE sdl2r_get_mouse_state(VALUE klass)
+{
+  int x, y;
+  Uint32 result = SDL_GetMouseState(&x, &y);
+  return rb_ary_new3(3, UINT2NUM(result), INT2NUM(x), INT2NUM(y));
+}
+
+
 static VALUE sdl2r_set_cursor(VALUE klass, VALUE vcursor)
 {
     struct SDL2RCursor *cur = SDL2R_GET_CURSOR_STRUCT(vcursor);
@@ -104,7 +120,7 @@ void Init_sdl2r_mouse(void)
 //    SDL2R_DEFINE_SINGLETON_METHOD(get_default_cursor, 0);
 //    SDL2R_DEFINE_SINGLETON_METHOD(get_global_mouse_state, 0);
 //    SDL2R_DEFINE_SINGLETON_METHOD(get_mouse_focus, 0);
-//    SDL2R_DEFINE_SINGLETON_METHOD(get_mouse_state, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(get_mouse_state, 0);
 //    SDL2R_DEFINE_SINGLETON_METHOD(get_relative_mouse_mode, 0);
 //    SDL2R_DEFINE_SINGLETON_METHOD(get_relative_mouse_state, 0);
     SDL2R_DEFINE_SINGLETON_METHOD(set_cursor, 1);
