@@ -121,7 +121,7 @@ static VALUE sdl2r_get_keyboard_state(VALUE klass)
 
     if (numkeys) {
         for (i = 0; i < numkeys; i++) {
-            rb_ary_push(vresult, UINT2NUM(c[i]));
+            rb_ary_push(vresult, SDL2R_TO_BOOL(c[i]));
         }
     }
     return vresult;
