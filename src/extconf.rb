@@ -3,6 +3,7 @@ require "mkmf"
 if find_executable('sdl2-config')
   sdl2_config = with_config('sdl2-config', 'sdl2-config')
   $CPPFLAGS += " " + `#{sdl2_config} --cflags`.chomp
+  $LOCAL_LIBS += " " + `#{sdl2_config} --libs`.chomp
 end
 
 SYSTEM_LIBRARIES = [
