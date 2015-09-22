@@ -427,6 +427,28 @@ static VALUE sdl2r_get_renderer_output_size(VALUE klass, VALUE vrenderer)
 }
 
 
+static VALUE sdl2r_render_get_scale(VALUE klass, VALUE vrenderer)
+{
+    struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
+    float x=0, y=0;
+
+    SDL_RenderGetScale(ren->renderer, &x, &y);
+
+    return rb_ary_new3(2, DBL2NUM(x), DBL2NUM(y));
+}
+
+
+static VALUE sdl2r_render_set_scale(VALUE klass, VALUE vrenderer, VALUE vx, VALUE vy)
+{
+    struct SDL2RRenderer *ren = SDL2R_GET_RENDERER_STRUCT(vrenderer);
+
+    if (SDL_RenderSetScale(ren->renderer, (float)NUM2DBL(vx), (float)NUM2DBL(vy))) {
+        rb_raise(eSDLError, "%s", SDL_GetError());
+    }
+
+    return vrenderer;
+}
+
 
 //static VALUE sdl2r_renderer_test(VALUE klass, VALUE vrenderer)
 //{
@@ -463,6 +485,8 @@ void Init_sdl2r_renderer(void)
     SDL2R_DEFINE_SINGLETON_METHOD(set_render_draw_blend_mode, 2);
     SDL2R_DEFINE_SINGLETON_METHOD(get_render_draw_blend_mode, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(get_renderer_output_size, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_get_scale, 1);
+    SDL2R_DEFINE_SINGLETON_METHOD(render_set_scale, 3);
 
     //SDL2R_DEFINE_SINGLETON_METHOD(create_software_renderer, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(create_texture, 2);
@@ -480,13 +504,11 @@ void Init_sdl2r_renderer(void)
     //SDL2R_DEFINE_SINGLETON_METHOD(query_texture, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(render_get_clip_rect, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(render_get_logical_size, 2);
-    //SDL2R_DEFINE_SINGLETON_METHOD(render_get_scale, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(render_get_viewport, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(render_is_clip_enabled, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(render_read_pixels, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(render_set_clip_rect, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(render_set_logical_size, 2);
-    //SDL2R_DEFINE_SINGLETON_METHOD(render_set_scale, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(render_set_viewport, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(render_target_supported, 2);
     //SDL2R_DEFINE_SINGLETON_METHOD(set_texture_alpha_mod, 2);
