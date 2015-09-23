@@ -92,6 +92,16 @@ static VALUE sdl2r_gl_make_current(VALUE klass, VALUE vwindow, VALUE vglcontext)
 }
 
 
+static VALUE sdl2r_gl_set_swap_interval(VALUE klass, VALUE vinterval)
+{
+    if (SDL_GL_SetSwapInterval(NUM2INT(vinterval))) {
+      rb_raise(eSDLError, "%s", SDL_GetError());
+    }
+
+    return Qnil;
+}
+
+
 static VALUE sdl2r_gl_swap_window(VALUE klass, VALUE vwindow)
 {
     struct SDL2RWindow *win = SDL2R_GET_WINDOW_STRUCT(vwindow);
@@ -117,7 +127,7 @@ void Init_sdl2r_opengl(void)
     SDL2R_DEFINE_SINGLETON_METHOD(gl_make_current, 2);
 //    SDL2R_DEFINE_SINGLETON_METHOD(gl_resetAttributes, 0);
 //    SDL2R_DEFINE_SINGLETON_METHOD(gl_setAttribute, 0);
-//    SDL2R_DEFINE_SINGLETON_METHOD(gl_setSwapInterval, 0);
+    SDL2R_DEFINE_SINGLETON_METHOD(gl_set_swap_interval, 1);
     SDL2R_DEFINE_SINGLETON_METHOD(gl_swap_window, 1);
 //    SDL2R_DEFINE_SINGLETON_METHOD(gl_unloadLibrary, 0);
 
