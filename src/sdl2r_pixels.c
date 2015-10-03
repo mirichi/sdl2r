@@ -40,7 +40,7 @@ VALUE sdl2r_pixels_alloc(VALUE klass)
 }
 
 
-static VALUE sdl2r_get_pixel(VALUE self, VALUE vx, VALUE vy)
+static VALUE sdl2r_pixels_im_get_pixel(VALUE self, VALUE vx, VALUE vy)
 {
     struct SDL2RPixels *pix = SDL2R_GET_PIXELS_STRUCT(self);
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pix->vsurface);
@@ -83,7 +83,7 @@ static VALUE sdl2r_get_pixel(VALUE self, VALUE vx, VALUE vy)
 }
 
 
-static VALUE sdl2r_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
+static VALUE sdl2r_pixels_im_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
 {
     struct SDL2RPixels *pix = SDL2R_GET_PIXELS_STRUCT(self);
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pix->vsurface);
@@ -124,6 +124,16 @@ static VALUE sdl2r_set_pixel(VALUE self, VALUE vx, VALUE vy, VALUE vcolor)
 }
 
 
+static VALUE sdl2r_pixels_im_to_s(VALUE self)
+{
+  struct SDL2RPixels *pix = SDL2R_GET_PIXELS_STRUCT(self);
+  struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pix->vsurface);
+  SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
+
+  return rb_str_new(surface->pixels, surface->w * surface->h * surface->pitch);
+}
+
+
 void Init_sdl2r_pixels(void)
 {
     // SDL module methods
@@ -131,11 +141,11 @@ void Init_sdl2r_pixels(void)
     // SDL::Surface::Pixels class
     cPixels = rb_define_class_under(cSurface, "Pixels", rb_cObject);
     rb_define_alloc_func(cPixels, sdl2r_pixels_alloc);
-    rb_define_method(cPixels, "[]", sdl2r_get_pixel, 2);
-    rb_define_method(cPixels, "[]=", sdl2r_set_pixel, 3);
+    rb_define_method(cPixels, "[]", sdl2r_pixels_im_get_pixel, 2);
+    rb_define_method(cPixels, "[]=", sdl2r_pixels_im_set_pixel, 3);
+    rb_define_method(cPixels, "to_s", sdl2r_pixels_im_to_s, 0);
 
     // Constants
 
     // weak ref hash
 }
-
