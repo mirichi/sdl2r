@@ -126,6 +126,13 @@ static VALUE sdl2r_im_get_h(VALUE self)
 }
 
 
+static VALUE sdl2r_im_get_pitch(VALUE self)
+{
+    struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
+    return INT2NUM(sdl2r_get_sdl_surface(sur)->pitch);
+}
+
+
 static VALUE sdl2r_im_get_pixels(VALUE self)
 {
     struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(self);
@@ -431,6 +438,7 @@ void Init_sdl2r_surface(void)
     rb_define_method(cSurface, "disposed?", sdl2r_surface_im_get_disposed, 0);
     rb_define_method(cSurface, "w", sdl2r_im_get_w, 0);
     rb_define_method(cSurface, "h", sdl2r_im_get_h, 0);
+    rb_define_method(cSurface, "pitch", sdl2r_im_get_pitch, 0);
     rb_define_method(cSurface, "pixels", sdl2r_im_get_pixels, 0);
     rb_define_method(cSurface, "format", sdl2r_im_get_format, 0);
 
