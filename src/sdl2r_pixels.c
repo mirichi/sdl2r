@@ -130,7 +130,7 @@ static VALUE sdl2r_pixels_im_to_s(VALUE self)
   struct SDL2RSurface *sur = SDL2R_GET_SURFACE_STRUCT(pix->vsurface);
   SDL_Surface *surface = sdl2r_get_sdl_surface(sur);
 
-  return rb_str_new(surface->pixels, surface->w * surface->h * surface->pitch);
+  return rb_str_new(surface->pixels, surface->h * surface->pitch);
 }
 
 
