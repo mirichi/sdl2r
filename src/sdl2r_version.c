@@ -1,7 +1,7 @@
 #define SDL2RVERSION
 #include "sdl2r.h"
 #include "sdl2r_version.h"
-#include "sdl_revision.h"
+#include "SDL_revision.h"
 
 VALUE cVersion;
 

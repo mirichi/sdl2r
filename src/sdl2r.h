@@ -1,5 +1,5 @@
-#include "SDL.h"
 #include "ruby.h"
+#include "SDL.h"
 #include "ruby/encoding.h"
 
 #ifndef SDL2R
